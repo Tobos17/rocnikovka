@@ -5,6 +5,7 @@ import {
   OrbitControls,
   useGLTF,
   useKeyboardControls,
+  useTexture,
 } from "@react-three/drei";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
@@ -20,7 +21,7 @@ import * as THREE from "three";
 import { useVehicleController } from "./use-vehicle-controller";
 
 const spawn = {
-  position: [0, 0, 0],
+  position: [5, 2, -5],
   rotation: [0, Math.PI / 2, 0],
 };
 
@@ -36,8 +37,8 @@ const controls = [
 const wheelInfo = {
   axleCs: new THREE.Vector3(0, 0, -1),
   suspensionRestLength: 0.125,
-  suspensionStiffness: 11,
-  maxSuspensionTravel: 3,
+  suspensionStiffness: 15,
+  maxSuspensionTravel: 5,
   radius: 0.15,
 };
 
@@ -50,8 +51,8 @@ const wheels = [
   { position: new THREE.Vector3(0.47, -0.15, 0.325), ...wheelInfo },
 ];
 
-const cameraOffset = new THREE.Vector3(5, 5, -5);
-const cameraTargetOffset = new THREE.Vector3(0, -1, 0);
+const cameraOffset = new THREE.Vector3(3, 3, -3);
+const cameraTargetOffset = new THREE.Vector3(0, 0, 0);
 
 const _bodyPosition = new THREE.Vector3();
 const _airControlAngVel = new THREE.Vector3();
@@ -78,7 +79,7 @@ const Vehicle = ({ position, rotation }) => {
     {
       accelerateForce: { value: 1, min: 0, max: 10 },
       brakeForce: { value: 0.05, min: 0, max: 0.5, step: 0.01 },
-      steerAngle: { value: Math.PI / 24, min: 0, max: Math.PI / 12 },
+      steerAngle: { value: Math.PI / 12, min: 0, max: Math.PI / 12 },
     }
   );
 
@@ -130,10 +131,33 @@ const Vehicle = ({ position, rotation }) => {
     angvel.applyQuaternion(chassisRigidBody.rotation());
     angvel.add(chassisRigidBody.angvel());
 
-    chassisRigidBody.setAngvel(
-      new rapier.Vector3(angvel.x, angvel.y, angvel.z),
-      true
-    );
+    if (controls.forward || controls.back) {
+      chassisRigidBody.setAngvel(
+        new rapier.Vector3(angvel.x, angvel.y, angvel.z),
+        true
+      );
+    }
+
+    if (!controls.forward && !controls.back) {
+      const currentlinvel = new THREE.Vector3();
+      currentlinvel.add(chassisRigidBody.linvel());
+
+      if (
+        Math.abs(currentlinvel.x) < 0.01 &&
+        Math.abs(currentlinvel.y) < 0.01 &&
+        Math.abs(currentlinvel.z) < 0.01
+      ) {
+        chassisRigidBody.setLinvel(new rapier.Vector3(0, 0, 0), true);
+      }
+      // console.log(chassisRigidBody.linvel().x);
+
+      const a = 1.0 - Math.pow(0.01, delta * 0.05);
+      const linvel = currentlinvel.lerp(new THREE.Vector3(0, 0, 0), a);
+      chassisRigidBody.setLinvel(
+        new rapier.Vector3(linvel.x, linvel.y, linvel.z),
+        true
+      );
+    }
 
     if (controls.reset) {
       const chassis = controller.chassis();
@@ -145,15 +169,15 @@ const Vehicle = ({ position, rotation }) => {
       chassis.setAngvel(new rapier.Vector3(0, 0, 0), true);
     }
 
-    // if (
-    //   !controls.forward &&
-    //   !controls.back &&
-    //   !controls.left &&
-    //   !controls.right
-    // ) {
-    //   const chassis = controller.chassis();
-    //   chassis.setLinvel(new rapier.Vector3(0, 0, 0), true);
-    // }
+    if (
+      (controls.left || controls.right) &&
+      (!controls.forward || !controls.back)
+    ) {
+      // const chassis = controller.chassis();
+      // const r = new THREE.Euler(0, 0, 0);
+      // const q = new THREE.Quaternion().setFromEuler(r);
+      // chassis.setRotation(q, true);
+    }
 
     /* camera */
 
@@ -185,6 +209,7 @@ const Vehicle = ({ position, rotation }) => {
   return (
     <>
       <RigidBody
+        scale={0.8}
         position={position}
         rotation={rotation}
         canSleep={false}
@@ -195,7 +220,7 @@ const Vehicle = ({ position, rotation }) => {
         <CuboidCollider args={[0.8, 0.2, 0.4]} />
 
         <group rotation-y={Math.PI} ref={chasisMeshRef} name="chassisBody">
-          <primitive object={scene2} position={[0.225, -0.225, -0.275]} />
+          <primitive object={scene2} position={[0.225, -0.25, -0.275]} />
         </group>
 
         {/* wheels */}
@@ -226,25 +251,26 @@ const Scene = () => {
     <>
       <RigidBody
         type="fixed"
-        colliders="cuboid"
-        position={[0, -5, 0]}
-        // userData={{ outOfBounds: true }}
-      >
-        {/* <mesh>
-          <boxGeometry args={[600, 1, 600]} />
-          <meshStandardMaterial color="#ff5555" />
-        </mesh> */}
-      </RigidBody>
-
-      <RigidBody
-        type="fixed"
         colliders="trimesh"
-        scale={2}
-        position={[0, -2, 0]}
+        scale={1}
+        position={[0, 0, 0]}
       >
         <primitive object={scene} />
       </RigidBody>
     </>
+  );
+};
+
+const Model = () => {
+  const { nodes } = useGLTF("/models/g.glb");
+  const matcap = useTexture("./textures/green.png");
+
+  // console.log(nodes.Plane003.position);
+
+  return (
+    <mesh geometry={nodes.Plane003.geometry} position={nodes.Plane003.position}>
+      <meshMatcapMaterial matcap={matcap} />
+    </mesh>
   );
 };
 
@@ -260,6 +286,7 @@ export function Sketch() {
   return (
     <>
       <Canvas>
+        <Model />
         <Environment preset="sunset" />
         <Physics debug={debug}>
           <KeyboardControls map={controls}>

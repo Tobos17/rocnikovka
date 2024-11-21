@@ -3,11 +3,12 @@ import {
   Environment,
   KeyboardControls,
   OrbitControls,
+  shaderMaterial,
   useGLTF,
   useKeyboardControls,
   useTexture,
 } from "@react-three/drei";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Canvas, extend, useFrame, useThree } from "@react-three/fiber";
 import {
   CuboidCollider,
   Physics,
@@ -16,9 +17,24 @@ import {
   useRapier,
 } from "@react-three/rapier";
 import { useControls } from "leva";
-import { RefObject, useRef, useState } from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { useVehicleController } from "./use-vehicle-controller";
+
+import oceanVertexShader from "../shaders/ocean/vertex.glsl";
+import oceanFragmentShader from "../shaders/ocean/fragment.glsl";
+
+const OceanMaterial = shaderMaterial(
+  {
+    uTime: 0,
+    uColor: new THREE.Color(0x0077ff),
+    uMap: null,
+  },
+  oceanVertexShader,
+  oceanFragmentShader
+);
+
+extend({ OceanMaterial });
 
 const spawn = {
   position: [5, 2, -5],
@@ -51,7 +67,7 @@ const wheels = [
   { position: new THREE.Vector3(0.47, -0.15, 0.325), ...wheelInfo },
 ];
 
-const cameraOffset = new THREE.Vector3(3, 3, -3);
+const cameraOffset = new THREE.Vector3(4, 5, -4);
 const cameraTargetOffset = new THREE.Vector3(0, 0, 0);
 
 const _bodyPosition = new THREE.Vector3();
@@ -246,6 +262,11 @@ const Vehicle = ({ position, rotation }) => {
 
 const Scene = () => {
   const { scene } = useGLTF("/models/Env.glb");
+  const { nodes } = useGLTF("/models/grass.glb");
+  const { nodes: nodes2 } = useGLTF("/models/ground.glb");
+
+  const matcap = useTexture("./textures/grass.png");
+  const matcap2 = useTexture("./textures/ground.png");
 
   return (
     <>
@@ -256,6 +277,24 @@ const Scene = () => {
         position={[0, 0, 0]}
       >
         <primitive object={scene} />
+        {/* <mesh
+          geometry={nodes.Vert021.geometry}
+          position={nodes.Vert021.position}
+        >
+          <meshMatcapMaterial matcap={matcap} />
+        </mesh>
+        <mesh geometry={nodes.b002.geometry} position={nodes.b002.position}>
+          <meshMatcapMaterial matcap={matcap} />
+        </mesh>
+        <mesh geometry={nodes2.b001.geometry} position={nodes2.b001.position}>
+          <meshMatcapMaterial matcap={matcap2} />
+        </mesh>
+        <mesh
+          geometry={nodes2.Vert015.geometry}
+          position={nodes2.Vert015.position}
+        >
+          <meshMatcapMaterial matcap={matcap2} />
+        </mesh> */}
       </RigidBody>
     </>
   );
@@ -264,13 +303,42 @@ const Scene = () => {
 const Model = () => {
   const { nodes } = useGLTF("/models/g.glb");
   const matcap = useTexture("./textures/green.png");
+  // matcap.minFilter = THREE.NearestFilter;
+  matcap.magFilter = THREE.LinearMipmapLinearFilter;
 
   // console.log(nodes.Plane003.position);
 
   return (
-    <mesh geometry={nodes.Plane003.geometry} position={nodes.Plane003.position}>
-      <meshMatcapMaterial matcap={matcap} />
-    </mesh>
+    <>
+      <mesh geometry={nodes.b002.geometry} position={nodes.b002.position}>
+        <meshMatcapMaterial matcap={matcap} />
+      </mesh>
+    </>
+  );
+};
+
+const Water = () => {
+  // console.log(nodes.Plane003.position);
+
+  const oceanMaterial = useRef();
+  const uMap = useTexture("./textures/uMap.png");
+
+  uMap.wrapS = THREE.RepeatWrapping;
+  uMap.wrapT = THREE.RepeatWrapping;
+
+  useFrame((state) => {
+    oceanMaterial.current.uniforms.uTime.value += 0.1;
+    oceanMaterial.current.uniforms.uMap.value = uMap;
+  });
+
+  return (
+    <>
+      <mesh position={[0, -2, 0]} rotation-x={-Math.PI / 2}>
+        <planeGeometry args={[50, 50, 50, 50]} />
+        <oceanMaterial ref={oceanMaterial} />
+        {/* <meshBasicMaterial color={"red"} /> */}
+      </mesh>
+    </>
   );
 };
 
@@ -285,8 +353,21 @@ export function Sketch() {
 
   return (
     <>
-      <Canvas>
-        <Model />
+      <Canvas
+        gl={{
+          antialias: false,
+          alpha: false,
+          stencil: false,
+          powerPreference: "high-performance",
+        }}
+        dpr={[1, 1.5]}
+        camera={{ near: 2, far: 20, fov: 55 }}
+      >
+        {/* <Model /> */}
+
+        {/* <fogExp2 attach="fog" args={["#abddff", 1, 10]} /> */}
+
+        <Water />
         <Environment preset="sunset" />
         <Physics debug={debug}>
           <KeyboardControls map={controls}>

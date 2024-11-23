@@ -1,4 +1,3 @@
-import { DynamicRayCastVehicleController } from "@dimforge/rapier3d-compat";
 import {
   RapierRigidBody,
   useAfterPhysicsStep,

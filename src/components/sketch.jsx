@@ -37,8 +37,8 @@ const OceanMaterial = shaderMaterial(
 extend({ OceanMaterial });
 
 const spawn = {
-  position: [5, 2, -5],
-  rotation: [0, Math.PI / 2, 0],
+  position: [7, 2, -8],
+  rotation: [0, Math.PI / 5, 0],
 };
 
 const controls = [
@@ -175,7 +175,7 @@ const Vehicle = ({ position, rotation }) => {
       );
     }
 
-    if (controls.reset) {
+    if (controls.reset || chassisRigidBody.translation().y < -1) {
       const chassis = controller.chassis();
       chassis.setTranslation(new rapier.Vector3(...spawn.position), true);
       const spawnRot = new THREE.Euler(...spawn.rotation);
@@ -183,16 +183,6 @@ const Vehicle = ({ position, rotation }) => {
       chassis.setRotation(spawnQuat, true);
       chassis.setLinvel(new rapier.Vector3(0, 0, 0), true);
       chassis.setAngvel(new rapier.Vector3(0, 0, 0), true);
-    }
-
-    if (
-      (controls.left || controls.right) &&
-      (!controls.forward || !controls.back)
-    ) {
-      // const chassis = controller.chassis();
-      // const r = new THREE.Euler(0, 0, 0);
-      // const q = new THREE.Quaternion().setFromEuler(r);
-      // chassis.setRotation(q, true);
     }
 
     /* camera */
@@ -262,6 +252,33 @@ const Vehicle = ({ position, rotation }) => {
 
 const Scene = () => {
   const { scene } = useGLTF("/models/Env.glb");
+  const baked = useTexture("/textures/baked-2.jpg");
+  const bakedRocks = useTexture("/textures/baked-rocks.jpg");
+
+  baked.flipY = false;
+  baked.colorSpace = THREE.SRGBColorSpace;
+
+  bakedRocks.flipY = false;
+  bakedRocks.colorSpace = THREE.SRGBColorSpace;
+
+  useEffect(() => {
+    scene.traverse((child) => {
+      if (child.isMesh && child.name === "b002") {
+        child.material = new THREE.MeshBasicMaterial({
+          map: baked,
+        });
+      } else if (child.isMesh && child.name === "bounds") {
+        child.material = new THREE.MeshBasicMaterial({
+          visible: false,
+        });
+      } else if (child.isMesh && child.name === "m") {
+        child.material = new THREE.MeshBasicMaterial({
+          map: bakedRocks,
+        });
+      }
+    });
+  }, [scene]);
+
   const { nodes } = useGLTF("/models/grass.glb");
   const { nodes: nodes2 } = useGLTF("/models/ground.glb");
 
@@ -273,7 +290,7 @@ const Scene = () => {
       <RigidBody
         type="fixed"
         colliders="trimesh"
-        scale={1}
+        scale={1.2}
         position={[0, 0, 0]}
       >
         <primitive object={scene} />
@@ -355,7 +372,7 @@ export function Sketch() {
     <>
       <Canvas
         gl={{
-          antialias: false,
+          antialias: true,
           alpha: false,
           stencil: false,
           powerPreference: "high-performance",
@@ -364,8 +381,6 @@ export function Sketch() {
         camera={{ near: 2, far: 20, fov: 55 }}
       >
         {/* <Model /> */}
-
-        {/* <fogExp2 attach="fog" args={["#abddff", 1, 10]} /> */}
 
         <Water />
         <Environment preset="sunset" />

@@ -5,12 +5,7 @@ import {
 } from "@react-three/drei";
 import { useControls } from "leva";
 import { useRef } from "react";
-import { Map } from "./Map";
-// import { Physics } from "@react-three/rapier";
 import { Physics } from "@react-three/cannon";
-import { CharacterController } from "./CharacterController";
-import { CharacterControlle } from "./Char-Can";
-import { Groundd } from "./Groundd";
 
 export const Experience = () => {
   const shadowCameraRef = useRef();
@@ -36,11 +31,6 @@ export const Experience = () => {
           attach={"shadow-camera"}
         />
       </directionalLight> */}
-
-      <Physics broadphase="SAP" gravity={[0, -2.6, 0]}>
-        <CharacterControlle />
-        <Groundd />
-      </Physics>
 
       {/* <Physics debug>
         <Map />

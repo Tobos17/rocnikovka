@@ -21,7 +21,7 @@ function App() {
       {/* <color attach="background" args={["#ececec"]} /> */}
       {/* <Experience /> */}
       <Sketch />
-      {/* </Canvas> */}
+      {/* </Canvas> */}7
     </KeyboardControls>
   );
 }

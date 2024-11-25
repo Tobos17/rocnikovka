@@ -16,29 +16,15 @@ import {
   RigidBody,
   useRapier,
 } from "@react-three/rapier";
-import { useControls } from "leva";
+import { Leva, useControls } from "leva";
 import { RefObject, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { useVehicleController } from "./use-vehicle-controller";
-
-import oceanVertexShader from "../shaders/ocean/vertex.glsl";
-import oceanFragmentShader from "../shaders/ocean/fragment.glsl";
-
-const OceanMaterial = shaderMaterial(
-  {
-    uTime: 0,
-    uColor: new THREE.Color(0x0077ff),
-    uMap: null,
-  },
-  oceanVertexShader,
-  oceanFragmentShader
-);
-
-extend({ OceanMaterial });
+import { Ocean } from "./Ocean";
 
 const spawn = {
-  position: [7, 2, -8],
-  rotation: [0, Math.PI / 5, 0],
+  position: [8.5, 2, -9.5],
+  rotation: [0, Math.PI / 4, 0],
 };
 
 const controls = [
@@ -221,6 +207,7 @@ const Vehicle = ({ position, rotation }) => {
         canSleep={false}
         ref={chasisBodyRef}
         colliders={false}
+        mass={20}
         type="dynamic"
       >
         <CuboidCollider args={[0.8, 0.2, 0.4]} />
@@ -254,6 +241,7 @@ const Scene = () => {
   const { scene } = useGLTF("/models/Env.glb");
   const baked = useTexture("/textures/baked-2.jpg");
   const bakedRocks = useTexture("/textures/baked-rocks.jpg");
+  const bakedFloors = useTexture("/textures/baked-floors.jpg");
 
   baked.flipY = false;
   baked.colorSpace = THREE.SRGBColorSpace;
@@ -261,11 +249,19 @@ const Scene = () => {
   bakedRocks.flipY = false;
   bakedRocks.colorSpace = THREE.SRGBColorSpace;
 
+  bakedFloors.flipY = false;
+  bakedFloors.colorSpace = THREE.SRGBColorSpace;
+
   useEffect(() => {
     scene.traverse((child) => {
-      if (child.isMesh && child.name === "b002") {
+      if (
+        (child.isMesh && child.name === "b") ||
+        (child.isMesh && child.name === "b001") ||
+        (child.isMesh && child.name === "b002") ||
+        (child.isMesh && child.name === "b003")
+      ) {
         child.material = new THREE.MeshBasicMaterial({
-          map: baked,
+          map: bakedFloors,
         });
       } else if (child.isMesh && child.name === "bounds") {
         child.material = new THREE.MeshBasicMaterial({
@@ -317,45 +313,43 @@ const Scene = () => {
   );
 };
 
-const Model = () => {
-  const { nodes } = useGLTF("/models/g.glb");
-  const matcap = useTexture("./textures/green.png");
-  // matcap.minFilter = THREE.NearestFilter;
-  matcap.magFilter = THREE.LinearMipmapLinearFilter;
+const TextPlane = () => {
+  const alphaMap = useTexture("/textures/floorTexture.png");
 
-  // console.log(nodes.Plane003.position);
+  const position = [8, 0.01, -8];
 
   return (
     <>
-      <mesh geometry={nodes.b002.geometry} position={nodes.b002.position}>
-        <meshMatcapMaterial matcap={matcap} />
+      <mesh
+        position={position}
+        rotation-x={-Math.PI / 2}
+        rotation-z={Math.PI / 1.5}
+      >
+        <planeGeometry args={[3.5, 3.5]} />
+        <meshBasicMaterial
+          color={"red"}
+          alphaMap={alphaMap}
+          transparent={true}
+        />
       </mesh>
     </>
   );
 };
 
-const Water = () => {
-  // console.log(nodes.Plane003.position);
-
-  const oceanMaterial = useRef();
-  const uMap = useTexture("./textures/uMap.png");
-
-  uMap.wrapS = THREE.RepeatWrapping;
-  uMap.wrapT = THREE.RepeatWrapping;
-
-  useFrame((state) => {
-    oceanMaterial.current.uniforms.uTime.value += 0.1;
-    oceanMaterial.current.uniforms.uMap.value = uMap;
-  });
-
+const Model = () => {
+  const position = [9, 5, -8];
   return (
-    <>
-      <mesh position={[0, -2, 0]} rotation-x={-Math.PI / 2}>
-        <planeGeometry args={[50, 50, 50, 50]} />
-        <oceanMaterial ref={oceanMaterial} />
-        {/* <meshBasicMaterial color={"red"} /> */}
+    <RigidBody
+      scale={0.2}
+      colliders="trimesh"
+      position={position}
+      type="dynamic"
+    >
+      <mesh castShadow>
+        <boxGeometry />
+        <meshStandardMaterial color="orange" />
       </mesh>
-    </>
+    </RigidBody>
   );
 };
 
@@ -378,23 +372,23 @@ export function Sketch() {
           powerPreference: "high-performance",
         }}
         dpr={[1, 1.5]}
-        camera={{ near: 2, far: 20, fov: 55 }}
+        camera={{ near: 2, fov: 55 }}
       >
-        {/* <Model /> */}
-
-        <Water />
         <Environment preset="sunset" />
         <Physics debug={debug}>
           <KeyboardControls map={controls}>
             <Vehicle position={spawn.position} rotation={spawn.rotation} />
           </KeyboardControls>
-
+          <Model />
           <Scene />
         </Physics>
 
+        <TextPlane />
+
+        <Ocean />
+
         {/* <ambientLight intensity={1} /> */}
         {/* <hemisphereLight intensity={0.5} /> */}
-
         {orbitControls && <OrbitControls makeDefault />}
       </Canvas>
     </>

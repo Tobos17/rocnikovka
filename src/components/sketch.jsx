@@ -3,6 +3,7 @@ import {
   Environment,
   KeyboardControls,
   OrbitControls,
+  PivotControls,
   shaderMaterial,
   useGLTF,
   useKeyboardControls,
@@ -79,20 +80,25 @@ const Vehicle = ({ position, rotation }) => {
   const { accelerateForce, brakeForce, steerAngle } = useControls(
     "rapier-dynamic-raycast-vehicle-controller",
     {
-      accelerateForce: { value: 1, min: 0, max: 10 },
+      accelerateForce: { value: 0.75, min: 0, max: 10 },
       brakeForce: { value: 0.05, min: 0, max: 0.5, step: 0.01 },
-      steerAngle: { value: Math.PI / 12, min: 0, max: Math.PI / 12 },
+      steerAngle: { value: Math.PI / 8, min: 0, max: Math.PI / 8 },
     }
   );
 
   const [smoothedCameraPosition] = useState(new THREE.Vector3(0, 10, 0));
   const [smoothedCameraTarget] = useState(new THREE.Vector3());
 
+  const collider = useRef(null);
+  const collider2 = useRef(null);
+
+  let intercest = false;
+
   useFrame((state, delta) => {
     if (!chasisMeshRef.current || !vehicleController.current || !!threeControls)
       return;
 
-    const t = 1.0 - Math.pow(0.01, delta);
+    let t = 1.0 - Math.pow(0.01, delta);
 
     /* controls */
 
@@ -162,13 +168,38 @@ const Vehicle = ({ position, rotation }) => {
     }
 
     if (controls.reset || chassisRigidBody.translation().y < -1) {
-      const chassis = controller.chassis();
-      chassis.setTranslation(new rapier.Vector3(...spawn.position), true);
+      chassisRigidBody.setTranslation(
+        new rapier.Vector3(...spawn.position),
+        true
+      );
       const spawnRot = new THREE.Euler(...spawn.rotation);
       const spawnQuat = new THREE.Quaternion().setFromEuler(spawnRot);
-      chassis.setRotation(spawnQuat, true);
-      chassis.setLinvel(new rapier.Vector3(0, 0, 0), true);
-      chassis.setAngvel(new rapier.Vector3(0, 0, 0), true);
+      chassisRigidBody.setRotation(spawnQuat, true);
+      chassisRigidBody.setLinvel(new rapier.Vector3(0, 0, 0), true);
+      chassisRigidBody.setAngvel(new rapier.Vector3(0, 0, 0), true);
+    }
+
+    const playerPosition = new THREE.Vector3();
+    playerPosition.x = chassisRigidBody.translation().x;
+    playerPosition.y = chassisRigidBody.translation().y + 0.5;
+    playerPosition.z = chassisRigidBody.translation().z;
+
+    const rayDirection = { x: 0, y: 1, z: 0 };
+    const maxToi = 0.8;
+
+    const ray = world.castRay(
+      new rapier.Ray(playerPosition, rayDirection),
+      maxToi,
+      true,
+      undefined,
+      (2 << 16) | 0x02,
+      undefined
+    );
+
+    if (ray) {
+      intercest = true;
+    } else {
+      intercest = false;
     }
 
     /* camera */
@@ -177,11 +208,24 @@ const Vehicle = ({ position, rotation }) => {
     const cameraPosition = _cameraPosition;
 
     // camera behind chassis
-    cameraPosition.copy(cameraOffset);
+    if (intercest) {
+      let cP;
+      if (chassisRigidBody.translation().y < 1) {
+        cP = new THREE.Vector3(1, 4, -5);
+      } else {
+        cP = new THREE.Vector3(4, 6, 5);
+      }
+
+      cameraPosition.copy(cP);
+      t = 1.0 - Math.pow(0.01, delta * 0.4);
+    } else {
+      cameraPosition.copy(cameraOffset);
+    }
 
     cameraPosition.add(chassisRigidBody.translation());
 
     smoothedCameraPosition.lerp(cameraPosition, t);
+
     state.camera.position.copy(smoothedCameraPosition);
 
     // camera target
@@ -207,6 +251,7 @@ const Vehicle = ({ position, rotation }) => {
         canSleep={false}
         ref={chasisBodyRef}
         colliders={false}
+        collisionGroups={(1 << 16) | 0x01}
         mass={20}
         type="dynamic"
       >
@@ -232,6 +277,30 @@ const Vehicle = ({ position, rotation }) => {
             </group>
           </group>
         ))}
+      </RigidBody>
+
+      <RigidBody
+        type="fixed"
+        colliders="cuboid"
+        ref={collider}
+        collisionGroups={(2 << 16) | 0x02}
+      >
+        <mesh position={[0, 4.5, 0]}>
+          <boxGeometry args={[10, 0.2, 10]} />
+          <meshBasicMaterial visible={false} color="red" />
+        </mesh>
+      </RigidBody>
+
+      <RigidBody
+        type="fixed"
+        colliders="cuboid"
+        ref={collider2}
+        collisionGroups={(2 << 16) | 0x02}
+      >
+        <mesh position={[-3, 1.5, -5]}>
+          <boxGeometry args={[10, 0.2, 10]} />
+          <meshBasicMaterial visible={false} color="red" />
+        </mesh>
       </RigidBody>
     </>
   );
@@ -275,12 +344,6 @@ const Scene = () => {
     });
   }, [scene]);
 
-  const { nodes } = useGLTF("/models/grass.glb");
-  const { nodes: nodes2 } = useGLTF("/models/ground.glb");
-
-  const matcap = useTexture("./textures/grass.png");
-  const matcap2 = useTexture("./textures/ground.png");
-
   return (
     <>
       <RigidBody
@@ -288,26 +351,9 @@ const Scene = () => {
         colliders="trimesh"
         scale={1.2}
         position={[0, 0, 0]}
+        collisionGroups={(1 << 16) | 0x01}
       >
         <primitive object={scene} />
-        {/* <mesh
-          geometry={nodes.Vert021.geometry}
-          position={nodes.Vert021.position}
-        >
-          <meshMatcapMaterial matcap={matcap} />
-        </mesh>
-        <mesh geometry={nodes.b002.geometry} position={nodes.b002.position}>
-          <meshMatcapMaterial matcap={matcap} />
-        </mesh>
-        <mesh geometry={nodes2.b001.geometry} position={nodes2.b001.position}>
-          <meshMatcapMaterial matcap={matcap2} />
-        </mesh>
-        <mesh
-          geometry={nodes2.Vert015.geometry}
-          position={nodes2.Vert015.position}
-        >
-          <meshMatcapMaterial matcap={matcap2} />
-        </mesh> */}
       </RigidBody>
     </>
   );
@@ -386,6 +432,8 @@ export function Sketch() {
         <TextPlane />
 
         <Ocean />
+
+        <PivotControls scale={50} />
 
         {/* <ambientLight intensity={1} /> */}
         {/* <hemisphereLight intensity={0.5} /> */}

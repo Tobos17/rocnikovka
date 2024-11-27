@@ -15,6 +15,7 @@ import {
   Physics,
   RapierRigidBody,
   RigidBody,
+  TrimeshCollider,
   useRapier,
 } from "@react-three/rapier";
 import { Leva, useControls } from "leva";
@@ -24,8 +25,8 @@ import { useVehicleController } from "./use-vehicle-controller";
 import { Ocean } from "./Ocean";
 
 const spawn = {
-  position: [8.5, 2, -9.5],
-  rotation: [0, Math.PI / 4, 0],
+  position: [13, 1.5, -12.75],
+  rotation: [0, Math.PI / 4.5, 0],
 };
 
 const controls = [
@@ -91,6 +92,7 @@ const Vehicle = ({ position, rotation }) => {
 
   const collider = useRef(null);
   const collider2 = useRef(null);
+  const collider3 = useRef(null);
 
   let intercest = false;
 
@@ -157,7 +159,6 @@ const Vehicle = ({ position, rotation }) => {
       ) {
         chassisRigidBody.setLinvel(new rapier.Vector3(0, 0, 0), true);
       }
-      // console.log(chassisRigidBody.linvel().x);
 
       const a = 1.0 - Math.pow(0.01, delta * 0.05);
       const linvel = currentlinvel.lerp(new THREE.Vector3(0, 0, 0), a);
@@ -185,7 +186,7 @@ const Vehicle = ({ position, rotation }) => {
     playerPosition.z = chassisRigidBody.translation().z;
 
     const rayDirection = { x: 0, y: 1, z: 0 };
-    const maxToi = 0.8;
+    const maxToi = 3;
 
     const ray = world.castRay(
       new rapier.Ray(playerPosition, rayDirection),
@@ -210,14 +211,19 @@ const Vehicle = ({ position, rotation }) => {
     // camera behind chassis
     if (intercest) {
       let cP;
-      if (chassisRigidBody.translation().y < 1) {
-        cP = new THREE.Vector3(1, 4, -5);
+
+      if (chassisRigidBody.translation().y < 2) {
+        if (chassisRigidBody.translation().x > 8.5) {
+          cP = new THREE.Vector3(3, 2, -3);
+        } else {
+          cP = new THREE.Vector3(1, 4, -5);
+        }
       } else {
         cP = new THREE.Vector3(4, 6, 5);
       }
 
       cameraPosition.copy(cP);
-      t = 1.0 - Math.pow(0.01, delta * 0.4);
+      t = 1.0 - Math.pow(0.01, delta * 0.35);
     } else {
       cameraPosition.copy(cameraOffset);
     }
@@ -302,6 +308,18 @@ const Vehicle = ({ position, rotation }) => {
           <meshBasicMaterial visible={false} color="red" />
         </mesh>
       </RigidBody>
+
+      <RigidBody
+        type="fixed"
+        colliders="cuboid"
+        ref={collider3}
+        collisionGroups={(2 << 16) | 0x02}
+      >
+        <mesh position={[13, 3, -13]} rotation-y={Math.PI / 4.5}>
+          <boxGeometry args={[5, 0.2, 5]} />
+          <meshBasicMaterial visible={false} color="red" />
+        </mesh>
+      </RigidBody>
     </>
   );
 };
@@ -311,6 +329,11 @@ const Scene = () => {
   const baked = useTexture("/textures/baked-2.jpg");
   const bakedRocks = useTexture("/textures/baked-rocks.jpg");
   const bakedFloors = useTexture("/textures/baked-floors.jpg");
+
+  const { scene: colliderScene } = useGLTF("/models/colliders.glb");
+  const geometry = colliderScene.children[0].geometry;
+  const vertices = geometry.attributes.position.array;
+  const indices = geometry.index.array;
 
   baked.flipY = false;
   baked.colorSpace = THREE.SRGBColorSpace;
@@ -353,8 +376,10 @@ const Scene = () => {
         position={[0, 0, 0]}
         collisionGroups={(1 << 16) | 0x01}
       >
-        <primitive object={scene} />
+        {/* <primitive object={colliderScene} /> */}
+        <TrimeshCollider args={[vertices, indices]} />
       </RigidBody>
+      <primitive object={scene} scale={1.2} position={[0, 0, 0]} />
     </>
   );
 };

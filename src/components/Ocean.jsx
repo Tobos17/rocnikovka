@@ -96,7 +96,7 @@ const Water = ({ cubeRef }) => {
   return (
     <>
       <mesh rotation-x={-Math.PI / 2}>
-        <planeGeometry args={[50, 50, 50, 50]} />
+        <planeGeometry args={[100, 100, 50, 50]} />
         <oceanMaterial ref={oceanMaterial} />
         {/* <meshBasicMaterial color={"red"} /> */}
       </mesh>

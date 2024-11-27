@@ -1,4 +1,3 @@
-import { Collider } from "@dimforge/rapier3d-compat";
 import {
   Environment,
   KeyboardControls,
@@ -13,16 +12,16 @@ import { Canvas, extend, useFrame, useThree } from "@react-three/fiber";
 import {
   CuboidCollider,
   Physics,
-  RapierRigidBody,
   RigidBody,
   TrimeshCollider,
   useRapier,
 } from "@react-three/rapier";
 import { Leva, useControls } from "leva";
-import { RefObject, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { useVehicleController } from "./use-vehicle-controller";
 import { Ocean } from "./Ocean";
+import { Scene } from "./Scene";
 
 const spawn = {
   position: [13, 1.5, -12.75],
@@ -56,7 +55,7 @@ const wheels = [
 ];
 
 const cameraOffset = new THREE.Vector3(4, 5, -4);
-const cameraTargetOffset = new THREE.Vector3(0, 0, 0);
+const cameraTargetOffset = new THREE.Vector3(0, 0.2, 0);
 
 const _bodyPosition = new THREE.Vector3();
 const _airControlAngVel = new THREE.Vector3();
@@ -178,7 +177,14 @@ const Vehicle = ({ position, rotation }) => {
       chassisRigidBody.setRotation(spawnQuat, true);
       chassisRigidBody.setLinvel(new rapier.Vector3(0, 0, 0), true);
       chassisRigidBody.setAngvel(new rapier.Vector3(0, 0, 0), true);
+
+      chassisRigidBody.setBodyType(rapier.RigidBodyType.KinematicPositionBased);
     }
+    if (state.camera.position.x > 15 || state.camera.position.x < -15) {
+      chassisRigidBody.setBodyType(rapier.RigidBodyType.Dynamic);
+    }
+
+    // console.log(state.camera.position);
 
     const playerPosition = new THREE.Vector3();
     playerPosition.x = chassisRigidBody.translation().x;
@@ -214,7 +220,7 @@ const Vehicle = ({ position, rotation }) => {
 
       if (chassisRigidBody.translation().y < 2) {
         if (chassisRigidBody.translation().x > 8.5) {
-          cP = new THREE.Vector3(3, 2, -3);
+          cP = new THREE.Vector3(2.5, 2, -2.2);
         } else {
           cP = new THREE.Vector3(1, 4, -5);
         }
@@ -223,7 +229,7 @@ const Vehicle = ({ position, rotation }) => {
       }
 
       cameraPosition.copy(cP);
-      t = 1.0 - Math.pow(0.01, delta * 0.35);
+      t = 1.0 - Math.pow(0.01, delta * 0.4);
     } else {
       cameraPosition.copy(cameraOffset);
     }
@@ -233,6 +239,7 @@ const Vehicle = ({ position, rotation }) => {
     smoothedCameraPosition.lerp(cameraPosition, t);
 
     state.camera.position.copy(smoothedCameraPosition);
+    // console.log(chasisMeshRef.current.getWorldPosition(_bodyPosition));
 
     // camera target
     const bodyPosition = chasisMeshRef.current.getWorldPosition(_bodyPosition);
@@ -315,7 +322,7 @@ const Vehicle = ({ position, rotation }) => {
         ref={collider3}
         collisionGroups={(2 << 16) | 0x02}
       >
-        <mesh position={[13, 3, -13]} rotation-y={Math.PI / 4.5}>
+        <mesh position={[12.5, 3, -12.5]} rotation-y={Math.PI / 4.5}>
           <boxGeometry args={[5, 0.2, 5]} />
           <meshBasicMaterial visible={false} color="red" />
         </mesh>
@@ -324,48 +331,13 @@ const Vehicle = ({ position, rotation }) => {
   );
 };
 
-const Scene = () => {
-  const { scene } = useGLTF("/models/Env.glb");
-  const baked = useTexture("/textures/baked-2.jpg");
-  const bakedRocks = useTexture("/textures/baked-rocks.jpg");
-  const bakedFloors = useTexture("/textures/baked-floors.jpg");
-
+const ScenePhysics = () => {
   const { scene: colliderScene } = useGLTF("/models/colliders.glb");
+
   const geometry = colliderScene.children[0].geometry;
   const vertices = geometry.attributes.position.array;
   const indices = geometry.index.array;
-
-  baked.flipY = false;
-  baked.colorSpace = THREE.SRGBColorSpace;
-
-  bakedRocks.flipY = false;
-  bakedRocks.colorSpace = THREE.SRGBColorSpace;
-
-  bakedFloors.flipY = false;
-  bakedFloors.colorSpace = THREE.SRGBColorSpace;
-
-  useEffect(() => {
-    scene.traverse((child) => {
-      if (
-        (child.isMesh && child.name === "b") ||
-        (child.isMesh && child.name === "b001") ||
-        (child.isMesh && child.name === "b002") ||
-        (child.isMesh && child.name === "b003")
-      ) {
-        child.material = new THREE.MeshBasicMaterial({
-          map: bakedFloors,
-        });
-      } else if (child.isMesh && child.name === "bounds") {
-        child.material = new THREE.MeshBasicMaterial({
-          visible: false,
-        });
-      } else if (child.isMesh && child.name === "m") {
-        child.material = new THREE.MeshBasicMaterial({
-          map: bakedRocks,
-        });
-      }
-    });
-  }, [scene]);
+  // console.log(vertices, indices);
 
   return (
     <>
@@ -379,7 +351,6 @@ const Scene = () => {
         {/* <primitive object={colliderScene} /> */}
         <TrimeshCollider args={[vertices, indices]} />
       </RigidBody>
-      <primitive object={scene} scale={1.2} position={[0, 0, 0]} />
     </>
   );
 };
@@ -407,24 +378,45 @@ const TextPlane = () => {
   );
 };
 
-const Model = () => {
-  const position = [9, 5, -8];
-  return (
-    <RigidBody
-      scale={0.2}
-      colliders="trimesh"
-      position={position}
-      type="dynamic"
-    >
-      <mesh castShadow>
-        <boxGeometry />
-        <meshStandardMaterial color="orange" />
-      </mesh>
-    </RigidBody>
-  );
-};
+// const Model = ({ position }) => {
+//   const [, getKeyboardControls] = useKeyboardControls();
+//   const controls = getKeyboardControls();
+
+//   const boxRef = useRef();
+
+//   useFrame((state, delta) => {
+//     // console.log(controls.space);
+
+//     if (boxRef.current) {
+//       // Reset position
+//       // boxRef.current.setTranslation(position, false);
+//       // Reset velocity
+//       boxRef.current.setLinvel({ x: 0, y: 0, z: 0 }, true);
+//       boxRef.current.setAngvel({ x: 0, y: 0, z: 0 }, true);
+//     }
+//   });
+
+//   return (
+//     <RigidBody
+//       ref={boxRef}
+//       scale={0.35}
+//       colliders="cuboid"
+//       position={position}
+//       mass={0.01}
+//       friction={0}
+//       type="dynamic"
+//     >
+//       <mesh castShadow>
+//         <boxGeometry />
+//         <meshStandardMaterial color="orange" />
+//       </mesh>
+//     </RigidBody>
+//   );
+// };
 
 export function Sketch() {
+  const [scrolled, setScrolled] = useState(false);
+
   const { debug, orbitControls } = useControls(
     "rapier-dynamic-raycast-vehicle-controller/physics",
     {
@@ -436,23 +428,29 @@ export function Sketch() {
   return (
     <>
       <Canvas
+        flat
+        invalidateFrameloop={true}
         gl={{
           antialias: true,
           alpha: false,
-          stencil: false,
           powerPreference: "high-performance",
         }}
         dpr={[1, 1.5]}
-        camera={{ near: 2, fov: 55 }}
+        camera={{ near: 0.1, fov: 55 }}
       >
         <Environment preset="sunset" />
-        <Physics debug={debug}>
-          <KeyboardControls map={controls}>
-            <Vehicle position={spawn.position} rotation={spawn.rotation} />
-          </KeyboardControls>
-          <Model />
-          <Scene />
-        </Physics>
+
+        {scrolled && (
+          <Physics debug={debug}>
+            <KeyboardControls map={controls}>
+              <Vehicle position={spawn.position} rotation={spawn.rotation} />
+            </KeyboardControls>
+
+            <ScenePhysics />
+          </Physics>
+        )}
+
+        <Scene setScrolled={setScrolled} />
 
         <TextPlane />
 
@@ -460,8 +458,6 @@ export function Sketch() {
 
         <PivotControls scale={50} />
 
-        {/* <ambientLight intensity={1} /> */}
-        {/* <hemisphereLight intensity={0.5} /> */}
         {orbitControls && <OrbitControls makeDefault />}
       </Canvas>
     </>

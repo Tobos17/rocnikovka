@@ -17,7 +17,7 @@ import {
   useRapier,
 } from "@react-three/rapier";
 import { Leva, useControls } from "leva";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { useVehicleController } from "./use-vehicle-controller";
 import { Ocean } from "./Ocean";
@@ -65,6 +65,7 @@ const _cameraTarget = new THREE.Vector3();
 const Vehicle = ({ position, rotation }) => {
   const { world, rapier } = useRapier();
   const threeControls = useThree((s) => s.controls);
+  const camera = useThree((s) => s.camera);
   const [, getKeyboardControls] = useKeyboardControls();
 
   const chasisMeshRef = useRef();
@@ -184,8 +185,6 @@ const Vehicle = ({ position, rotation }) => {
       chassisRigidBody.setBodyType(rapier.RigidBodyType.Dynamic);
     }
 
-    // console.log(state.camera.position);
-
     const playerPosition = new THREE.Vector3();
     playerPosition.x = chassisRigidBody.translation().x;
     playerPosition.y = chassisRigidBody.translation().y + 0.5;
@@ -234,6 +233,7 @@ const Vehicle = ({ position, rotation }) => {
       cameraPosition.copy(cameraOffset);
     }
 
+    // console.log(chassisRigidBody.translation());
     cameraPosition.add(chassisRigidBody.translation());
 
     smoothedCameraPosition.lerp(cameraPosition, t);
@@ -378,45 +378,7 @@ const TextPlane = () => {
   );
 };
 
-// const Model = ({ position }) => {
-//   const [, getKeyboardControls] = useKeyboardControls();
-//   const controls = getKeyboardControls();
-
-//   const boxRef = useRef();
-
-//   useFrame((state, delta) => {
-//     // console.log(controls.space);
-
-//     if (boxRef.current) {
-//       // Reset position
-//       // boxRef.current.setTranslation(position, false);
-//       // Reset velocity
-//       boxRef.current.setLinvel({ x: 0, y: 0, z: 0 }, true);
-//       boxRef.current.setAngvel({ x: 0, y: 0, z: 0 }, true);
-//     }
-//   });
-
-//   return (
-//     <RigidBody
-//       ref={boxRef}
-//       scale={0.35}
-//       colliders="cuboid"
-//       position={position}
-//       mass={0.01}
-//       friction={0}
-//       type="dynamic"
-//     >
-//       <mesh castShadow>
-//         <boxGeometry />
-//         <meshStandardMaterial color="orange" />
-//       </mesh>
-//     </RigidBody>
-//   );
-// };
-
-export function Sketch() {
-  const [scrolled, setScrolled] = useState(false);
-
+export function Sketch({ isReady, tl }) {
   const { debug, orbitControls } = useControls(
     "rapier-dynamic-raycast-vehicle-controller/physics",
     {
@@ -429,18 +391,19 @@ export function Sketch() {
     <>
       <Canvas
         flat
-        invalidateFrameloop={true}
         gl={{
           antialias: true,
           alpha: false,
           powerPreference: "high-performance",
         }}
         dpr={[1, 1.5]}
-        camera={{ near: 0.1, fov: 55 }}
+        camera={{ near: 0.1, fov: 55, position: [0, 10, 0] }}
       >
         <Environment preset="sunset" />
+        <color attach="background" args={["#171720"]} />
+        <fog attach="fog" args={["#171720", 10, 30]} />
 
-        {scrolled && (
+        {isReady && (
           <Physics debug={debug}>
             <KeyboardControls map={controls}>
               <Vehicle position={spawn.position} rotation={spawn.rotation} />
@@ -450,13 +413,13 @@ export function Sketch() {
           </Physics>
         )}
 
-        <Scene setScrolled={setScrolled} />
+        <Scene tl={tl} />
 
         <TextPlane />
 
         <Ocean />
 
-        <PivotControls scale={50} />
+        {/* <PivotControls scale={50} /> */}
 
         {orbitControls && <OrbitControls makeDefault />}
       </Canvas>

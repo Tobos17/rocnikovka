@@ -1,15 +1,81 @@
+@import url("https://fonts.googleapis.com/css2?family=New+Amsterdam&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Julius+Sans+One&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+canvas {
+  touch-action: none;
+}
+
+body.loading {
+  height: 100vh !important;
+  overflow: hidden !important;
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
 html,
 body {
   overscroll-behavior: none;
 }
 
-body {
-  margin: 0;
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
 }
-canvas {
-  touch-action: none;
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* .lenis.lenis-stopped {
+  overflow: clip;
+} */
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+html {
+  scrollbar-width: none;
+}
+body {
+  -ms-overflow-style: none;
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
+.scene-inner {
+  overflow: hidden;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 100dvh !important; /* Ensures section fills viewport */
+  max-height: none !important;
+  transition: 0s !important;
+  position: relative; /* Needed for proper pinning */
+}
+
+.scene-content {
+  position: absolute;
+  width: 100vw;
+  height: 100dvh;
+  z-index: 1;
+  perspective: 500px;
+  perspective-origin: calc(50%) calc(46%);
+}
+
+.scene-content-inner {
+  transform-style: preserve-3d;
+  height: 100dvh;
 }

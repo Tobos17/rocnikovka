@@ -3,10 +3,10 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
-      fontFamily: {
-        main: ["New Amsterdam"],
-        title: ["Oswald", "sans-serif"], // Define the font family directly
-      },
+      // fontFamily: {
+      //   main: ["New Amsterdam"],
+      //   title: ["Oswald", "sans-serif"], // Define the font family directly
+      // },
       fontSize: {
         responsive: "clamp(0.5rem, 1rem, 0.7rem)",
       },
@@ -21,9 +21,11 @@ export default {
     function ({ addUtilities }) {
       const newUtilities = {
         ".font-title": {
-          fontFamily: "Oswald, sans-serif", // Apply the Oswald font
+          // fontFamily: "Oswald, sans-serif", // Apply the Oswald font
+          fontFamily: "Bebas Neue, sans-serif",
           fontWeight: "400", // Default weight to 400
           textTransform: "uppercase", // Add uppercase text transformation
+          color: "white",
         },
         ".font-paragraph": {
           fontFamily: "Oswald, sans-serif", // Apply the Oswald font

@@ -13,7 +13,7 @@ export const Experience = () => {
   return (
     <>
       <OrbitControls />
-      <Environment preset="sunset" />
+      {/* <Environment preset="sunset" /> */}
       {/* <directionalLight
         intensity={0.65}
         castShadow

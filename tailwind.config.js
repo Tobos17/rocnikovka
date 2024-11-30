@@ -27,19 +27,12 @@ export default {
           textTransform: "uppercase", // Add uppercase text transformation
           color: "white",
         },
-        ".font-paragraph": {
-          fontFamily: "Oswald, sans-serif", // Apply the Oswald font
-          fontWeight: "300", // Default weight to 400
+        ".font-banner": {
+          // fontFamily: "Oswald, sans-serif", // Apply the Oswald font
+          fontFamily: "Bebas Neue, sans-serif",
+          fontWeight: "400", // Default weight to 400
           textTransform: "uppercase", // Add uppercase text transformation
-        },
-        ".font-contact": {
-          fontFamily: "Oswald, sans-serif", // Apply the Oswald font
-          fontWeight: "100",
-          textTransform: "uppercase",
-        },
-        ".font-contactText": {
-          fontFamily: "Oswald, sans-serif", // Apply the Oswald font
-          fontWeight: "200",
+          color: "black",
         },
       };
 

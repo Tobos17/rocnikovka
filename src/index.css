@@ -72,7 +72,7 @@ body::-webkit-scrollbar {
   height: 100dvh;
   z-index: 1;
   perspective: 500px;
-  perspective-origin: calc(50%) calc(46%);
+  perspective-origin: calc(50%) calc(45%);
 }
 
 .scene-content-inner {

@@ -4,6 +4,7 @@ import {
   OrbitControls,
   PivotControls,
   shaderMaterial,
+  Sky,
   useGLTF,
   useKeyboardControls,
   useTexture,
@@ -400,8 +401,17 @@ export function Sketch({ isReady, tl }) {
         camera={{ near: 0.1, fov: 55, position: [0, 10, 0] }}
       >
         <Environment preset="sunset" />
-        <color attach="background" args={["#171720"]} />
-        <fog attach="fog" args={["#171720", 10, 30]} />
+        <Sky
+          turbidity={14.7}
+          rayleigh={2.0}
+          mieCoefficient={0.01}
+          mieDirectionalG={0.82}
+          sunPosition={[-0.6, 0.06, -1.0]}
+          inclination={0.07}
+          azimuth={130}
+        />
+        {/* <color attach="background" args={["#171720"]} /> */}
+        {/* <fog attach="fog" args={["#171720", 10, 20]} /> */}
 
         {isReady && (
           <Physics debug={debug}>

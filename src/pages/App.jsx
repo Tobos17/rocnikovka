@@ -29,6 +29,7 @@ function Home() {
       smoothWheel: true,
       syncTouch: false,
       touchMultiplier: 0,
+      wheelMultiplier: 0.75,
     });
     const lenis = lenisRef.current;
 
@@ -59,9 +60,11 @@ function Home() {
         scrub: 1,
         onUpdate: (self) => {
           // console.log(self.progress);
-          if (self.progress >= 0.975) {
+
+          if (self.progress >= 0.95) {
             setIsScrolled(true);
             tl.current.kill();
+            lenisRef.current.stop();
             // console.log("done");
           }
         },
@@ -134,12 +137,12 @@ function Home() {
               transform: "translateX(-50%) translateY(-50%)",
               transformOrigin: "center center",
             }}
-            className="z-50 bg-black fixed rounded-full overflow-hidden"
+            className="z-50 bg-white fixed rounded-full overflow-hidden"
           >
             <button
               ref={clicker}
               onClick={handleClick}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-title text-8xl tracking-wider"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-banner text-8xl tracking-wider"
             >
               Zablbni si
             </button>
@@ -150,7 +153,7 @@ function Home() {
           <Sketch tl={tl} isReady={isReady} />
         </div>
 
-        <Overlay tl={tl} />
+        <Overlay tl={tl} isScrolled={isScrolled} />
       </div>
     </>
   );

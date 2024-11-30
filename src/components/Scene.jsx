@@ -8,7 +8,7 @@ export const Scene = ({ tl }) => {
   const { scene: env } = useGLTF("/models/Env.glb");
   const baked = useTexture("/textures/baked-2.jpg");
   const bakedRocks = useTexture("/textures/baked-rocks.jpg");
-  const bakedFloors = useTexture("/textures/bf.jpg");
+  const bakedFloors = useTexture("/textures/baked-floors.jpg");
 
   baked.flipY = false;
   baked.colorSpace = THREE.SRGBColorSpace;
@@ -52,16 +52,16 @@ export const Scene = ({ tl }) => {
 
       tl.current
 
-        .to(camera.position, { x: 10, y: 1.5, z: -10, duration: 1 }, 0)
+        .to(camera.position, { x: 10.3, y: 1.2, z: -10.3, duration: 1 }, 0)
 
-        .to(camera.rotation, { y: Math.PI / 3, duration: 1 }, 1)
-        .to(camera.position, { x: -0.5, y: 0.75, z: -7.5, duration: 1 }, 1)
+        .to(camera.rotation, { y: Math.PI / 2.5, duration: 1 }, 0)
+        .to(camera.position, { x: -0.5, y: 1, z: -7.25, duration: 1 }, 1)
 
-        .to(camera.rotation, { y: Math.PI / 8, duration: 1 }, 2)
-        .to(camera.position, { x: 4, y: 5, z: -9, duration: 1 }, 2)
+        .to(camera.rotation, { y: Math.PI / 60, duration: 1 }, 2)
+        .to(camera.position, { x: 2, y: 5, z: -9, duration: 1 }, 2)
 
         // .to(camera.rotation, { y: Math.PI / 1.25, duration: 1 }, 3)
-        .to(camera.position, { x: 4, y: 7, z: -9, duration: 1 }, 3);
+        .to(camera.position, { x: 2, y: 9, z: -9, duration: 1 }, 3);
 
       // .to(camera.rotation, { y: Math.PI / 1.25, duration: 1 }, 3)
       // .to(camera.position, { x: 6, y: 5.5, z: 8, duration: 1 }, 3)

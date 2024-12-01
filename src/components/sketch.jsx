@@ -419,7 +419,7 @@ export function Sketch({ isReady, tl }) {
           rayleigh={1.099}
           mieCoefficient={0.005}
           mieDirectionalG={0.447}
-          sunPosition={[60, 75, 150]}
+          sunPosition={[60, 60, 150]}
           // azimuth={50}
         />
         {/* <color attach="background" args={["#171720"]} /> */}

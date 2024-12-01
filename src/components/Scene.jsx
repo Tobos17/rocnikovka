@@ -148,16 +148,21 @@ export const Mountains = () => {
 export const Floors = () => {
   const { scene } = useGLTF("/models/Floors.glb");
   const bakedFloors = useTexture("/textures/bakedFloors.jpg");
+  const imageTexture = useTexture("/textures/gs.jpg");
 
   bakedFloors.flipY = false;
   bakedFloors.colorSpace = THREE.SRGBColorSpace;
+  // imageTexture.flipY = false;
+  imageTexture.colorSpace = THREE.SRGBColorSpace;
 
   useEffect(() => {
     scene.traverse((child) => {
       if (child.isMesh) {
         if (child.name.includes("image")) {
-          child.material = new THREE.MeshBasicMaterial({
-            map: bakedFloors,
+          child.material = new THREE.MeshStandardMaterial({
+            map: imageTexture,
+            emissive: new THREE.Color(0x6bbbee),
+            emissiveIntensity: 0.75,
           });
         } else {
           child.material = new THREE.MeshBasicMaterial({
@@ -177,8 +182,8 @@ export const Scene = ({ tl }) => {
 
   useLayoutEffect(() => {
     if (tl.current && camera && scene) {
-      camera.position.set(15, 1.75, -15);
-      camera.lookAt(0, 1.75, 0);
+      camera.position.set(15, 1.5, -15);
+      camera.lookAt(0, 1.5, 0);
 
       tl.current
 

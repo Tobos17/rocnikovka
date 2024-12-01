@@ -33,7 +33,7 @@ export const Loader = ({ setLoading }) => {
       <motion.div
         exit={{
           top: "-115.5vh",
-          rotate: "-4deg",
+          rotate: "-4.05deg",
           transition: {
             duration: 2.25,
             ease: [0.25, 0, 0.24, 1],

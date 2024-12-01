@@ -52,7 +52,7 @@ export const Overlay = ({ tl, isSrolled }) => {
         textRefs.current[2],
         { opacity: 0 },
         { opacity: 1, ease: "sm", duration: 0.075 },
-        1.55
+        1.535
       );
 
       tl.current.fromTo(
@@ -89,13 +89,12 @@ export const Overlay = ({ tl, isSrolled }) => {
             </h1>
           </div>
 
-          <div className="absolute right-[15vw] bottom-[12.5vh] max-w-[350px] flex flex-col gap-1 items-end justify-center">
-            <p className="font-title text-2xl tracking-wide">Bazinga</p>
+          <div className="absolute right-[15vw] bottom-[12.5vh] max-w-[500px] flex flex-col gap-1 items-end justify-center">
             <p className="font-title text-2xl tracking-wide">
-              KlobasnikuKlobasniku KlobasnikuK
+              Přijďte objevit místo
             </p>
             <p className="font-title text-2xl tracking-wide">
-              KlobasnikuKlobasniku KlobasnikuKlo
+              kde dobrodružství čeká na každém kroku
             </p>
           </div>
 
@@ -108,7 +107,7 @@ export const Overlay = ({ tl, isSrolled }) => {
                 ref={(el) => (textRefs.current[0] = el)}
                 className="font-title text-5xl tracking-wide leading-snug"
               >
-                Ostrov projekt
+                Jedinečný
               </span>
             </div>
 
@@ -117,7 +116,7 @@ export const Overlay = ({ tl, isSrolled }) => {
                 ref={(el) => (textRefs.current[1] = el)}
                 className="font-title text-5xl tracking-wide leading-snug"
               >
-                Ostrov projekt
+                zážitek
               </span>
             </div>
           </div>
@@ -128,10 +127,10 @@ export const Overlay = ({ tl, isSrolled }) => {
             className="absolute right-[30vw] top-[35vh] max-w-[320px] font-title text-3xl tracking-wider leading-normal"
           >
             <p className="font-title text-5xl tracking-wide leading-snug">
-              Ostrov projekt
+              Chcete si
             </p>
             <p className="font-title text-5xl tracking-wide leading-snug">
-              Klobasniku
+              odpočinout
             </p>
           </div>
         </div>

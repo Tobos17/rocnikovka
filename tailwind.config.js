@@ -21,7 +21,6 @@ export default {
     function ({ addUtilities }) {
       const newUtilities = {
         ".font-title": {
-          // fontFamily: "Reenie Beanie, cursive",
           fontFamily: "Bebas Neue, sans-serif",
           fontWeight: "400",
           // textTransform: "uppercase",

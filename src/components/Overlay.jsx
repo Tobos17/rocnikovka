@@ -2,48 +2,77 @@ import gsap from "gsap";
 import React, { useEffect, useLayoutEffect, useRef } from "react";
 import { Navbar } from "./Navbar";
 
-export const Overlay = ({ tl, isScrolled }) => {
+import { CustomEase } from "gsap/CustomEase";
+
+gsap.registerPlugin(CustomEase);
+
+export const Overlay = ({ tl, isSrolled }) => {
   const textRefs = useRef([]);
   useLayoutEffect(() => {
-    if (tl.current) {
+    if (tl.current && textRefs.current) {
       tl.current.to(
         "#targetSection",
         { translateZ: 5000, ease: "none", duration: 4 }, // Ease "none" for linear animation
         0 // Start at the beginning of the timeline
       );
 
-      tl.current.fromTo(
-        textRefs.current[1],
-        { opacity: 0 },
-        { opacity: 1, ease: "none", duration: 0.075 }, // Ease "none" for linear animation
-        1.01 // Start at the beginning of the timeline
+      CustomEase.create("sm", "0.76, 0, 0.24, 1");
+      let lastTime = 0;
+      gsap.set(textRefs.current[0], { y: "100%" });
+      gsap.set(textRefs.current[1], { y: "100%" });
+      tl.current.call(
+        () => {
+          // Check if the timeline is moving forward or backward
+          const isReversing = tl.current.time() < lastTime;
+
+          // Animate accordingly
+          gsap.to(textRefs.current[0], {
+            y: isReversing ? "-100%" : "0%",
+            duration: 0.8,
+
+            ease: "sm",
+          });
+
+          gsap.to(textRefs.current[1], {
+            y: isReversing ? "-100%" : "0%",
+            duration: 0.8,
+            delay: isReversing ? 0 : 0.15,
+            ease: "sm",
+          });
+
+          // Update the lastTime for the next call
+          lastTime = tl.current.time();
+        },
+
+        [],
+        1.025
       );
 
       tl.current.fromTo(
         textRefs.current[2],
         { opacity: 0 },
-        { opacity: 1, ease: "none", duration: 0.075 }, // Ease "none" for linear animation
-        1.572 // Start at the beginning of the timeline
+        { opacity: 1, ease: "sm", duration: 0.075 }, // Ease "none" for linear animation
+        1.57 // Start at the beginning of the timeline
       );
 
       tl.current.fromTo(
         textRefs.current[3],
         { x: "-22.5vw" },
-        { x: "0", ease: "none", duration: 0.25 }, // Ease "none" for linear animation
+        { x: "0", ease: "sm", duration: 0.25 }, // Ease "none" for linear animation
         2 // Start at the beginning of the timeline
       );
       tl.current.fromTo(
         textRefs.current[3],
         { y: "-100vh" },
-        { y: "0", ease: "none", duration: 1 }, // Ease "none" for linear animation
+        { y: "0", ease: "sm", duration: 1 }, // Ease "none" for linear animation
         2 // Start at the beginning of the timeline
       );
-      tl.current.to(
-        textRefs.current[3],
+      // tl.current.to(
+      //   textRefs.current[3],
 
-        { x: "-23.5vw", ease: "power2.out", duration: 1 }, // Ease "none" for linear animation
-        3 // Start at the beginning of the timeline
-      );
+      //   { width: "100%", ease: "sm", duration: 1 }, // Ease "none" for linear animation
+      //   3 // Start at the beginning of the timeline
+      // );
     }
   }, [tl.current]);
 
@@ -61,9 +90,7 @@ export const Overlay = ({ tl, isScrolled }) => {
           </div>
 
           <div className="absolute right-[15vw] bottom-[12.5vh] max-w-[350px] flex flex-col gap-1 items-end justify-center">
-            <p className="font-title text-2xl tracking-wider">
-              Ostrov projektOstrov projekt
-            </p>
+            <p className="font-title text-2xl tracking-wider">Bazinga</p>
             <p className="font-title text-2xl tracking-wider">
               KlobasnikuKlobasniku KlobasnikuK
             </p>
@@ -73,22 +100,32 @@ export const Overlay = ({ tl, isScrolled }) => {
           </div>
 
           <div
-            ref={(el) => (textRefs.current[1] = el)}
-            style={{ transform: "translateZ(-1200px)" }}
-            className="absolute left-[60vw] top-[40vh] max-w-[320px] font-title text-3xl tracking-wider leading-normal"
+            style={{ transform: "translateZ(-1250px)" }}
+            className="absolute left-[62.5vw] top-[35vh] max-w-[320px] flex flex-col justify-center items-center font-title text-3xl tracking-wider leading-normal"
           >
-            <p className="font-title text-5xl tracking-wider leading-normal">
-              Ostrov projekt
-            </p>
-            <p className="font-title text-5xl tracking-wider leading-normal">
-              Klobasniku
-            </p>
+            <div className="overflow-hidden flex-1 relative flex justify-center items-center ">
+              <span
+                ref={(el) => (textRefs.current[0] = el)}
+                className="font-title text-5xl tracking-wider leading-normal"
+              >
+                Ostrov projekt
+              </span>
+            </div>
+
+            <div className="overflow-hidden flex-1 relative flex justify-center items-center ">
+              <span
+                ref={(el) => (textRefs.current[1] = el)}
+                className="font-title text-5xl tracking-wider leading-normal"
+              >
+                Ostrov projekt
+              </span>
+            </div>
           </div>
 
           <div
             ref={(el) => (textRefs.current[2] = el)}
             style={{ transform: "translateZ(-1850px)" }}
-            className="absolute right-[30vw] top-[40vh] max-w-[320px] font-title text-3xl tracking-wider leading-normal"
+            className="absolute right-[30vw] top-[35vh] max-w-[320px] font-title text-3xl tracking-wider leading-normal"
           >
             <p className="font-title text-5xl tracking-wider leading-normal">
               Ostrov projekt

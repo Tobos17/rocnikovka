@@ -30,6 +30,7 @@ import {
   DepthOfField,
   EffectComposer,
   HueSaturation,
+  SelectiveBloom,
   Vignette,
 } from "@react-three/postprocessing";
 
@@ -343,7 +344,7 @@ const Vehicle = ({ position, rotation }) => {
 
 const ScenePhysics = () => {
   const { scene: colliderScene } = useGLTF("/models/colliders.glb");
-
+  console.log(colliderScene);
   const geometry = colliderScene.children[0].geometry;
   const vertices = geometry.attributes.position.array;
   const indices = geometry.index.array;
@@ -415,7 +416,7 @@ export function Sketch({ isReady, tl }) {
           rayleigh={1.099}
           mieCoefficient={0.005}
           mieDirectionalG={0.447}
-          sunPosition={[60, 15, 150]}
+          sunPosition={[100, 25, 150]}
           // azimuth={50}
         />
         {/* <color attach="background" args={["#171720"]} /> */}
@@ -437,16 +438,18 @@ export function Sketch({ isReady, tl }) {
 
         <Ocean />
 
-        <EffectComposer>
-          <Bloom
-            intensity={1.25}
-            luminanceThreshold={2}
-            luminanceSmoothing={0.1}
-            mipmapBlur={true}
-          />
-          <Vignette eskil={false} offset={0.1} darkness={0.85} />
-          <BrightnessContrast brightness={-0.05} contrast={-0.05} />
-        </EffectComposer>
+        {!isReady && (
+          <EffectComposer>
+            <Bloom
+              intensity={1.25}
+              luminanceThreshold={2}
+              luminanceSmoothing={0.1}
+              mipmapBlur={true}
+            />
+            <Vignette offset={0.1} darkness={0.85} />
+            <BrightnessContrast brightness={-0.05} contrast={-0.025} />
+          </EffectComposer>
+        )}
 
         <Cloud
           position={[15, 5, 40]}
@@ -465,7 +468,7 @@ export function Sketch({ isReady, tl }) {
           seed={2}
         />
         <Cloud
-          position={[-75, -5, 30]}
+          position={[-60, -10, 30]}
           color={0xffffff}
           speed={0}
           opacity={0.75}

@@ -19,7 +19,7 @@ import {
   useRapier,
 } from "@react-three/rapier";
 import { Leva, useControls } from "leva";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useLayoutEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { useVehicleController } from "./use-vehicle-controller";
 import { Ocean } from "./Ocean";
@@ -33,6 +33,7 @@ import {
   SelectiveBloom,
   Vignette,
 } from "@react-three/postprocessing";
+import { LoaderThree } from "./LoaderThree";
 
 const spawn = {
   position: [13, 1.5, -12.75],
@@ -410,6 +411,8 @@ export function Sketch({ isReady, tl }) {
         dpr={[1, 1.5]}
         camera={{ near: 0.1, fov: 55, position: [0, 10, 0] }}
       >
+        {/* <Suspense fallback={<LoaderThree />}> */}
+
         <Environment preset="sunset" />
         <Sky
           turbidity={8.2}
@@ -441,13 +444,13 @@ export function Sketch({ isReady, tl }) {
         {!isReady && (
           <EffectComposer>
             <Bloom
-              intensity={1.25}
+              intensity={2}
               luminanceThreshold={2}
               luminanceSmoothing={0.1}
               mipmapBlur={true}
             />
             <Vignette offset={0.1} darkness={0.85} />
-            <BrightnessContrast brightness={-0.05} contrast={-0.025} />
+            <BrightnessContrast brightness={-0.1} contrast={-0.15} />
           </EffectComposer>
         )}
 

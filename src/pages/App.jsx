@@ -4,11 +4,13 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Lenis from "lenis";
+import { Loader } from "../components/Loader";
+import { AnimatePresence } from "framer-motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
 function Home() {
-  console.log("home");
+  // console.log("home");
   const [loading, setLoading] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isReady, setIsReady] = useState(false);
@@ -18,10 +20,10 @@ function Home() {
   const tl = useRef(null);
 
   useLayoutEffect(() => {
-    setTimeout(() => {
-      document.body.classList.remove("loading");
-      setLoading(false);
-    }, 3000);
+    // setTimeout(() => {
+    //   document.body.classList.remove("loading");
+    //   setLoading(false);
+    // }, 3000);
 
     lenisRef.current = new Lenis({
       duration: 1.5,
@@ -127,38 +129,37 @@ function Home() {
 
   return (
     <>
-      {loading ? (
-        <div className="loading"></div>
-      ) : (
-        <div className="h-full w-full flex flex-col">
-          {isScrolled && (
-            <div
-              ref={loader}
-              style={{
-                left: "50%",
-                top: "50%",
-                transform: "translateX(-50%) translateY(-50%)",
-                transformOrigin: "center center",
-              }}
-              className="z-50 bg-primary fixed rounded-full overflow-hidden"
+      <AnimatePresence mode="wait">
+        {loading && <Loader setLoading={setLoading} />}
+      </AnimatePresence>
+      <div className="h-full w-full flex flex-col">
+        {isScrolled && (
+          <div
+            ref={loader}
+            style={{
+              left: "50%",
+              top: "50%",
+              transform: "translateX(-50%) translateY(-50%)",
+              transformOrigin: "center center",
+            }}
+            className="z-50 bg-primary fixed rounded-full overflow-hidden"
+          >
+            <button
+              ref={clicker}
+              onClick={handleClick}
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-title text-8xl tracking-wider"
             >
-              <button
-                ref={clicker}
-                onClick={handleClick}
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-title text-8xl tracking-wider"
-              >
-                Zablbni si
-              </button>
-            </div>
-          )}
-
-          <div className="h-screen w-screen fixed">
-            <Sketch tl={tl} isReady={isReady} />
+              Zablbni si
+            </button>
           </div>
+        )}
 
-          <Overlay tl={tl} isScrolled={isScrolled} />
+        <div className="h-screen w-screen fixed">
+          <Sketch tl={tl} isReady={isReady} />
         </div>
-      )}
+
+        <Overlay tl={tl} isScrolled={isScrolled} />
+      </div>
     </>
   );
 }

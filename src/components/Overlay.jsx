@@ -51,28 +51,28 @@ export const Overlay = ({ tl, isSrolled }) => {
       tl.current.fromTo(
         textRefs.current[2],
         { opacity: 0 },
-        { opacity: 1, ease: "sm", duration: 0.075 }, // Ease "none" for linear animation
-        1.57 // Start at the beginning of the timeline
+        { opacity: 1, ease: "sm", duration: 0.075 },
+        1.57
       );
 
       tl.current.fromTo(
         textRefs.current[3],
-        { x: "-22.5vw" },
-        { x: "0", ease: "sm", duration: 0.25 }, // Ease "none" for linear animation
-        2 // Start at the beginning of the timeline
+        { x: "-100vw" },
+        { x: "-75vw", duration: 0.5 },
+        2
       );
       tl.current.fromTo(
         textRefs.current[3],
         { y: "-100vh" },
-        { y: "0", ease: "sm", duration: 1 }, // Ease "none" for linear animation
-        2 // Start at the beginning of the timeline
+        { y: "0", duration: 1 },
+        2
       );
-      // tl.current.to(
-      //   textRefs.current[3],
+      tl.current.to(
+        textRefs.current[3],
 
-      //   { width: "100%", ease: "sm", duration: 1 }, // Ease "none" for linear animation
-      //   3 // Start at the beginning of the timeline
-      // );
+        { x: "0", duration: 1 },
+        3
+      );
     }
   }, [tl.current]);
 
@@ -81,20 +81,20 @@ export const Overlay = ({ tl, isSrolled }) => {
       <div className="scene-content">
         <div id="targetSection" className="scene-content-inner">
           <div className="absolute left-[10vw] bottom-[12.5vh] max-w-[800px] flex flex-col gap-1 items-start justify-center">
-            <h1 className="font-title text-8xl tracking-wider">
+            <h1 className="font-title text-8xl tracking-wide">
               Ostrov na který
             </h1>
-            <h1 className="font-title text-8xl tracking-wider">
+            <h1 className="font-title text-8xl tracking-wide">
               nikdy nezapomenete
             </h1>
           </div>
 
           <div className="absolute right-[15vw] bottom-[12.5vh] max-w-[350px] flex flex-col gap-1 items-end justify-center">
-            <p className="font-title text-2xl tracking-wider">Bazinga</p>
-            <p className="font-title text-2xl tracking-wider">
+            <p className="font-title text-2xl tracking-wide">Bazinga</p>
+            <p className="font-title text-2xl tracking-wide">
               KlobasnikuKlobasniku KlobasnikuK
             </p>
-            <p className="font-title text-2xl tracking-wider">
+            <p className="font-title text-2xl tracking-wide">
               KlobasnikuKlobasniku KlobasnikuKlo
             </p>
           </div>
@@ -106,7 +106,7 @@ export const Overlay = ({ tl, isSrolled }) => {
             <div className="overflow-hidden flex-1 relative flex justify-center items-center ">
               <span
                 ref={(el) => (textRefs.current[0] = el)}
-                className="font-title text-5xl tracking-wider leading-normal"
+                className="font-title text-5xl tracking-wide leading-snug"
               >
                 Ostrov projekt
               </span>
@@ -115,7 +115,7 @@ export const Overlay = ({ tl, isSrolled }) => {
             <div className="overflow-hidden flex-1 relative flex justify-center items-center ">
               <span
                 ref={(el) => (textRefs.current[1] = el)}
-                className="font-title text-5xl tracking-wider leading-normal"
+                className="font-title text-5xl tracking-wide leading-snug"
               >
                 Ostrov projekt
               </span>
@@ -127,10 +127,10 @@ export const Overlay = ({ tl, isSrolled }) => {
             style={{ transform: "translateZ(-1850px)" }}
             className="absolute right-[30vw] top-[35vh] max-w-[320px] font-title text-3xl tracking-wider leading-normal"
           >
-            <p className="font-title text-5xl tracking-wider leading-normal">
+            <p className="font-title text-5xl tracking-wide leading-snug">
               Ostrov projekt
             </p>
-            <p className="font-title text-5xl tracking-wider leading-normal">
+            <p className="font-title text-5xl tracking-wide leading-snug">
               Klobasniku
             </p>
           </div>
@@ -140,47 +140,49 @@ export const Overlay = ({ tl, isSrolled }) => {
 
         <div
           ref={(el) => (textRefs.current[3] = el)}
-          className="absolute left-[0vw] top-[0vh] h-[205vh] w-[22.5vw] flex flex-col justify-center items-center px-10 py-24 gap-24 overflow-hidden bg-primary font-title text-3xl tracking-wider leading-normal"
+          className="absolute left-[0vw] top-[0vh] h-[205vh] w-screen flex justify-end items-center overflow-hidden bg-primary"
         >
-          <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-10 px-10 rounded-[50px] bg-secondary">
-            <p className="font-title text-5xl tracking-wider leading-normal">
-              Ostrov projekt
-            </p>
-            <p className="font-banner text-xl tracking-wider leading-normal">
-              Ostrov projektOstrov projektOstrov projektOstrov projektOstrov
-              projektOstrov projekt projektOstrov projektOstrov projektOstrov
-              projektOstrov projektOstrov projektOstrov
-            </p>
-          </div>
+          <div className="h-full w-[25vw] flex flex-col justify-center items-center px-10 py-10 gap-10">
+            <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-10 px-10 rounded-[50px] bg-secondary">
+              <p className="font-title text-5xl tracking-wide leading-normal">
+                Ostrov projekt
+              </p>
+              <p className="font-banner text-xl tracking-wide leading-normal">
+                Ostrov projektOstrov projektOstrov projektOstrov projektOstrov
+                projektOstrov projekt projektOstrov projektOstrov projektOstrov
+                projektOstrov projektOstrov projektOstrov
+              </p>
+            </div>
 
-          <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-10 px-10 rounded-[50px] bg-secondary">
-            <p className="font-title text-5xl tracking-wider leading-normal">
-              Ostrov projekt
-            </p>
-            <p className="font-banner text-xl tracking-wider leading-normal ">
-              Ostrov projektOstrov projektOstrov projektOstrov projektOstrov
-              projektOstrov projekt
-            </p>
-          </div>
+            <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-10 px-10 rounded-[50px] bg-secondary">
+              <p className="font-title text-5xl tracking-wide leading-normal">
+                Ostrov projekt
+              </p>
+              <p className="font-banner text-xl tracking-wide leading-normal ">
+                Ostrov projektOstrov projektOstrov projektOstrov projektOstrov
+                projektOstrov projekt
+              </p>
+            </div>
 
-          <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-10 px-10 rounded-[50px] bg-secondary">
-            <p className="font-title text-5xl tracking-wider leading-normal">
-              Ostrov projekt
-            </p>
-            <p className="font-banner text-xl tracking-wider leading-normal">
-              Ostrov projektOstrov projektOstrov projektOstrov projektOstrov
-              projektOstrov projekt
-            </p>
-          </div>
+            <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-10 px-10 rounded-[50px] bg-secondary">
+              <p className="font-title text-5xl tracking-wide leading-normal">
+                Ostrov projekt
+              </p>
+              <p className="font-banner text-xl tracking-wide leading-normal">
+                Ostrov projektOstrov projektOstrov projektOstrov projektOstrov
+                projektOstrov projekt
+              </p>
+            </div>
 
-          <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-10 px-10 rounded-[50px] bg-secondary">
-            <p className="font-title text-5xl tracking-wider leading-normal">
-              Ostrov projekt
-            </p>
-            <p className="font-banner text-xl tracking-wider leading-normal">
-              Ostrov projektOstrov projektOstrov projektOstrov projektOstrov
-              projektOstrov projekt
-            </p>
+            <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-10 px-10 rounded-[50px] bg-secondary">
+              <p className="font-title text-5xl tracking-wide leading-normal">
+                Ostrov projekt
+              </p>
+              <p className="font-banner text-xl tracking-wide leading-normal">
+                Ostrov projektOstrov projektOstrov projektOstrov projektOstrov
+                projektOstrov projekt
+              </p>
+            </div>
           </div>
         </div>
       </div>

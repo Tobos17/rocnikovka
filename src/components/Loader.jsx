@@ -7,6 +7,18 @@ export const Loader = ({ setLoading }) => {
   return (
     <>
       <motion.h1
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{
+          duration: 1.25,
+          ease: [0.76, 0, 0.24, 1],
+        }}
+        onAnimationComplete={() => {
+          setTimeout(() => {
+            document.body.classList.remove("loading");
+            setLoading(false);
+          }, 1000);
+        }}
         exit={{
           opacity: 0,
           transition: {
@@ -19,19 +31,11 @@ export const Loader = ({ setLoading }) => {
         INSANITY
       </motion.h1>
       <motion.div
-        initial={{ opacity: 1 }}
-        animate={{ opacity: 1, duration: 2, ease: [0.76, 0, 0.24, 1] }}
-        onAnimationComplete={() => {
-          setTimeout(() => {
-            document.body.classList.remove("loading");
-            setLoading(false);
-          }, 2500);
-        }}
         exit={{
-          top: "-115vh",
+          top: "-115.5vh",
           rotate: "-4deg",
           transition: {
-            duration: 2.75,
+            duration: 2.25,
             ease: [0.25, 0, 0.24, 1],
           },
         }}

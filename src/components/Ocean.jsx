@@ -10,7 +10,7 @@ import oceanFragmentShader from "../shaders/ocean/fragment.glsl";
 const OceanMaterial = shaderMaterial(
   {
     uTime: 0,
-    uColor: new THREE.Color(0x3caee2),
+    uColor: new THREE.Color(0x6bbbee),
     uMap: null,
   },
   oceanVertexShader,

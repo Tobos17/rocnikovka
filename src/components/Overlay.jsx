@@ -52,7 +52,7 @@ export const Overlay = ({ tl, isSrolled }) => {
         textRefs.current[2],
         { opacity: 0 },
         { opacity: 1, ease: "sm", duration: 0.075 },
-        1.57
+        1.55
       );
 
       tl.current.fromTo(
@@ -70,7 +70,7 @@ export const Overlay = ({ tl, isSrolled }) => {
       tl.current.to(
         textRefs.current[3],
 
-        { x: "0", duration: 1 },
+        { x: "-100vw", duration: 1 },
         3
       );
     }
@@ -81,10 +81,10 @@ export const Overlay = ({ tl, isSrolled }) => {
       <div className="scene-content">
         <div id="targetSection" className="scene-content-inner">
           <div className="absolute left-[10vw] bottom-[12.5vh] max-w-[800px] flex flex-col gap-1 items-start justify-center">
-            <h1 className="font-title text-8xl tracking-wide">
+            <h1 className="font-title text-7xl 3xl:text-8xl tracking-wide">
               Ostrov na který
             </h1>
-            <h1 className="font-title text-8xl tracking-wide">
+            <h1 className="font-title text-7xl 3xl:text-8xl tracking-wide">
               nikdy nezapomenete
             </h1>
           </div>

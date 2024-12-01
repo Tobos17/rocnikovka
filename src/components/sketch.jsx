@@ -419,7 +419,7 @@ export function Sketch({ isReady, tl }) {
           rayleigh={1.099}
           mieCoefficient={0.005}
           mieDirectionalG={0.447}
-          sunPosition={[100, 25, 150]}
+          sunPosition={[60, 75, 150]}
           // azimuth={50}
         />
         {/* <color attach="background" args={["#171720"]} /> */}
@@ -437,7 +437,7 @@ export function Sketch({ isReady, tl }) {
 
         <Scene tl={tl} />
 
-        <TextPlane />
+        {/* <TextPlane /> */}
 
         <Ocean />
 
@@ -479,7 +479,7 @@ export function Sketch({ isReady, tl }) {
           seed={1}
         />
 
-        <ambientLight intensity={3.5} />
+        <ambientLight intensity={5.5} color={0xffffff} />
 
         {/* <PivotControls scale={50} /> */}
 

@@ -63,8 +63,12 @@ export const Bridge = ({ tl }) => {
             emissive: new THREE.Color(0xf1cc6c),
             emissiveIntensity: 4,
           });
-
           emissiveMaterial.current.push(child.material);
+          return;
+        } else if (child.name.includes("Text")) {
+          child.material = child.material;
+          child.material.visible = false;
+          return;
         } else {
           child.material = new THREE.MeshBasicMaterial({
             map: bakedBridge,
@@ -78,14 +82,14 @@ export const Bridge = ({ tl }) => {
     if (tl.current) {
       tl.current.fromTo(
         emissiveMaterial.current[0],
-        { emissiveIntensity: 0.5 },
+        { emissiveIntensity: -1 },
         { emissiveIntensity: 4, duration: 0.1 },
         0
       );
 
       tl.current.to(
         emissiveMaterial.current[0],
-        { emissiveIntensity: 0.5, duration: 0.05 },
+        { emissiveIntensity: -1, duration: 0.05 },
         0.15
       );
 
@@ -96,7 +100,7 @@ export const Bridge = ({ tl }) => {
       );
       tl.current.to(
         emissiveMaterial.current[0],
-        { emissiveIntensity: 0.5, duration: 0.05 },
+        { emissiveIntensity: -1, duration: 0.05 },
         0.4
       );
       tl.current.to(
@@ -106,7 +110,7 @@ export const Bridge = ({ tl }) => {
       );
       tl.current.to(
         emissiveMaterial.current[0],
-        { emissiveIntensity: 0.5, duration: 0.05 },
+        { emissiveIntensity: -1, duration: 0.05 },
         0.7
       );
 
@@ -151,9 +155,15 @@ export const Floors = () => {
   useEffect(() => {
     scene.traverse((child) => {
       if (child.isMesh) {
-        child.material = new THREE.MeshBasicMaterial({
-          map: bakedFloors,
-        });
+        if (child.name.includes("image")) {
+          child.material = new THREE.MeshBasicMaterial({
+            map: bakedFloors,
+          });
+        } else {
+          child.material = new THREE.MeshBasicMaterial({
+            map: bakedFloors,
+          });
+        }
       }
     });
   }, [scene]);

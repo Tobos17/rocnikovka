@@ -1,4 +1,5 @@
 import {
+  Cloud,
   Environment,
   KeyboardControls,
   OrbitControls,
@@ -23,6 +24,14 @@ import * as THREE from "three";
 import { useVehicleController } from "./use-vehicle-controller";
 import { Ocean } from "./Ocean";
 import { Scene } from "./Scene";
+import {
+  Bloom,
+  BrightnessContrast,
+  DepthOfField,
+  EffectComposer,
+  HueSaturation,
+  Vignette,
+} from "@react-three/postprocessing";
 
 const spawn = {
   position: [13, 1.5, -12.75],
@@ -402,13 +411,12 @@ export function Sketch({ isReady, tl }) {
       >
         <Environment preset="sunset" />
         <Sky
-          turbidity={14.7}
-          rayleigh={2.0}
-          mieCoefficient={0.01}
-          mieDirectionalG={0.82}
-          sunPosition={[-0.6, 0.06, -1.0]}
-          inclination={0.07}
-          azimuth={130}
+          turbidity={8.2}
+          rayleigh={1.099}
+          mieCoefficient={0.005}
+          mieDirectionalG={0.447}
+          sunPosition={[60, 15, 150]}
+          // azimuth={50}
         />
         {/* <color attach="background" args={["#171720"]} /> */}
         {/* <fog attach="fog" args={["#171720", 10, 20]} /> */}
@@ -428,6 +436,44 @@ export function Sketch({ isReady, tl }) {
         <TextPlane />
 
         <Ocean />
+
+        <EffectComposer>
+          <Bloom
+            intensity={1.25}
+            luminanceThreshold={2}
+            luminanceSmoothing={0.1}
+            mipmapBlur={true}
+          />
+          <Vignette eskil={false} offset={0.1} darkness={0.85} />
+          <BrightnessContrast brightness={-0.05} contrast={-0.05} />
+        </EffectComposer>
+
+        <Cloud
+          position={[15, 5, 40]}
+          color={0xffffff}
+          speed={0}
+          opacity={0.75}
+          scale={4}
+          seed={8}
+        />
+        <Cloud
+          position={[-30, 5, 30]}
+          color={0xffffff}
+          speed={0}
+          opacity={0.75}
+          scale={5}
+          seed={2}
+        />
+        <Cloud
+          position={[-75, -5, 30]}
+          color={0xffffff}
+          speed={0}
+          opacity={0.75}
+          scale={10}
+          seed={1}
+        />
+
+        <ambientLight intensity={3.5} />
 
         {/* <PivotControls scale={50} /> */}
 

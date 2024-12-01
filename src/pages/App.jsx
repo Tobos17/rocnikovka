@@ -29,7 +29,7 @@ function Home() {
       smoothWheel: true,
       syncTouch: false,
       touchMultiplier: 0,
-      wheelMultiplier: 0.75,
+      wheelMultiplier: 0.6,
     });
     const lenis = lenisRef.current;
 
@@ -137,12 +137,12 @@ function Home() {
               transform: "translateX(-50%) translateY(-50%)",
               transformOrigin: "center center",
             }}
-            className="z-50 bg-white fixed rounded-full overflow-hidden"
+            className="z-50 bg-primary fixed rounded-full overflow-hidden"
           >
             <button
               ref={clicker}
               onClick={handleClick}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-banner text-8xl tracking-wider"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-title text-8xl tracking-wider"
             >
               Zablbni si
             </button>

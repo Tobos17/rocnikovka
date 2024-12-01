@@ -10,7 +10,7 @@ import oceanFragmentShader from "../shaders/ocean/fragment.glsl";
 const OceanMaterial = shaderMaterial(
   {
     uTime: 0,
-    uColor: new THREE.Color(0x7fcce0),
+    uColor: new THREE.Color(0x3caee2),
     uMap: null,
   },
   oceanVertexShader,
@@ -114,7 +114,7 @@ export function Ocean() {
 
   return (
     <group position={[0, -2, 0]}>
-      <Model ref={cubeRef} position={[0, 0, -12.5]} />
+      <Model ref={cubeRef} position={[-6, 0, -11.5]} />
       <Water cubeRef={cubeRef} />
     </group>
   );

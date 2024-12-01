@@ -1,47 +1,167 @@
 import { useGLTF, useTexture } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import gsap from "gsap";
-import { useEffect, useLayoutEffect } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import * as THREE from "three";
 
-export const Scene = ({ tl }) => {
-  const { scene: env } = useGLTF("/models/Env.glb");
-  const baked = useTexture("/textures/baked-2.jpg");
-  const bakedRocks = useTexture("/textures/baked-rocks.jpg");
-  const bakedFloors = useTexture("/textures/baked-floors.jpg");
+export const Props = () => {
+  const { scene } = useGLTF("/models/Props.glb");
+  const bakedProps = useTexture("/textures/bakedProps.jpg");
 
-  baked.flipY = false;
-  baked.colorSpace = THREE.SRGBColorSpace;
+  bakedProps.flipY = false;
+  bakedProps.colorSpace = THREE.SRGBColorSpace;
 
-  bakedRocks.flipY = false;
-  bakedRocks.colorSpace = THREE.SRGBColorSpace;
+  useEffect(() => {
+    scene.traverse((child) => {
+      if (child.isMesh) {
+        child.material = new THREE.MeshBasicMaterial({
+          map: bakedProps,
+        });
+      }
+    });
+  }, [scene]);
+
+  return <primitive object={scene} dispose={null} />;
+};
+
+export const SpecialProps = () => {
+  const { scene } = useGLTF("/models/SpecialProps.glb");
+  const bakedSpecialProps = useTexture("/textures/bakedSpecialProps.jpg");
+
+  bakedSpecialProps.flipY = false;
+  bakedSpecialProps.colorSpace = THREE.SRGBColorSpace;
+
+  useEffect(() => {
+    scene.traverse((child) => {
+      if (child.isMesh) {
+        child.material = new THREE.MeshBasicMaterial({
+          map: bakedSpecialProps,
+        });
+      }
+    });
+  }, [scene]);
+
+  return <primitive object={scene} dispose={null} />;
+};
+
+export const Bridge = ({ tl }) => {
+  const { scene } = useGLTF("/models/bridge.glb");
+  const bakedBridge = useTexture("/textures/bakedBridge.jpg");
+
+  bakedBridge.flipY = false;
+  bakedBridge.colorSpace = THREE.SRGBColorSpace;
+
+  // const [intensity, setIntensity] = useState(0);
+  const emissiveMaterial = useRef([]);
+
+  useEffect(() => {
+    scene.traverse((child) => {
+      if (child.isMesh) {
+        if (child.name.includes("emis")) {
+          // console.log(child);
+          child.material = new THREE.MeshStandardMaterial({
+            emissive: new THREE.Color(0xf1cc6c),
+            emissiveIntensity: 4,
+          });
+
+          emissiveMaterial.current.push(child.material);
+        } else {
+          child.material = new THREE.MeshBasicMaterial({
+            map: bakedBridge,
+          });
+        }
+      }
+    });
+  }, [scene]);
+
+  useEffect(() => {
+    if (tl.current) {
+      tl.current.fromTo(
+        emissiveMaterial.current[0],
+        { emissiveIntensity: 1.5 },
+        { emissiveIntensity: 4, duration: 0.1 },
+        0
+      );
+
+      tl.current.to(
+        emissiveMaterial.current[0],
+        { emissiveIntensity: 1.5, duration: 0.05 },
+        0.15
+      );
+
+      tl.current.to(
+        emissiveMaterial.current[0],
+        { emissiveIntensity: 4, duration: 0.1 },
+        0.25
+      );
+      tl.current.to(
+        emissiveMaterial.current[0],
+        { emissiveIntensity: 1.5, duration: 0.05 },
+        0.4
+      );
+      tl.current.to(
+        emissiveMaterial.current[0],
+        { emissiveIntensity: 4, duration: 0.05 },
+        0.55
+      );
+      tl.current.to(
+        emissiveMaterial.current[0],
+        { emissiveIntensity: 1.5, duration: 0.05 },
+        0.7
+      );
+
+      tl.current.to(
+        emissiveMaterial.current[0],
+        { emissiveIntensity: 4, duration: 0.05 },
+        0.9
+      );
+    }
+  }, [tl.current]);
+
+  return <primitive object={scene} dispose={null} />;
+};
+
+export const Mountains = () => {
+  const { scene } = useGLTF("/models/Mountains.glb");
+  const bakedMountains = useTexture("/textures/bakedMountains.jpg");
+
+  bakedMountains.flipY = false;
+  bakedMountains.colorSpace = THREE.SRGBColorSpace;
+
+  useEffect(() => {
+    scene.traverse((child) => {
+      if (child.isMesh) {
+        child.material = new THREE.MeshBasicMaterial({
+          map: bakedMountains,
+        });
+      }
+    });
+  }, [scene]);
+
+  return <primitive object={scene} dispose={null} />;
+};
+
+export const Floors = () => {
+  const { scene } = useGLTF("/models/Floors.glb");
+  const bakedFloors = useTexture("/textures/bakedFloors.jpg");
 
   bakedFloors.flipY = false;
   bakedFloors.colorSpace = THREE.SRGBColorSpace;
 
   useEffect(() => {
-    env.traverse((child) => {
-      if (
-        (child.isMesh && child.name === "b") ||
-        (child.isMesh && child.name === "b001") ||
-        (child.isMesh && child.name === "b002") ||
-        (child.isMesh && child.name === "b003")
-      ) {
+    scene.traverse((child) => {
+      if (child.isMesh) {
         child.material = new THREE.MeshBasicMaterial({
           map: bakedFloors,
         });
-      } else if (child.isMesh && child.name === "bounds") {
-        child.material = new THREE.MeshBasicMaterial({
-          visible: false,
-        });
-      } else if (child.isMesh && child.name === "m") {
-        child.material = new THREE.MeshBasicMaterial({
-          map: bakedRocks,
-        });
       }
     });
-  }, [env]);
+  }, [scene]);
 
+  return <primitive object={scene} dispose={null} />;
+};
+
+export const Scene = ({ tl }) => {
   const camera = useThree((state) => state.camera);
   const scene = useThree((state) => state.scene);
 
@@ -72,8 +192,13 @@ export const Scene = ({ tl }) => {
   }, [tl.current]);
 
   return (
-    <>
-      <primitive object={env} scale={1.2} position={[0, 0, 0]} />
-    </>
+    <group scale={1.2} position={[0, 0, 0]}>
+      {/* <primitive object={env} scale={1.2} position={[0, 0, 0]} /> */}
+      <Props />
+      <SpecialProps />
+      <Bridge tl={tl} />
+      <Mountains />
+      <Floors />
+    </group>
   );
 };

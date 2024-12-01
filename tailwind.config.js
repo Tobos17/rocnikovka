@@ -21,18 +21,23 @@ export default {
     function ({ addUtilities }) {
       const newUtilities = {
         ".font-title": {
-          // fontFamily: "Oswald, sans-serif", // Apply the Oswald font
+          // fontFamily: "Reenie Beanie, cursive",
           fontFamily: "Bebas Neue, sans-serif",
-          fontWeight: "400", // Default weight to 400
-          textTransform: "uppercase", // Add uppercase text transformation
+          fontWeight: "400",
+          // textTransform: "uppercase",
           color: "white",
         },
         ".font-banner": {
-          // fontFamily: "Oswald, sans-serif", // Apply the Oswald font
           fontFamily: "Bebas Neue, sans-serif",
           fontWeight: "400", // Default weight to 400
-          textTransform: "uppercase", // Add uppercase text transformation
-          color: "black",
+          // textTransform: "uppercase",
+          color: "#D4DE95",
+        },
+        ".bg-primary": {
+          backgroundColor: "#BAC095",
+        },
+        ".bg-secondary": {
+          backgroundColor: "#636B2F",
         },
       };
 

@@ -156,7 +156,7 @@ function Home() {
         )}
 
         <div className="h-screen w-screen fixed">
-          <Sketch tl={tl} isReady={isReady} />
+          {/* <Sketch tl={tl} isReady={isReady} /> */}
         </div>
 
         <Overlay tl={tl} isScrolled={isScrolled} />

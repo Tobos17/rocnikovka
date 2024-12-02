@@ -61,7 +61,7 @@ body::-webkit-scrollbar {
   overflow: hidden;
   width: 100% !important;
   max-width: 100% !important;
-  height: 100dvh !important; /* Ensures section fills viewport */
+  height: 10000px;
   max-height: none !important;
   transition: 0s !important;
   position: relative; /* Needed for proper pinning */

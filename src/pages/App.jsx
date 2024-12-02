@@ -53,12 +53,12 @@ function Home() {
     };
   }, [loading]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     tl.current = gsap.timeline({
       scrollTrigger: {
         trigger: "#firstSection",
         start: "top top",
-        end: "+=10000",
+        end: "bottom bottom",
         pin: true,
         scrub: 1,
         onUpdate: (self) => {
@@ -107,7 +107,7 @@ function Home() {
       });
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (isScrolled) {
       gsap.fromTo(
         loader.current,
@@ -143,12 +143,12 @@ function Home() {
               transform: "translateX(-50%) translateY(-50%)",
               transformOrigin: "center center",
             }}
-            className="z-50 bg-primary fixed rounded-full overflow-hidden"
+            className="z-50 bg-secondary fixed rounded-full overflow-hidden"
           >
             <button
               ref={clicker}
               onClick={handleClick}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-title text-8xl tracking-wider"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-title text-6xl tracking-wider"
             >
               Zablbni si
             </button>
@@ -158,8 +158,9 @@ function Home() {
         <div className="h-screen w-screen fixed">
           <Experience tl={tl} isReady={isReady} />
         </div>
-
-        <Overlay tl={tl} isScrolled={isScrolled} />
+        <div id="firstSection" className="scene-inner">
+          <Overlay tl={tl} isScrolled={isScrolled} />
+        </div>
       </div>
     </>
   );

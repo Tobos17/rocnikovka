@@ -8,7 +8,7 @@ gsap.registerPlugin(CustomEase);
 
 export const Overlay = ({ tl, isSrolled }) => {
   const textRefs = useRef([]);
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (tl.current && textRefs.current) {
       tl.current.to(
         "#targetSection",
@@ -52,7 +52,7 @@ export const Overlay = ({ tl, isSrolled }) => {
         textRefs.current[2],
         { opacity: 0 },
         { opacity: 1, ease: "sm", duration: 0.075 },
-        1.535
+        1.55
       );
 
       tl.current.fromTo(
@@ -63,9 +63,9 @@ export const Overlay = ({ tl, isSrolled }) => {
       );
       tl.current.fromTo(
         textRefs.current[3],
-        { y: "-100vh" },
-        { y: "0", duration: 1 },
-        2
+        { y: "0vh" },
+        { y: "-100vh", duration: 0.5 },
+        2.5
       );
       tl.current.to(
         textRefs.current[3],
@@ -77,111 +77,112 @@ export const Overlay = ({ tl, isSrolled }) => {
   }, [tl.current]);
 
   return (
-    <div id="firstSection" className="scene-inner">
-      <div className="scene-content">
-        <div id="targetSection" className="scene-content-inner">
-          <div className="absolute left-[10vw] bottom-[12.5vh] max-w-[800px] flex flex-col gap-1 items-start justify-center">
-            <h1 className="font-title text-7xl 3xl:text-8xl tracking-wide">
-              Ostrov na který
-            </h1>
-            <h1 className="font-title text-7xl 3xl:text-8xl tracking-wide">
-              nikdy nezapomenete
-            </h1>
-          </div>
-
-          <div className="absolute right-[15vw] bottom-[12.5vh] max-w-[500px] flex flex-col gap-1 items-end justify-center">
-            <p className="font-title text-2xl tracking-wide">
-              Přijďte objevit místo
-            </p>
-            <p className="font-title text-2xl tracking-wide">
-              kde dobrodružství čeká na každém kroku
-            </p>
-          </div>
-
-          <div
-            style={{ transform: "translateZ(-1250px)" }}
-            className="absolute left-[62.5vw] top-[35vh] max-w-[320px] flex flex-col justify-center items-center font-title text-3xl tracking-wider leading-normal"
-          >
-            <div className="overflow-hidden flex-1 relative flex justify-center items-center ">
-              <span
-                ref={(el) => (textRefs.current[0] = el)}
-                className="font-title text-5xl tracking-wide leading-snug"
-              >
-                Jedinečný
-              </span>
-            </div>
-
-            <div className="overflow-hidden flex-1 relative flex justify-center items-center ">
-              <span
-                ref={(el) => (textRefs.current[1] = el)}
-                className="font-title text-5xl tracking-wide leading-snug"
-              >
-                zážitek
-              </span>
-            </div>
-          </div>
-
-          <div
-            ref={(el) => (textRefs.current[2] = el)}
-            style={{ transform: "translateZ(-1850px)" }}
-            className="absolute right-[30vw] top-[35vh] max-w-[320px] font-title text-3xl tracking-wider leading-normal"
-          >
-            <p className="font-title text-5xl tracking-wide leading-snug">
-              Chcete si
-            </p>
-            <p className="font-title text-5xl tracking-wide leading-snug">
-              odpočinout
-            </p>
-          </div>
+    <div className="scene-content">
+      <div id="targetSection" className="scene-content-inner">
+        <div className="absolute left-[10vw] bottom-[12.5vh] max-w-[800px] flex flex-col gap-1 items-start justify-center">
+          <h1 className="font-title text-7xl 3xl:text-8xl tracking-wide">
+            Ostrov na který
+          </h1>
+          <h1 className="font-title text-7xl 3xl:text-8xl tracking-wide">
+            nikdy nezapomenete
+          </h1>
         </div>
-        {/* gaz */}
-        {/* {!isScrolled && <Navbar />} */}
+
+        <div className="absolute right-[15vw] bottom-[12.5vh] max-w-[500px] flex flex-col gap-1 items-end justify-center">
+          <p className="font-title text-3xl tracking-wide">
+            Přijďte objevit místo kde
+          </p>
+          <p className="font-title text-3xl tracking-wide">
+            dobrodružství čeká na každém kroku
+          </p>
+        </div>
 
         <div
-          ref={(el) => (textRefs.current[3] = el)}
-          className="absolute left-[0vw] top-[0vh] h-[205vh] w-screen flex justify-end items-center overflow-hidden bg-primary"
+          style={{ transform: "translateZ(-1250px)" }}
+          className="absolute left-[62.5vw] top-[35vh] max-w-[320px] flex flex-col justify-center items-center font-title text-3xl tracking-wider leading-normal"
         >
-          <div className="h-full w-[25vw] flex flex-col justify-center items-center px-10 py-10 gap-10">
-            <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-10 px-10 rounded-[50px] bg-secondary">
-              <p className="font-title text-5xl tracking-wide leading-normal">
-                Ostrov projekt
-              </p>
-              <p className="font-banner text-xl tracking-wide leading-normal">
-                Ostrov projektOstrov projektOstrov projektOstrov projektOstrov
-                projektOstrov projekt projektOstrov projektOstrov projektOstrov
-                projektOstrov projektOstrov projektOstrov
-              </p>
-            </div>
+          <div className="overflow-hidden flex-1 relative flex justify-center items-center ">
+            <span
+              ref={(el) => (textRefs.current[0] = el)}
+              className="font-title text-5xl tracking-wide leading-snug"
+            >
+              Jedinečný
+            </span>
+          </div>
 
-            <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-10 px-10 rounded-[50px] bg-secondary">
-              <p className="font-title text-5xl tracking-wide leading-normal">
-                Ostrov projekt
-              </p>
-              <p className="font-banner text-xl tracking-wide leading-normal ">
-                Ostrov projektOstrov projektOstrov projektOstrov projektOstrov
-                projektOstrov projekt
-              </p>
-            </div>
+          <div className="overflow-hidden flex-1 relative flex justify-center items-center ">
+            <span
+              ref={(el) => (textRefs.current[1] = el)}
+              className="font-title text-5xl tracking-wide leading-snug"
+            >
+              zážitek
+            </span>
+          </div>
+        </div>
 
-            <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-10 px-10 rounded-[50px] bg-secondary">
-              <p className="font-title text-5xl tracking-wide leading-normal">
-                Ostrov projekt
-              </p>
-              <p className="font-banner text-xl tracking-wide leading-normal">
-                Ostrov projektOstrov projektOstrov projektOstrov projektOstrov
-                projektOstrov projekt
-              </p>
-            </div>
+        <div
+          ref={(el) => (textRefs.current[2] = el)}
+          style={{ transform: "translateZ(-1850px)" }}
+          className="absolute right-[30vw] top-[35vh] max-w-[320px] font-title text-3xl tracking-wider leading-normal"
+        >
+          <p className="font-title text-5xl tracking-wide leading-snug">
+            Nekonečná
+          </p>
+          <p className="font-title text-5xl tracking-wide leading-snug">
+            zábava
+          </p>
+        </div>
+      </div>
+      {/* gaz */}
+      {/* {!isScrolled && <Navbar />} */}
 
-            <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-10 px-10 rounded-[50px] bg-secondary">
-              <p className="font-title text-5xl tracking-wide leading-normal">
-                Ostrov projekt
-              </p>
-              <p className="font-banner text-xl tracking-wide leading-normal">
-                Ostrov projektOstrov projektOstrov projektOstrov projektOstrov
-                projektOstrov projekt
-              </p>
-            </div>
+      <div
+        ref={(el) => (textRefs.current[3] = el)}
+        className="absolute left-[0vw] top-[0vh] h-[200vh] w-screen flex justify-end items-center overflow-hidden bg-primary"
+      >
+        <div className="h-full w-[25vw] flex flex-col justify-center items-center px-[5vh] py-[5vh] gap-[5vh]">
+          <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-[5vh] px-10 rounded-[50px] bg-secondary">
+            <p className="font-title text-5xl tracking-wide leading-tight">
+              Plavby snů
+            </p>
+            <p className="font-title text-xl tracking-wide leading-normal">
+              Vydejte se na dechberoucí plavbu našimi loděmi s proskleným dnem,
+              které vám umožní obdivovat podmořský život z pohodlí paluby.
+              Připravte se na výpravy za delfíny, korálovými útesy a nádhernými
+              západy slunce
+            </p>
+          </div>
+
+          <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-10 px-10 rounded-[50px] bg-secondary">
+            <p className="font-title text-5xl tracking-wide leading-tight">
+              Ponorkové dobrodružství
+            </p>
+            <p className="font-title text-xl tracking-wide leading-normal ">
+              S naší futuristickou ponorkou se ponoříte do hlubin oceánu a
+              zažijete svět, který je jinak vyhrazen jen potápěčům. Sledujte
+              majestátní manty, pestrobarevné ryby a tajemné vraky lodí
+            </p>
+          </div>
+
+          <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-10 px-10 rounded-[50px] bg-secondary">
+            <p className="font-title text-5xl tracking-wide leading-tight">
+              Balónem nad ostrovem
+            </p>
+            <p className="font-title text-xl tracking-wide leading-tight">
+              Zažijte nezapomenutelný pohled na ostrov z ptačí perspektivy!
+              Leťte horkovzdušným balónem a obdivujte zelené džungle, tyrkysové
+              laguny a nekonečné obzory
+            </p>
+          </div>
+          <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-10 px-10 rounded-[50px] bg-secondary">
+            <p className="font-title text-5xl tracking-wide leading-normal">
+              Magické plavby
+            </p>
+            <p className="font-title text-xl tracking-wide leading-normal">
+              Nasedněte na naši loď s proskleným dnem a odhalte tajemství pod
+              hladinou! Pozorujte korálové útesy, hrajte si s pohledem na
+              delfíny a užijte si kouzelné západy slunce na vodní hladině
+            </p>
           </div>
         </div>
       </div>

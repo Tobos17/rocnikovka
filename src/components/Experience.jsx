@@ -10,13 +10,13 @@ import {
   useTexture,
 } from "@react-three/drei";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-// import {
-//   CuboidCollider,
-//   Physics,
-//   RigidBody,
-//   TrimeshCollider,
-//   useRapier,
-// } from "@react-three/rapier";
+import {
+  CuboidCollider,
+  Physics,
+  RigidBody,
+  TrimeshCollider,
+  useRapier,
+} from "@react-three/rapier";
 import { useControls } from "leva";
 import { useRef, useState } from "react";
 import * as THREE from "three";
@@ -386,13 +386,13 @@ const TextPlane = () => {
 };
 
 export const Experience = ({ isReady, tl }) => {
-  const { debug, orbitControls } = useControls(
-    "rapier-dynamic-raycast-vehicle-controller/physics",
-    {
-      debug: false,
-      orbitControls: false,
-    }
-  );
+  // const { debug, orbitControls } = useControls(
+  //   "rapier-dynamic-raycast-vehicle-controller/physics",
+  //   {
+  //     debug: false,
+  //     orbitControls: false,
+  //   }
+  // );
 
   return (
     <>
@@ -420,15 +420,15 @@ export const Experience = ({ isReady, tl }) => {
         {/* <color attach="background" args={["#171720"]} /> */}
         {/* <fog attach="fog" args={["#171720", 10, 20]} /> */}
 
-        {/* {isReady && (
-          <Physics debug={debug}>
+        {isReady && (
+          <Physics debug={false}>
             <KeyboardControls map={controls}>
               <Vehicle position={spawn.position} rotation={spawn.rotation} />
             </KeyboardControls>
 
             <ScenePhysics />
           </Physics>
-        )} */}
+        )}
 
         <Scene tl={tl} />
 
@@ -478,7 +478,7 @@ export const Experience = ({ isReady, tl }) => {
 
         {/* <PivotControls scale={50} /> */}
 
-        {orbitControls && <OrbitControls makeDefault />}
+        {/* {orbitControls && <OrbitControls makeDefault />} */}
       </Canvas>
     </>
   );

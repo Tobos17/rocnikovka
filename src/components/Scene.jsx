@@ -148,7 +148,11 @@ export const Mountains = () => {
 export const Floors = () => {
   const { scene } = useGLTF("/models/Floors.glb");
   const bakedFloors = useTexture("/textures/bakedFloors.jpg");
-  const imageTexture = useTexture("/textures/gs.jpg");
+  const imageTexture = useTexture("/textures/bgg.jpg");
+  const imageTexture1 = useTexture("/textures/bgggg.jpg");
+  const imageTexture2 = useTexture("/textures/bgg.jpg");
+  const imageTexture3 = useTexture("/textures/bgggg.jpg");
+  const imageTexture4 = useTexture("/textures/bgg.jpg");
 
   bakedFloors.flipY = false;
   bakedFloors.colorSpace = THREE.SRGBColorSpace;
@@ -159,11 +163,30 @@ export const Floors = () => {
     scene.traverse((child) => {
       if (child.isMesh) {
         if (child.name.includes("image")) {
-          child.material = new THREE.MeshStandardMaterial({
+          child.material = new THREE.MeshBasicMaterial({
             map: imageTexture,
-            emissive: new THREE.Color(0x6bbbee),
-            emissiveIntensity: 0.75,
           });
+          return;
+        } else if (child.name.includes("image.001")) {
+          child.material = new THREE.MeshBasicMaterial({
+            map: imageTexture1,
+          });
+          return;
+        } else if (child.name.includes("image.002")) {
+          child.material = new THREE.MeshBasicMaterial({
+            map: imageTexture2,
+          });
+          return;
+        } else if (child.name.includes("image.003")) {
+          child.material = new THREE.MeshBasicMaterial({
+            map: imageTexture3,
+          });
+          return;
+        } else if (child.name.includes("image.004")) {
+          child.material = new THREE.MeshBasicMaterial({
+            map: imageTexture4,
+          });
+          return;
         } else {
           child.material = new THREE.MeshBasicMaterial({
             map: bakedFloors,

@@ -17,7 +17,7 @@ void main() {
     vec3 pos = position;
     
     float strength = 0.75;
-    pos.z += strength * calculateSurface(pos.x , -pos.y );
+    pos.z += strength * calculateSurface(pos.x * 2.5, -pos.y * 2.5 );
     // pos.z -= strength * calculateSurface(0.0, 0.0);
 
     gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);

@@ -28,7 +28,7 @@ export const Loader = ({ setLoading }) => {
         }}
         className="fixed z-[60] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-title text-8xl text-white"
       >
-        INSANITY
+        Ostrov Snů
       </motion.h1>
       <motion.div
         exit={{

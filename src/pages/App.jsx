@@ -53,11 +53,12 @@ function Home() {
     };
   }, [loading]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     tl.current = gsap.timeline({
       scrollTrigger: {
-        trigger: "#firstSection",
+        trigger: "#triggerRef",
         start: "top top",
+
         end: "bottom bottom",
         pin: true,
         scrub: 1,
@@ -158,9 +159,8 @@ function Home() {
         <div className="h-screen w-screen fixed">
           <Experience tl={tl} isReady={isReady} />
         </div>
-        <div id="firstSection" className="scene-inner">
-          <Overlay tl={tl} isScrolled={isScrolled} />
-        </div>
+
+        <Overlay tl={tl} isScrolled={isScrolled} />
       </div>
     </>
   );

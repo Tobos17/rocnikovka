@@ -17,7 +17,7 @@ export const Loader = ({ setLoading }) => {
           setTimeout(() => {
             document.body.classList.remove("loading");
             setLoading(false);
-          }, 1000);
+          }, 2);
         }}
         exit={{
           opacity: 0,

@@ -19,7 +19,9 @@ const OceanMaterial = shaderMaterial(
 
 extend({ OceanMaterial });
 
-const waveElevation = (position, uTime) => {
+const waveElevation = (p, uTime) => {
+  const position = p.clone().multiplyScalar(2.5);
+  // console.log(position);
   const time = uTime * 0.05;
   const scale = 10;
   const strength = 0.75;

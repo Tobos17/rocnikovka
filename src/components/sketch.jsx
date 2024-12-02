@@ -390,7 +390,7 @@ const TextPlane = () => {
   );
 };
 
-export function Sketch({ isReady, tl }) {
+function Sketch({ isReady, tl }) {
   const { debug, orbitControls } = useControls(
     "rapier-dynamic-raycast-vehicle-controller/physics",
     {
@@ -488,3 +488,5 @@ export function Sketch({ isReady, tl }) {
     </>
   );
 }
+
+export default Sketch;

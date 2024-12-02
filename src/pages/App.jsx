@@ -1,5 +1,5 @@
 import { OrbitControls } from "@react-three/drei";
-import { Sketch } from "../components/Experience";
+import { Experience } from "../components/Experience";
 import { Overlay } from "../components/Overlay";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -155,9 +155,9 @@ function Home() {
           </div>
         )}
 
-        {/* <div className="h-screen w-screen fixed"> */}
-        <Sketch tl={tl} isReady={isReady} />
-        {/* </div> */}
+        <div className="h-screen w-screen fixed">
+          <Experience tl={tl} isReady={isReady} />
+        </div>
 
         <Overlay tl={tl} isScrolled={isScrolled} />
       </div>

@@ -385,7 +385,7 @@ const TextPlane = () => {
   );
 };
 
-export const Sketch = ({ isReady, tl }) => {
+export const Experience = ({ isReady, tl }) => {
   const { debug, orbitControls } = useControls(
     "rapier-dynamic-raycast-vehicle-controller/physics",
     {

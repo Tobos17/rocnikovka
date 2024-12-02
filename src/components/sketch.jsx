@@ -4,13 +4,12 @@ import {
   KeyboardControls,
   OrbitControls,
   PivotControls,
-  shaderMaterial,
   Sky,
   useGLTF,
   useKeyboardControls,
   useTexture,
 } from "@react-three/drei";
-import { Canvas, extend, useFrame, useThree } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
   CuboidCollider,
   Physics,
@@ -18,8 +17,8 @@ import {
   TrimeshCollider,
   useRapier,
 } from "@react-three/rapier";
-import { Leva, useControls } from "leva";
-import { Suspense, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useControls } from "leva";
+import { useRef, useState } from "react";
 import * as THREE from "three";
 import { useVehicleController } from "./use-vehicle-controller";
 import { Ocean } from "./Ocean";
@@ -27,13 +26,9 @@ import { Scene } from "./Scene";
 import {
   Bloom,
   BrightnessContrast,
-  DepthOfField,
   EffectComposer,
-  HueSaturation,
-  SelectiveBloom,
   Vignette,
 } from "@react-three/postprocessing";
-import { LoaderThree } from "./LoaderThree";
 
 const spawn = {
   position: [13, 1.5, -12.75],
@@ -425,7 +420,7 @@ function Sketch({ isReady, tl }) {
         {/* <color attach="background" args={["#171720"]} /> */}
         {/* <fog attach="fog" args={["#171720", 10, 20]} /> */}
 
-        {isReady && (
+        {/* {isReady && (
           <Physics debug={debug}>
             <KeyboardControls map={controls}>
               <Vehicle position={spawn.position} rotation={spawn.rotation} />
@@ -433,7 +428,7 @@ function Sketch({ isReady, tl }) {
 
             <ScenePhysics />
           </Physics>
-        )}
+        )} */}
 
         <Scene tl={tl} />
 

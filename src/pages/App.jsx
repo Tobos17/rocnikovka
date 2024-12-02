@@ -1,4 +1,4 @@
-// import Sketch from "../components/Sketch";
+import Sketch from "../components/Sketch";
 import { Overlay } from "../components/Overlay";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";

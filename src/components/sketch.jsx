@@ -10,13 +10,13 @@ import {
   useTexture,
 } from "@react-three/drei";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import {
-  CuboidCollider,
-  Physics,
-  RigidBody,
-  TrimeshCollider,
-  useRapier,
-} from "@react-three/rapier";
+// import {
+//   CuboidCollider,
+//   Physics,
+//   RigidBody,
+//   TrimeshCollider,
+//   useRapier,
+// } from "@react-three/rapier";
 import { useControls } from "leva";
 import { useRef, useState } from "react";
 import * as THREE from "three";

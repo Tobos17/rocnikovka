@@ -1,5 +1,5 @@
 import gsap from "gsap";
-import React, { useEffect, useLayoutEffect, useRef } from "react";
+import React, { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { Navbar } from "./Navbar";
 
 import { CustomEase } from "gsap/CustomEase";
@@ -8,6 +8,9 @@ gsap.registerPlugin(CustomEase);
 
 export const Overlay = ({ tl, isScrolled }) => {
   const textRefs = useRef([]);
+  const text = useRef(null);
+  const text2 = useRef(null);
+
   useEffect(() => {
     if (tl.current && textRefs.current) {
       tl.current.to(
@@ -76,118 +79,143 @@ export const Overlay = ({ tl, isScrolled }) => {
     }
   }, [tl.current]);
 
-  return (
-    <div id="triggerRef" className="scene-inner">
-      <div className="scene-content">
-        <div id="sectionRef" className="scene-content-inner">
-          <div className="absolute left-[10vw] bottom-[12.5vh] max-w-[800px] flex flex-col gap-1 items-start justify-center">
-            <h1 className="font-title text-7xl 3xl:text-8xl tracking-wide">
-              Ostrov na který
-            </h1>
-            <h1 className="font-title text-7xl 3xl:text-8xl tracking-wide">
-              nikdy nezapomenete
-            </h1>
-          </div>
+  useEffect(() => {
+    if (text.current && text2.current) {
+      gsap.fromTo(
+        text.current,
+        { opacity: 0, y: "100%" },
+        { opacity: 1, y: 0, duration: 2, delay: 0.25, ease: "sm" }
+      );
 
-          <div className="absolute right-[15vw] bottom-[12.5vh] max-w-[500px] flex flex-col gap-1 items-end justify-center">
-            <p className="font-title text-3xl tracking-wide">
-              Přijďte objevit místo kde
-            </p>
-            <p className="font-title text-3xl tracking-wide">
-              dobrodružství čeká na každém kroku
-            </p>
+      gsap.fromTo(
+        text2.current,
+        { opacity: 0, y: 50 },
+        { opacity: 1, y: 0, duration: 1.5, delay: 1.5, ease: "power1.inOut" }
+      );
+    }
+  }, []);
+
+  return useMemo(
+    () => (
+      <div id="triggerRef" className="scene-inner">
+        <div className="scene-content">
+          <div id="sectionRef" className="scene-content-inner">
+            <div
+              ref={text}
+              className="absolute left-[10vw] bottom-[12.5vh] max-w-[800px] flex flex-col gap-1 items-start justify-center"
+            >
+              <h1 className="font-title text-7xl 3xl:text-8xl tracking-wide">
+                Ostrov na který
+              </h1>
+              <h1 className="font-title text-7xl 3xl:text-8xl tracking-wide">
+                nikdy nezapomenete
+              </h1>
+            </div>
+
+            <div
+              ref={text2}
+              className="absolute right-[15vw] bottom-[12.5vh] max-w-[500px] flex flex-col gap-1 items-end justify-center"
+            >
+              <p className="font-title text-3xl tracking-wide">
+                Přijďte objevit místo kde
+              </p>
+              <p className="font-title text-3xl tracking-wide">
+                dobrodružství čeká na každém kroku
+              </p>
+            </div>
+
+            <div
+              style={{ transform: "translateZ(-1250px)" }}
+              className="absolute left-[62.5vw] top-[35vh] max-w-[320px] flex flex-col justify-center items-center font-title text-3xl tracking-wider leading-normal"
+            >
+              <div className="overflow-hidden flex-1 relative flex justify-center items-center ">
+                <span
+                  ref={(el) => (textRefs.current[0] = el)}
+                  className="font-title text-5xl tracking-wide leading-snug"
+                >
+                  Jedinečný
+                </span>
+              </div>
+
+              <div className="overflow-hidden flex-1 relative flex justify-center items-center ">
+                <span
+                  ref={(el) => (textRefs.current[1] = el)}
+                  className="font-title text-5xl tracking-wide leading-snug"
+                >
+                  zážitek
+                </span>
+              </div>
+            </div>
+
+            <div
+              ref={(el) => (textRefs.current[2] = el)}
+              style={{ transform: "translateZ(-1850px)" }}
+              className="absolute right-[30vw] top-[35vh] max-w-[320px] font-title text-3xl tracking-wider leading-normal"
+            >
+              <p className="font-title text-5xl tracking-wide leading-snug">
+                Nekonečná
+              </p>
+              <p className="font-title text-5xl tracking-wide leading-snug">
+                zábava
+              </p>
+            </div>
           </div>
+          {/* gaz */}
+          {/* {!isScrolled && <Navbar />} */}
 
           <div
-            style={{ transform: "translateZ(-1250px)" }}
-            className="absolute left-[62.5vw] top-[35vh] max-w-[320px] flex flex-col justify-center items-center font-title text-3xl tracking-wider leading-normal"
+            ref={(el) => (textRefs.current[3] = el)}
+            className="absolute left-[0vw] top-[0vh] h-[200vh] w-screen flex justify-end items-center overflow-hidden bg-primary"
           >
-            <div className="overflow-hidden flex-1 relative flex justify-center items-center ">
-              <span
-                ref={(el) => (textRefs.current[0] = el)}
-                className="font-title text-5xl tracking-wide leading-snug"
-              >
-                Jedinečný
-              </span>
-            </div>
+            <div className="h-full w-[25vw] flex flex-col justify-center items-center px-[5vh] py-[5vh] gap-[5vh]">
+              <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-[5vh] px-10 rounded-[50px] bg-secondary">
+                <p className="font-title text-5xl tracking-wide leading-tight">
+                  Plavby snů
+                </p>
+                <p className="font-title text-xl tracking-wide leading-normal">
+                  Vydejte se na dechberoucí plavbu našimi loděmi s proskleným
+                  dnem, které vám umožní obdivovat podmořský život z pohodlí
+                  paluby. Připravte se na výpravy za delfíny, korálovými útesy a
+                  nádhernými západy slunce
+                </p>
+              </div>
 
-            <div className="overflow-hidden flex-1 relative flex justify-center items-center ">
-              <span
-                ref={(el) => (textRefs.current[1] = el)}
-                className="font-title text-5xl tracking-wide leading-snug"
-              >
-                zážitek
-              </span>
-            </div>
-          </div>
+              <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-10 px-10 rounded-[50px] bg-secondary">
+                <p className="font-title text-5xl tracking-wide leading-tight">
+                  Ponorkové dobrodružství
+                </p>
+                <p className="font-title text-xl tracking-wide leading-normal ">
+                  S naší futuristickou ponorkou se ponoříte do hlubin oceánu a
+                  zažijete svět, který je jinak vyhrazen jen potápěčům. Sledujte
+                  majestátní manty, pestrobarevné ryby a tajemné vraky lodí
+                </p>
+              </div>
 
-          <div
-            ref={(el) => (textRefs.current[2] = el)}
-            style={{ transform: "translateZ(-1850px)" }}
-            className="absolute right-[30vw] top-[35vh] max-w-[320px] font-title text-3xl tracking-wider leading-normal"
-          >
-            <p className="font-title text-5xl tracking-wide leading-snug">
-              Nekonečná
-            </p>
-            <p className="font-title text-5xl tracking-wide leading-snug">
-              zábava
-            </p>
-          </div>
-        </div>
-        {/* gaz */}
-        {!isScrolled && <Navbar />}
-
-        <div
-          ref={(el) => (textRefs.current[3] = el)}
-          className="absolute left-[0vw] top-[0vh] h-[200vh] w-screen flex justify-end items-center overflow-hidden bg-primary"
-        >
-          <div className="h-full w-[25vw] flex flex-col justify-center items-center px-[5vh] py-[5vh] gap-[5vh]">
-            <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-[5vh] px-10 rounded-[50px] bg-secondary">
-              <p className="font-title text-5xl tracking-wide leading-tight">
-                Plavby snů
-              </p>
-              <p className="font-title text-xl tracking-wide leading-normal">
-                Vydejte se na dechberoucí plavbu našimi loděmi s proskleným
-                dnem, které vám umožní obdivovat podmořský život z pohodlí
-                paluby. Připravte se na výpravy za delfíny, korálovými útesy a
-                nádhernými západy slunce
-              </p>
-            </div>
-
-            <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-10 px-10 rounded-[50px] bg-secondary">
-              <p className="font-title text-5xl tracking-wide leading-tight">
-                Ponorkové dobrodružství
-              </p>
-              <p className="font-title text-xl tracking-wide leading-normal ">
-                S naší futuristickou ponorkou se ponoříte do hlubin oceánu a
-                zažijete svět, který je jinak vyhrazen jen potápěčům. Sledujte
-                majestátní manty, pestrobarevné ryby a tajemné vraky lodí
-              </p>
-            </div>
-
-            <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-10 px-10 rounded-[50px] bg-secondary">
-              <p className="font-title text-5xl tracking-wide leading-tight">
-                Balónem nad ostrovem
-              </p>
-              <p className="font-title text-xl tracking-wide leading-tight">
-                Zažijte nezapomenutelný pohled na ostrov z ptačí perspektivy!
-                Leťte horkovzdušným balónem a obdivujte zelené džungle,
-                tyrkysové laguny a nekonečné obzory
-              </p>
-            </div>
-            <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-10 px-10 rounded-[50px] bg-secondary">
-              <p className="font-title text-5xl tracking-wide leading-normal">
-                Magické plavby
-              </p>
-              <p className="font-title text-xl tracking-wide leading-normal">
-                Nasedněte na naši loď s proskleným dnem a odhalte tajemství pod
-                hladinou! Pozorujte korálové útesy, hrajte si s pohledem na
-                delfíny a užijte si kouzelné západy slunce na vodní hladině
-              </p>
+              <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-10 px-10 rounded-[50px] bg-secondary">
+                <p className="font-title text-5xl tracking-wide leading-tight">
+                  Balónem nad ostrovem
+                </p>
+                <p className="font-title text-xl tracking-wide leading-tight">
+                  Zažijte nezapomenutelný pohled na ostrov z ptačí perspektivy!
+                  Leťte horkovzdušným balónem a obdivujte zelené džungle,
+                  tyrkysové laguny a nekonečné obzory
+                </p>
+              </div>
+              <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-10 px-10 rounded-[50px] bg-secondary">
+                <p className="font-title text-5xl tracking-wide leading-normal">
+                  Magické plavby
+                </p>
+                <p className="font-title text-xl tracking-wide leading-normal">
+                  Nasedněte na naši loď s proskleným dnem a odhalte tajemství
+                  pod hladinou! Pozorujte korálové útesy, hrajte si s pohledem
+                  na delfíny a užijte si kouzelné západy slunce na vodní hladině
+                </p>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    ),
+    []
   );
 };

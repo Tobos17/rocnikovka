@@ -162,28 +162,36 @@ export const Floors = () => {
   useEffect(() => {
     scene.traverse((child) => {
       if (child.isMesh) {
-        if (child.name.includes("image")) {
-          child.material = new THREE.MeshBasicMaterial({
+        if (child.name === "image") {
+          child.material = new THREE.MeshStandardMaterial({
+            emissive: new THREE.Color(0xf1cc6c),
+            emissiveIntensity: 0.05,
             map: imageTexture,
           });
           return;
-        } else if (child.name.includes("image.001")) {
+        } else if (child.name === "image001") {
           child.material = new THREE.MeshBasicMaterial({
             map: imageTexture1,
           });
           return;
-        } else if (child.name.includes("image.002")) {
-          child.material = new THREE.MeshBasicMaterial({
+        } else if (child.name === "image002") {
+          child.material = new THREE.MeshStandardMaterial({
+            emissive: new THREE.Color(0xf1cc6c),
+            emissiveIntensity: 0.05,
             map: imageTexture2,
           });
           return;
-        } else if (child.name.includes("image.003")) {
-          child.material = new THREE.MeshBasicMaterial({
+        } else if (child.name === "image003") {
+          child.material = new THREE.MeshStandardMaterial({
+            emissive: new THREE.Color(0xf1cc6c),
+            emissiveIntensity: 0.05,
             map: imageTexture3,
           });
           return;
-        } else if (child.name.includes("image.004")) {
-          child.material = new THREE.MeshBasicMaterial({
+        } else if (child.name === "image004") {
+          child.material = new THREE.MeshStandardMaterial({
+            emissive: new THREE.Color(0xf1cc6c),
+            emissiveIntensity: 0.05,
             map: imageTexture4,
           });
           return;

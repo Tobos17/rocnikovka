@@ -85,14 +85,18 @@ const Vehicle = ({ position, rotation }) => {
     wheels
   );
 
-  const { accelerateForce, brakeForce, steerAngle } = useControls(
-    "rapier-dynamic-raycast-vehicle-controller",
-    {
-      accelerateForce: { value: 0.75, min: 0, max: 10 },
-      brakeForce: { value: 0.05, min: 0, max: 0.5, step: 0.01 },
-      steerAngle: { value: Math.PI / 8, min: 0, max: Math.PI / 8 },
-    }
-  );
+  // const { accelerateForce, brakeForce, steerAngle } = useControls(
+  //   "rapier-dynamic-raycast-vehicle-controller",
+  //   {
+  //     accelerateForce: { value: 0.7, min: 0, max: 10 },
+  //     brakeForce: { value: 0.05, min: 0, max: 0.5, step: 0.01 },
+  //     steerAngle: { value: Math.PI / 8, min: 0, max: Math.PI / 8 },
+  //   }
+  // );
+
+  const accelerateForce = 0.7;
+  const brakeForce = 0.05;
+  const steerAngle = Math.PI / 8;
 
   const [smoothedCameraPosition] = useState(new THREE.Vector3(0, 10, 0));
   const [smoothedCameraTarget] = useState(new THREE.Vector3());
@@ -365,20 +369,49 @@ const ScenePhysics = () => {
 const TextPlane = () => {
   const alphaMap = useTexture("/textures/floorTexture.png");
 
-  const position = [8, 0.01, -8];
+  // alphaMap.flipY = false;
+  alphaMap.colorSpace = THREE.SRGBColorSpace;
+  alphaMap.anisotropy = 16;
+
+  const position = [2.25, 3.1, 0];
+  const position2 = [14, 1, -11.5];
+  const position3 = [-2.5, 1.25, -4];
 
   return (
     <>
       <mesh
         position={position}
         rotation-x={-Math.PI / 2}
-        rotation-z={Math.PI / 1.5}
+        rotation-z={Math.PI / 3.35}
       >
-        <planeGeometry args={[3.5, 3.5]} />
-        <meshBasicMaterial
-          color={"red"}
+        <planeGeometry args={[5, 4]} />
+        <meshStandardMaterial
+          // color={"white"}
+          emissive={new THREE.Color(0xffffff)}
+          emissiveIntensity={0.25}
           alphaMap={alphaMap}
           transparent={true}
+        />
+      </mesh>
+      <mesh position={position2} rotation-y={Math.PI / 1.4}>
+        <planeGeometry args={[2, 2]} />
+        <meshStandardMaterial
+          emissive={new THREE.Color(0xffffff)}
+          emissiveIntensity={0.25}
+          alphaMap={alphaMap}
+          transparent={true}
+          side={THREE.DoubleSide}
+        />
+      </mesh>
+
+      <mesh position={position3} rotation-y={Math.PI / 0.915}>
+        <planeGeometry args={[4, 3]} />
+        <meshStandardMaterial
+          emissive={new THREE.Color(0xffffff)}
+          emissiveIntensity={0.25}
+          alphaMap={alphaMap}
+          transparent={true}
+          side={THREE.DoubleSide}
         />
       </mesh>
     </>
@@ -406,8 +439,6 @@ export const Experience = ({ isReady, tl }) => {
         dpr={[1, 1.5]}
         camera={{ near: 0.1, fov: 55, position: [0, 10, 0] }}
       >
-        {/* <Suspense fallback={<LoaderThree />}> */}
-
         <Environment preset="sunset" />
         <Sky
           turbidity={8.2}
@@ -415,7 +446,6 @@ export const Experience = ({ isReady, tl }) => {
           mieCoefficient={0.005}
           mieDirectionalG={0.447}
           sunPosition={[60, 60, 150]}
-          // azimuth={50}
         />
         {/* <color attach="background" args={["#171720"]} /> */}
         {/* <fog attach="fog" args={["#171720", 10, 20]} /> */}
@@ -432,22 +462,22 @@ export const Experience = ({ isReady, tl }) => {
 
         <Scene tl={tl} />
 
-        {/* <TextPlane /> */}
+        {isReady && <TextPlane />}
 
         <Ocean />
 
-        {!isReady && (
-          <EffectComposer>
-            <Bloom
-              intensity={2}
-              luminanceThreshold={2}
-              luminanceSmoothing={0.1}
-              mipmapBlur={true}
-            />
-            <Vignette offset={0.1} darkness={0.85} />
-            <BrightnessContrast brightness={-0.1} contrast={-0.15} />
-          </EffectComposer>
-        )}
+        {/* {!isReady && ( */}
+        <EffectComposer>
+          <Bloom
+            intensity={2}
+            luminanceThreshold={2}
+            luminanceSmoothing={0.1}
+            mipmapBlur={true}
+          />
+          <Vignette offset={0.1} darkness={0.85} />
+          <BrightnessContrast brightness={-0.1} contrast={-0.15} />
+        </EffectComposer>
+        {/* )} */}
 
         <Cloud
           position={[15, 5, 40]}

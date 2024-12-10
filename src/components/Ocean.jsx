@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { extend, useFrame } from "@react-three/fiber";
 import { useControls } from "leva";
 import * as THREE from "three";
@@ -108,6 +108,17 @@ const Water = ({ cubeRef }) => {
 
 const Model = React.forwardRef((props, ref) => {
   const { scene } = useGLTF("/models/majak.glb");
+
+  // useEffect(() => {
+  //   scene.traverse((child) => {
+  //     if (child.isMesh) {
+  //       console.log(child);
+  //       child.lightMapIntensity = 0;
+  //       child.envMapIntensity = 0;
+  //     }
+  //   });
+  // }, [scene]);
+
   return <primitive ref={ref} object={scene} {...props} dispose={null} />;
 });
 

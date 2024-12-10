@@ -66,8 +66,11 @@ export const Bridge = ({ tl }) => {
           emissiveMaterial.current.push(child.material);
           return;
         } else if (child.name.includes("Text")) {
-          child.material = child.material;
-          child.material.visible = false;
+          child.material = new THREE.MeshStandardMaterial({
+            color: new THREE.Color(0x3d2e06),
+            roughness: 0.75,
+          });
+
           return;
         } else {
           child.material = new THREE.MeshBasicMaterial({

@@ -26,6 +26,12 @@ export default {
           // textTransform: "uppercase",
           color: "white",
         },
+        ".font-end": {
+          fontFamily: "Bebas Neue, sans-serif",
+          fontWeight: "400",
+          // textTransform: "uppercase",
+          color: "black",
+        },
         ".font-banner": {
           fontFamily: "Bebas Neue, sans-serif",
           fontWeight: "400", // Default weight to 400
@@ -33,10 +39,12 @@ export default {
           color: "#D4DE95",
         },
         ".bg-primary": {
-          backgroundColor: "#BAC095",
+          // backgroundColor: "#BAC095",
+          backgroundColor: "white",
         },
         ".bg-secondary": {
-          backgroundColor: "#636B2F",
+          // backgroundColor: "#636B2F",
+          backgroundColor: "black",
         },
       };
 

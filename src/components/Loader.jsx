@@ -21,7 +21,7 @@ export const Loader = ({ setLoading }) => {
           setTimeout(() => {
             document.body.classList.remove("loading");
             setLoading(false);
-          }, 2500);
+          }, 4500);
         }}
         className="z-[50] fixed inset-0 h-[115vh] w-[105vw] bg-white"
       ></motion.div>

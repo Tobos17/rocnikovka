@@ -6,7 +6,7 @@ import { CustomEase } from "gsap/CustomEase";
 
 gsap.registerPlugin(CustomEase);
 
-export const Overlay = ({ tl, isScrolled }) => {
+export const Overlay = ({ tl, isScrolled, setIsReady }) => {
   const textRefs = useRef([]);
   const text = useRef(null);
   const text2 = useRef(null);
@@ -61,7 +61,7 @@ export const Overlay = ({ tl, isScrolled }) => {
       tl.current.fromTo(
         textRefs.current[3],
         { x: "-100vw" },
-        { x: "-75vw", ease: "sm", duration: 0.25 },
+        { x: "-75vw", ease: "linear", duration: 0.25 },
         2
       );
       tl.current.fromTo(
@@ -76,6 +76,51 @@ export const Overlay = ({ tl, isScrolled }) => {
         { x: "-100vw", duration: 1 },
         3
       );
+      tl.current.fromTo(
+        textRefs.current[4],
+        { y: "-100vh" },
+        { y: "0vh", duration: 0.75 },
+        3
+      );
+
+      //
+      tl.current.call(
+        () => {
+          // Check if the timeline is moving forward or backward
+          const isReversing = tl.current.time() < lastTime;
+
+          // Animate accordingly
+          gsap.to(textRefs.current[4], {
+            backgroundColor: isReversing ? "white" : "black",
+            duration: 0.5,
+            ease: "sm",
+          });
+
+          gsap.to(textRefs.current[4], {
+            backgroundColor: isReversing ? "white" : "black",
+            duration: 0.5,
+            // delay: isReversing ? 0 : 0.15,
+            ease: "sm",
+          });
+
+          gsap.fromTo(
+            textRefs.current[5],
+            { opacity: 0, y: "125%" },
+            { opacity: 1, y: 0, duration: 0.75, delay: 0.15, ease: "sm" }
+          );
+          gsap.fromTo(
+            textRefs.current[6],
+            { opacity: 0, y: "125%" },
+            { opacity: 1, y: 0, duration: 0.75, delay: 0.15, ease: "sm" }
+          );
+
+          // Update the lastTime for the next call
+          lastTime = tl.current.time();
+        },
+
+        [],
+        3.75
+      );
     }
   }, [tl.current]);
 
@@ -84,16 +129,33 @@ export const Overlay = ({ tl, isScrolled }) => {
       gsap.fromTo(
         text.current,
         { opacity: 0, y: "100%" },
-        { opacity: 1, y: 0, duration: 2, delay: 0.25, ease: "sm" }
+        { opacity: 1, y: 0, duration: 1.5, delay: 1.75, ease: "sm" }
       );
 
       gsap.fromTo(
         text2.current,
-        { opacity: 0, y: 50 },
-        { opacity: 1, y: 0, duration: 1.5, delay: 1.5, ease: "power1.inOut" }
+        { opacity: 0, y: 100 },
+        { opacity: 1, y: 0, duration: 1.5, delay: 2.5, ease: "power1.inOut" }
       );
     }
   }, []);
+
+  const handleClick = () => {
+    gsap.to(textRefs.current[4], {
+      opacity: 0,
+      duration: 0.25,
+      ease: "sm",
+      onComplete: () => {
+        textRefs.current.forEach((el) => {
+          gsap.set(el, {
+            display: "none",
+          });
+        });
+      },
+    });
+    tl.current.kill();
+    setIsReady(true);
+  };
 
   return useMemo(
     () => (
@@ -168,7 +230,7 @@ export const Overlay = ({ tl, isScrolled }) => {
             className="absolute left-[0vw] top-[0vh] h-[200vh] w-screen flex justify-end items-center overflow-hidden bg-primary"
           >
             <div className="h-full w-[25vw] flex flex-col justify-center items-center px-[5vh] py-[5vh] gap-[5vh]">
-              <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-[5vh] px-10 rounded-[50px] bg-secondary">
+              <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-[5vh] px-10 rounded-[35px] bg-secondary">
                 <p className="font-title text-5xl tracking-wide leading-tight">
                   Plavby snů
                 </p>
@@ -180,7 +242,7 @@ export const Overlay = ({ tl, isScrolled }) => {
                 </p>
               </div>
 
-              <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-10 px-10 rounded-[50px] bg-secondary">
+              <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-10 px-10 rounded-[35px] bg-secondary">
                 <p className="font-title text-5xl tracking-wide leading-tight">
                   Ponorkové dobrodružství
                 </p>
@@ -191,7 +253,7 @@ export const Overlay = ({ tl, isScrolled }) => {
                 </p>
               </div>
 
-              <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-10 px-10 rounded-[50px] bg-secondary">
+              <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-10 px-10 rounded-[35px] bg-secondary">
                 <p className="font-title text-5xl tracking-wide leading-tight">
                   Balónem nad ostrovem
                 </p>
@@ -201,7 +263,7 @@ export const Overlay = ({ tl, isScrolled }) => {
                   tyrkysové laguny a nekonečné obzory
                 </p>
               </div>
-              <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-10 px-10 rounded-[50px] bg-secondary">
+              <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-10 px-10 rounded-[35px] bg-secondary">
                 <p className="font-title text-5xl tracking-wide leading-normal">
                   Magické plavby
                 </p>
@@ -211,6 +273,33 @@ export const Overlay = ({ tl, isScrolled }) => {
                   na delfíny a užijte si kouzelné západy slunce na vodní hladině
                 </p>
               </div>
+            </div>
+          </div>
+          <div
+            ref={(el) => (textRefs.current[4] = el)}
+            className="z-[100] fixed inset-0 flex flex-col gap-0 justify-center items-center h-screen w-screen bg-primary"
+          >
+            <div
+              onClick={handleClick}
+              className="cursor-pointer overflow-hidden relative flex justify-center items-center "
+            >
+              <span
+                ref={(el) => (textRefs.current[5] = el)}
+                className="font-title text-8xl tracking-wide leading-snug"
+              >
+                Prohledej místo
+              </span>
+            </div>
+            <div
+              onClick={handleClick}
+              className="cursor-pointer overflow-hidden relative flex justify-center items-center "
+            >
+              <span
+                ref={(el) => (textRefs.current[6] = el)}
+                className="font-title text-8xl tracking-wide leading-snug"
+              >
+                které nezná hranic
+              </span>
             </div>
           </div>
         </div>

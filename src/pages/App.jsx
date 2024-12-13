@@ -135,7 +135,7 @@ function Home() {
         {loading && <Loader setLoading={setLoading} />}
       </AnimatePresence>
       <div className="h-full w-full flex flex-col">
-        {isScrolled && (
+        {/* {isScrolled && (
           <div
             ref={loader}
             style={{
@@ -154,13 +154,13 @@ function Home() {
               Zablbni si
             </button>
           </div>
-        )}
+        )} */}
 
         <div className="h-screen w-screen fixed">
           <Experience tl={tl} isReady={isReady} />
         </div>
 
-        <Overlay tl={tl} isScrolled={isScrolled} />
+        <Overlay tl={tl} isScrolled={isScrolled} setIsReady={setIsReady} />
       </div>
     </>
   );

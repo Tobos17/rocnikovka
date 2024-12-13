@@ -105,6 +105,9 @@ const Vehicle = ({ position, rotation }) => {
   const collider2 = useRef(null);
   const collider3 = useRef(null);
 
+  const [shadowOffset] = useState(new THREE.Vector3(0, -0.25, 0));
+  const shadow = useRef(null);
+
   let intercest = false;
 
   useFrame((state, delta) => {
@@ -224,6 +227,11 @@ const Vehicle = ({ position, rotation }) => {
     // camera position
     const cameraPosition = _cameraPosition;
 
+    shadow.current.position.copy(chassisRigidBody.translation());
+    shadow.current.position.add(shadowOffset);
+
+    shadow.current.position.y = 0.025;
+
     // camera behind chassis
     if (intercest) {
       let cP;
@@ -232,10 +240,10 @@ const Vehicle = ({ position, rotation }) => {
         if (chassisRigidBody.translation().x > 8.5) {
           cP = new THREE.Vector3(2.5, 2, -2.2);
         } else {
-          cP = new THREE.Vector3(1, 4, -5);
+          cP = new THREE.Vector3(1, 6, -5);
         }
       } else {
-        cP = new THREE.Vector3(4, 6, 5);
+        cP = new THREE.Vector3(4, 6, 4);
       }
 
       cameraPosition.copy(cP);
@@ -244,7 +252,12 @@ const Vehicle = ({ position, rotation }) => {
       cameraPosition.copy(cameraOffset);
     }
 
-    // console.log(chassisRigidBody.translation());
+    if (chassisRigidBody.translation().x < -7.5) {
+      shadow.current.visible = false;
+    } else {
+      shadow.current.visible = true;
+    }
+
     cameraPosition.add(chassisRigidBody.translation());
 
     smoothedCameraPosition.lerp(cameraPosition, t);
@@ -265,6 +278,7 @@ const Vehicle = ({ position, rotation }) => {
 
   const { scene } = useGLTF("/models/w.glb");
   const { scene: scene2 } = useGLTF("/models/ch.glb");
+  const bakedShadow = useTexture("/textures/simpleShadow.jpg");
 
   return (
     <>
@@ -338,6 +352,15 @@ const Vehicle = ({ position, rotation }) => {
           <meshBasicMaterial visible={false} color="red" />
         </mesh>
       </RigidBody>
+      <mesh ref={shadow} rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[5, 5]} />
+        <meshBasicMaterial
+          color={0x000000}
+          transparent
+          side={THREE.DoubleSide}
+          alphaMap={bakedShadow}
+        />
+      </mesh>
     </>
   );
 };
@@ -367,15 +390,23 @@ const ScenePhysics = () => {
 };
 
 const TextPlane = () => {
-  const alphaMap = useTexture("/textures/floorTexture.png");
+  const alphaText = useTexture("/textures/alphaText.webp");
+  const alphaText2 = useTexture("/textures/alphaText2.webp");
+  const alphaText3 = useTexture("/textures/alphaText3.webp");
 
   // alphaMap.flipY = false;
-  alphaMap.colorSpace = THREE.SRGBColorSpace;
-  alphaMap.anisotropy = 16;
+  alphaText.colorSpace = THREE.SRGBColorSpace;
+  alphaText.anisotropy = 16;
 
-  const position = [2.25, 3.1, 0];
-  const position2 = [14, 1, -11.5];
-  const position3 = [-2.5, 1.25, -4];
+  alphaText2.colorSpace = THREE.SRGBColorSpace;
+  alphaText2.anisotropy = 16;
+
+  alphaText3.colorSpace = THREE.SRGBColorSpace;
+  alphaText3.anisotropy = 16;
+
+  const position = [2, 3.1, 0];
+  const position2 = [14, 1.15, -11.5];
+  const position3 = [-2.5, 1.5, -4];
 
   return (
     <>
@@ -387,9 +418,9 @@ const TextPlane = () => {
         <planeGeometry args={[5, 4]} />
         <meshStandardMaterial
           // color={"white"}
-          emissive={new THREE.Color(0xffffff)}
-          emissiveIntensity={0.25}
-          alphaMap={alphaMap}
+          emissive={new THREE.Color(0xe3ebac)}
+          emissiveIntensity={0.0001}
+          alphaMap={alphaText2}
           transparent={true}
         />
       </mesh>
@@ -397,8 +428,8 @@ const TextPlane = () => {
         <planeGeometry args={[2, 2]} />
         <meshStandardMaterial
           emissive={new THREE.Color(0xffffff)}
-          emissiveIntensity={0.25}
-          alphaMap={alphaMap}
+          emissiveIntensity={-0.025}
+          alphaMap={alphaText}
           transparent={true}
           side={THREE.DoubleSide}
         />
@@ -409,7 +440,7 @@ const TextPlane = () => {
         <meshStandardMaterial
           emissive={new THREE.Color(0xffffff)}
           emissiveIntensity={0.25}
-          alphaMap={alphaMap}
+          alphaMap={alphaText3}
           transparent={true}
           side={THREE.DoubleSide}
         />
@@ -470,7 +501,7 @@ export const Experience = ({ isReady, tl }) => {
         <EffectComposer>
           <Bloom
             intensity={2}
-            luminanceThreshold={2}
+            luminanceThreshold={2.3}
             luminanceSmoothing={0.1}
             mipmapBlur={true}
           />

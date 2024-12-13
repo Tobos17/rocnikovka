@@ -67,8 +67,9 @@ export const Bridge = ({ tl }) => {
           return;
         } else if (child.name.includes("Text")) {
           child.material = new THREE.MeshStandardMaterial({
-            color: new THREE.Color(0x3d2e06),
-            roughness: 0.75,
+            color: new THREE.Color(0x483e2e),
+            roughness: 1,
+            metalness: 0.9,
           });
 
           return;
@@ -153,9 +154,9 @@ export const Floors = () => {
   const bakedFloors = useTexture("/textures/bakedFloors.jpg");
   const imageTexture = useTexture("/textures/bgg.jpg");
   const imageTexture1 = useTexture("/textures/bgggg.jpg");
-  const imageTexture2 = useTexture("/textures/bgg.jpg");
-  const imageTexture3 = useTexture("/textures/bgggg.jpg");
-  const imageTexture4 = useTexture("/textures/bgg.jpg");
+  const imageTexture2 = useTexture("/textures/bggg.webp");
+  const imageTexture3 = useTexture("/textures/bgggggggg.jpg");
+  const imageTexture4 = useTexture("/textures/bgggg.jpeg");
 
   bakedFloors.flipY = false;
   bakedFloors.colorSpace = THREE.SRGBColorSpace;
@@ -168,34 +169,36 @@ export const Floors = () => {
         if (child.name === "image") {
           child.material = new THREE.MeshStandardMaterial({
             emissive: new THREE.Color(0xf1cc6c),
-            emissiveIntensity: 0.05,
+            emissiveIntensity: -0.5,
             map: imageTexture,
           });
           return;
         } else if (child.name === "image001") {
-          child.material = new THREE.MeshBasicMaterial({
+          child.material = new THREE.MeshStandardMaterial({
+            emissive: new THREE.Color(0xf1cc6c),
+            emissiveIntensity: -0.5,
             map: imageTexture1,
           });
           return;
         } else if (child.name === "image002") {
           child.material = new THREE.MeshStandardMaterial({
             emissive: new THREE.Color(0xf1cc6c),
-            emissiveIntensity: 0.05,
-            map: imageTexture2,
+            emissiveIntensity: -0.5,
+            map: imageTexture3,
           });
           return;
         } else if (child.name === "image003") {
           child.material = new THREE.MeshStandardMaterial({
             emissive: new THREE.Color(0xf1cc6c),
-            emissiveIntensity: 0.05,
-            map: imageTexture3,
+            emissiveIntensity: -0.5,
+            map: imageTexture4,
           });
           return;
         } else if (child.name === "image004") {
           child.material = new THREE.MeshStandardMaterial({
             emissive: new THREE.Color(0xf1cc6c),
-            emissiveIntensity: 0.05,
-            map: imageTexture4,
+            emissiveIntensity: -1,
+            map: imageTexture2,
           });
           return;
         } else {
@@ -216,6 +219,12 @@ export const Scene = ({ tl }) => {
 
   useLayoutEffect(() => {
     if (tl.current && camera && scene) {
+      gsap.fromTo(scene, { opacity: 0 }, { opacity: 1, duration: 1 }, 0);
+      gsap.fromTo(
+        camera.position,
+        { x: 19, y: 4, z: -19 },
+        { x: 15, y: 1.5, z: -15, duration: 3, ease: "sm" }
+      );
       camera.position.set(15, 1.5, -15);
       camera.lookAt(0, 1.5, 0);
 

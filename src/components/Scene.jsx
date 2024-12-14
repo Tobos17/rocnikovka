@@ -213,13 +213,13 @@ export const Floors = () => {
   return <primitive object={scene} dispose={null} />;
 };
 
-export const Scene = ({ tl }) => {
+export const Scene = ({ tl, isReady }) => {
   const camera = useThree((state) => state.camera);
   const scene = useThree((state) => state.scene);
 
   useLayoutEffect(() => {
     if (tl.current && camera && scene) {
-      gsap.fromTo(scene, { opacity: 0 }, { opacity: 1, duration: 1 }, 0);
+      // gsap.fromTo(scene, { opacity: 0 }, { opacity: 1, duration: 1 }, 0);
       gsap.fromTo(
         camera.position,
         { x: 19, y: 4, z: -19 },
@@ -248,6 +248,31 @@ export const Scene = ({ tl }) => {
       // .to(camera.position, { x: 10, y: 1.5, z: -10, duration: 1 }, 4);
     }
   }, [tl.current]);
+
+  const cursor = useRef({ x: 0, y: 0 });
+
+  const updateCursorPosition = (event) => {
+    cursor.current = {
+      x: (event.clientX / window.innerWidth) * 2 - 1, // Normalized X (-1 to 1)
+      y: -(event.clientY / window.innerHeight) * 2 + 1, // Normalized Y (-1 to 1)
+    };
+  };
+
+  // Add mousemove listener
+  useEffect(() => {
+    window.addEventListener("mousemove", updateCursorPosition);
+    return () => window.removeEventListener("mousemove", updateCursorPosition);
+  }, []);
+
+  useFrame((state, delta) => {
+    if (isReady) return;
+    let t = 1.0 - Math.pow(0.01, delta * 0.2);
+
+    const mouseX = cursor.current.x * 0.15;
+    const mouseY = cursor.current.y * 0.15;
+
+    scene.position.lerp(new THREE.Vector3(-mouseX, mouseY, -mouseX), t);
+  });
 
   return (
     <group scale={1.2} position={[0, 0, 0]}>

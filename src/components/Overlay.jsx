@@ -159,24 +159,21 @@ export const Overlay = ({ tl, isScrolled, setIsReady }) => {
 
   return useMemo(
     () => (
-      <div id="triggerRef" className="scene-inner">
+      <div id="triggerRef" className="scene-inner pointer-events-none">
         <div className="scene-content">
           <div id="sectionRef" className="scene-content-inner">
             <div
               ref={text}
-              className="absolute left-[10vw] bottom-[12.5vh] max-w-[800px] flex flex-col gap-1 items-start justify-center"
+              className="absolute left-[7.5vw] bottom-[15vh] max-w-[800px] flex flex-col gap-1 items-start justify-center"
             >
-              <h1 className="font-title text-7xl 3xl:text-8xl tracking-wide">
-                Ostrov na který
-              </h1>
-              <h1 className="font-title text-7xl 3xl:text-8xl tracking-wide">
-                nikdy nezapomenete
+              <h1 className="font-title text-8xl 3xl:text-8xl tracking-wide">
+                ostrov plný zážitků
               </h1>
             </div>
 
             <div
               ref={text2}
-              className="absolute right-[15vw] bottom-[12.5vh] max-w-[500px] flex flex-col gap-1 items-end justify-center"
+              className="absolute right-[7.5vw] bottom-[15vh] max-w-[500px] flex flex-col gap-1 items-end justify-center"
             >
               <p className="font-title text-3xl tracking-wide">
                 Přijďte objevit místo kde
@@ -277,26 +274,26 @@ export const Overlay = ({ tl, isScrolled, setIsReady }) => {
           </div>
           <div
             ref={(el) => (textRefs.current[4] = el)}
-            className="z-[100] fixed inset-0 flex flex-col gap-0 justify-center items-center h-screen w-screen bg-primary"
+            className="z-[100] fixed inset-0 flex flex-col gap-4 justify-center items-center h-screen w-screen bg-primary"
           >
             <div
               onClick={handleClick}
-              className="cursor-pointer overflow-hidden relative flex justify-center items-center "
+              className="cursor-pointer pointer-events-auto overflow-hidden relative flex justify-center items-center"
             >
               <span
                 ref={(el) => (textRefs.current[5] = el)}
-                className="font-title text-8xl tracking-wide leading-snug"
+                className="font-title text-8xl leading-[0.9] tracking-wide"
               >
                 Prohledej místo
               </span>
             </div>
             <div
               onClick={handleClick}
-              className="cursor-pointer overflow-hidden relative flex justify-center items-center "
+              className="cursor-pointer pointer-events-auto overflow-hidden relative flex justify-center items-center"
             >
               <span
                 ref={(el) => (textRefs.current[6] = el)}
-                className="font-title text-8xl tracking-wide leading-snug"
+                className="font-title text-8xl leading-[0.9] tracking-wide"
               >
                 které nezná hranic
               </span>

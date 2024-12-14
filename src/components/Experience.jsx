@@ -18,7 +18,7 @@ import {
   useRapier,
 } from "@react-three/rapier";
 import { useControls } from "leva";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { useVehicleController } from "./use-vehicle-controller";
 import { Ocean } from "./Ocean";
@@ -29,6 +29,7 @@ import {
   EffectComposer,
   Vignette,
 } from "@react-three/postprocessing";
+import { Howl } from "howler";
 
 const spawn = {
   position: [13, 1.5, -12.75],
@@ -42,6 +43,7 @@ const controls = [
   { name: "right", keys: ["ArrowRight", "KeyD"] },
   { name: "brake", keys: ["Space"] },
   { name: "reset", keys: ["KeyR"] },
+  { name: "horn", keys: ["KeyE"] },
 ];
 
 const wheelInfo = {
@@ -93,6 +95,80 @@ const Vehicle = ({ position, rotation }) => {
   //     steerAngle: { value: Math.PI / 8, min: 0, max: Math.PI / 8 },
   //   }
   // );
+
+  const [engine, setEngine] = useState({
+    progress: 0,
+    progressEasingUp: 0.3,
+    progressEasingDown: 0.15,
+    speed: 0,
+    speedMultiplier: 2.5,
+    acceleration: 0,
+    accelerationMultiplier: 0.4,
+    rate: { min: 0.4, max: 1.4 },
+    volume: { min: 0.4, max: 1, master: 1 },
+  });
+
+  const soundRef = useRef();
+
+  // Initialize the Howl sound
+  useEffect(() => {
+    soundRef.current = new Howl({
+      src: ["./sounds/engine.mp3"],
+      loop: true,
+    });
+
+    return () => soundRef.current.stop(); // Cleanup on component unmount
+  }, []);
+
+  useEffect(() => {
+    if (!soundRef.current) return;
+
+    let isPressed = false;
+    const handleKeyDown = (event) => {
+      console.log("Key pressed:", event.code);
+      if (
+        event.code === "KeyW" ||
+        event.code === "ArrowUp" ||
+        event.code === "KeyS" ||
+        event.code === "ArrowDown"
+      ) {
+        if (!isPressed) {
+          soundRef.current.play();
+        }
+        isPressed = true;
+      }
+    };
+
+    const handleKeyUp = (event) => {
+      console.log("Key released:", event.code);
+      if (
+        event.code === "KeyW" ||
+        event.code === "ArrowUp" ||
+        event.code === "KeyS" ||
+        event.code === "ArrowDown"
+      ) {
+        isPressed = false;
+        soundRef.current.pause();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, []);
+
+  let hornSound = new Audio("/sounds/horn.mp3");
+  let engineSound = new Audio("/sounds/engine.mp3");
+
+  engineSound.loop = true;
+  engineSound.preload = "auto";
+  engineSound.volume = 0;
+
+  let isPlaying = false;
 
   const accelerateForce = 0.7;
   const brakeForce = 0.05;
@@ -160,6 +236,14 @@ const Vehicle = ({ position, rotation }) => {
         new rapier.Vector3(angvel.x, angvel.y, angvel.z),
         true
       );
+
+      // soundRef.current.play();
+    }
+
+    if (controls.horn) {
+      hornSound.volume = 0.075;
+      hornSound.currentTime = 0;
+      hornSound.play();
     }
 
     if (!controls.forward && !controls.back) {
@@ -367,11 +451,25 @@ const Vehicle = ({ position, rotation }) => {
 
 const ScenePhysics = () => {
   const { scene: colliderScene } = useGLTF("/models/colliders.glb");
-  console.log(colliderScene);
-  const geometry = colliderScene.children[0].geometry;
+  const { scene: colliderScene1 } = useGLTF("/models/collider.glb");
+  const { scene: colliderScene2 } = useGLTF("/models/collider2.glb");
+
+  const geometry = colliderScene2.children[0].geometry;
   const vertices = geometry.attributes.position.array;
   const indices = geometry.index.array;
-  // console.log(vertices, indices);
+
+  const geometry1 = colliderScene1.children[0].geometry;
+  const vertices1 = geometry1.attributes.position.array;
+  const indices1 = geometry1.index.array;
+
+  let mainSound = new Audio("/sounds/main.mp3");
+  let crashSound = new Audio("/sounds/crashhh.mp3");
+
+  useEffect(() => {
+    mainSound.volume = 0.05;
+    mainSound.currentTime = 0;
+    mainSound.play();
+  }, []);
 
   return (
     <>
@@ -385,12 +483,26 @@ const ScenePhysics = () => {
         {/* <primitive object={colliderScene} /> */}
         <TrimeshCollider args={[vertices, indices]} />
       </RigidBody>
+      <RigidBody
+        type="fixed"
+        colliders="trimesh"
+        scale={1.2}
+        position={[0, 0, 0]}
+        collisionGroups={(1 << 16) | 0x01}
+        onCollisionEnter={(e) => {
+          crashSound.volume = 1;
+          crashSound.currentTime = 0;
+          crashSound.play();
+        }}
+      >
+        <TrimeshCollider args={[vertices1, indices1]} />
+      </RigidBody>
     </>
   );
 };
 
 const TextPlane = () => {
-  const alphaText = useTexture("/textures/alphaText.webp");
+  const alphaText = useTexture("/textures/alphaText1.webp");
   const alphaText2 = useTexture("/textures/alphaText2.webp");
   const alphaText3 = useTexture("/textures/alphaText3.webp");
 
@@ -491,7 +603,7 @@ export const Experience = ({ isReady, tl }) => {
           </Physics>
         )}
 
-        <Scene tl={tl} />
+        <Scene tl={tl} isReady={isReady} />
 
         {isReady && <TextPlane />}
 

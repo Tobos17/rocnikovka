@@ -27,12 +27,26 @@ function Home() {
     // }, 3000);
 
     lenisRef.current = new Lenis({
-      duration: 1.5,
+      // duration: 1.5,
+      // easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      // smoothWheel: true,
+      // syncTouch: false,
+      // touchMultiplier: 0,
+      // syncTouch: true,
+      // wheelMultiplier: 0.5,
+
+      duration: 3,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      direction: "vertical",
+      gestureDirection: "vertical",
+      smooth: true,
       smoothWheel: true,
+      smoothTouch: false,
       syncTouch: false,
       touchMultiplier: 0,
-      wheelMultiplier: 0.5,
+      wheelMultiplier: 0.4,
+      infinite: false,
+      autoResize: true,
     });
     const lenis = lenisRef.current;
 
@@ -108,26 +122,26 @@ function Home() {
       });
   };
 
-  useLayoutEffect(() => {
-    if (isScrolled) {
-      gsap.fromTo(
-        loader.current,
-        { height: "0vh", width: "0vh" },
-        {
-          duration: 0.75,
-          ease: "power3.out",
-          height: "65vh",
-          width: "65vh",
-        }
-      );
+  // useLayoutEffect(() => {
+  //   if (isScrolled) {
+  //     gsap.fromTo(
+  //       loader.current,
+  //       { height: "0vh", width: "0vh" },
+  //       {
+  //         duration: 0.75,
+  //         ease: "power3.out",
+  //         height: "65vh",
+  //         width: "65vh",
+  //       }
+  //     );
 
-      gsap.fromTo(
-        clicker.current,
-        { opacity: 0 },
-        { duration: 1, ease: "power3.out", delay: 0.35, opacity: 1 }
-      );
-    }
-  }, [isScrolled]);
+  //     gsap.fromTo(
+  //       clicker.current,
+  //       { opacity: 0 },
+  //       { duration: 1, ease: "power3.out", delay: 0.35, opacity: 1 }
+  //     );
+  //   }
+  // }, [isScrolled]);
 
   return (
     <>
@@ -157,7 +171,7 @@ function Home() {
         )} */}
 
         <div className="h-screen w-screen fixed">
-          <Experience tl={tl} isReady={isReady} />
+          <Experience loading={loading} tl={tl} isReady={isReady} />
         </div>
 
         <Overlay tl={tl} isScrolled={isScrolled} setIsReady={setIsReady} />

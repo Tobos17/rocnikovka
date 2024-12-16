@@ -1,7 +1,7 @@
-import { useGLTF, useTexture } from "@react-three/drei";
+import { Line, OrbitControls, useGLTF, useTexture } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import gsap from "gsap";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 
 export const Props = () => {
@@ -213,39 +213,68 @@ export const Floors = () => {
   return <primitive object={scene} dispose={null} />;
 };
 
-export const Scene = ({ tl, isReady }) => {
+export const Scene = ({ loading, tl, isReady }) => {
   const camera = useThree((state) => state.camera);
   const scene = useThree((state) => state.scene);
 
+  const LINE_NB_POINTS = 1500;
+
+  const curvePoints = useMemo(
+    () => [
+      new THREE.Vector3(15, 1.5, -15),
+      new THREE.Vector3(9, 1.5, -10),
+      new THREE.Vector3(-0.5, 1.15, -7.25),
+      new THREE.Vector3(3, 8, -8),
+      new THREE.Vector3(-2, 10, -2),
+    ],
+    []
+  );
+
+  const curve = useMemo(() => {
+    return new THREE.CatmullRomCurve3(curvePoints, false, "catmullrom", 0.5);
+  }, []);
+
+  const linePoints = useMemo(() => {
+    return curve.getPoints(LINE_NB_POINTS);
+  }, [curve]);
+
+  useFrame((state, delta) => {
+    if (tl.current && camera && scene && !loading && !isReady) {
+      // console.log(loading);
+      const curPointIndex = Math.min(
+        Math.round(tl.current.progress() * linePoints.length),
+        linePoints.length - 1
+      );
+      // console.log(state.camera.position.y);
+
+      const curPoint = linePoints[curPointIndex];
+
+      const lookAtPoint =
+        linePoints[Math.min(linePoints.length, curPointIndex + 10)];
+
+      // state.camera.lookAt(lookAtPoint);
+      // console.log(state.camera.getWorldDirection());
+
+      state.camera.position.lerp(curPoint, delta * 24);
+    }
+  });
+
   useLayoutEffect(() => {
     if (tl.current && camera && scene) {
-      // gsap.fromTo(scene, { opacity: 0 }, { opacity: 1, duration: 1 }, 0);
       gsap.fromTo(
         camera.position,
         { x: 19, y: 4, z: -19 },
         { x: 15, y: 1.5, z: -15, duration: 3, ease: "sm" }
       );
-      camera.position.set(15, 1.5, -15);
+
       camera.lookAt(0, 1.5, 0);
-
       tl.current
-
-        .to(camera.position, { x: 10.3, y: 1.2, z: -10.3, duration: 1 }, 0)
-
-        .to(camera.rotation, { y: Math.PI / 2.5, duration: 1 }, 0)
-        .to(camera.position, { x: -0.5, y: 1, z: -7.25, duration: 1 }, 1)
-
-        .to(camera.rotation, { y: Math.PI / 60, duration: 1 }, 2)
-        .to(camera.position, { x: 2, y: 5, z: -9, duration: 1 }, 2)
-
-        // .to(camera.rotation, { y: Math.PI / 1.25, duration: 1 }, 3)
-        .to(camera.position, { x: 2, y: 9, z: -9, duration: 1 }, 3);
-
-      // .to(camera.rotation, { y: Math.PI / 1.25, duration: 1 }, 3)
-      // .to(camera.position, { x: 6, y: 5.5, z: 8, duration: 1 }, 3)
-
-      // .to(camera.rotation, { y: Math.PI / 4, duration: 1 }, 4)
-      // .to(camera.position, { x: 10, y: 1.5, z: -10, duration: 1 }, 4);
+        // .to(camera.position, { x: 10.3, y: 1.2, z: -10.3, duration: 1 }, 0)
+        .to(camera.rotation, { y: Math.PI / 2.5, duration: 1.75 }, 0)
+        // .to(camera.position, { x: -0.5, y: 1, z: -7.25, duration: 1 }, 1)
+        .to(camera.rotation, { y: Math.PI / 60, duration: 1.5 }, 2);
+      // .to(camera.position, { x: 2, y: 5, z: -9, duration: 1 }, 2)
+      // .to(camera.position, { x: 2, y: 9, z: -9, duration: 1 }, 3);
     }
   }, [tl.current]);
 
@@ -275,13 +304,18 @@ export const Scene = ({ tl, isReady }) => {
   });
 
   return (
-    <group scale={1.2} position={[0, 0, 0]}>
-      {/* <primitive object={env} scale={1.2} position={[0, 0, 0]} /> */}
-      <Props />
-      <SpecialProps />
-      <Bridge tl={tl} />
-      <Mountains />
-      <Floors />
-    </group>
+    <>
+      <group scale={1.2} position={[0, 0, 0]}>
+        {/* <OrbitControls /> */}
+        {/* <primitive object={env} scale={1.2} position={[0, 0, 0]} /> */}
+        <Props />
+        <SpecialProps />
+        <Bridge tl={tl} />
+        <Mountains />
+        <Floors />
+      </group>
+
+      {/* <Line points={linePoints} color={"white"} lineWidth={16} /> */}
+    </>
   );
 };

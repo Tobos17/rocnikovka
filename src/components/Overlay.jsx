@@ -31,6 +31,7 @@ export const Overlay = ({ tl, isScrolled, setIsReady }) => {
           // Animate accordingly
           gsap.to(textRefs.current[0], {
             y: isReversing ? "-100%" : "0%",
+            opacity: isReversing ? 0 : 1,
             duration: 0.8,
 
             ease: "sm",
@@ -38,6 +39,8 @@ export const Overlay = ({ tl, isScrolled, setIsReady }) => {
 
           gsap.to(textRefs.current[1], {
             y: isReversing ? "-100%" : "0%",
+            opacity: isReversing ? 0 : 1,
+
             duration: 0.8,
             delay: isReversing ? 0 : 0.15,
             ease: "sm",
@@ -48,20 +51,26 @@ export const Overlay = ({ tl, isScrolled, setIsReady }) => {
         },
 
         [],
-        1.025
+        0.95
       );
 
       tl.current.fromTo(
         textRefs.current[2],
         { opacity: 0 },
         { opacity: 1, ease: "sm", duration: 0.075 },
-        1.55
+        1.625
       );
 
+      const x =
+        window.innerWidth > 1024
+          ? "-70vw"
+          : window.innerWidth > 640
+          ? "-50vw"
+          : "0vw";
       tl.current.fromTo(
         textRefs.current[3],
         { x: "-100vw" },
-        { x: "-75vw", ease: "linear", duration: 0.25 },
+        { x: x, ease: "linear", duration: 0.25 },
         2
       );
       tl.current.fromTo(
@@ -73,7 +82,7 @@ export const Overlay = ({ tl, isScrolled, setIsReady }) => {
       tl.current.to(
         textRefs.current[3],
 
-        { x: "-100vw", duration: 1 },
+        { x: "-100vw", duration: 0.95 },
         3
       );
       tl.current.fromTo(
@@ -166,31 +175,32 @@ export const Overlay = ({ tl, isScrolled, setIsReady }) => {
               ref={text}
               className="absolute left-[7.5vw] bottom-[15vh] max-w-[800px] flex flex-col gap-1 items-start justify-center"
             >
-              <h1 className="font-title text-8xl 3xl:text-8xl tracking-wide">
+              <h1 className="font-title text-7xl xl:text-7xl 2xl:text-8xl tracking-wide">
                 ostrov plný zážitků
               </h1>
             </div>
 
             <div
               ref={text2}
-              className="absolute right-[7.5vw] bottom-[15vh] max-w-[500px] flex flex-col gap-1 items-end justify-center"
+              className="absolute right-[7.5vw] bottom-[7.5vh] lg:bottom-[15vh] max-w-[500px] flex flex-col gap-1 items-end justify-center"
             >
-              <p className="font-title text-3xl tracking-wide">
+              <p className="font-title text-xl lg:text-xl xl:text-xl 2xl:text-3xl tracking-wide">
                 Přijďte objevit místo kde
               </p>
-              <p className="font-title text-3xl tracking-wide">
+              <p className="font-title text-xl lg:text-xl xl:text-xl 2xl:text-3xl tracking-wide">
                 dobrodružství čeká na každém kroku
               </p>
             </div>
 
             <div
               style={{ transform: "translateZ(-1250px)" }}
-              className="absolute left-[62.5vw] top-[35vh] max-w-[320px] flex flex-col justify-center items-center font-title text-3xl tracking-wider leading-normal"
+              className="absolute left-[55vw] md:left-[62.5vw] top-[35vh] max-w-[320px] flex flex-col justify-center items-center font-title text-3xl tracking-wider "
             >
               <div className="overflow-hidden flex-1 relative flex justify-center items-center ">
                 <span
                   ref={(el) => (textRefs.current[0] = el)}
-                  className="font-title text-5xl tracking-wide leading-snug"
+                  style={{ opacity: 0 }}
+                  className="font-title text-4xl md:text-5xl tracking-wide !leading-[1.1]"
                 >
                   Jedinečný
                 </span>
@@ -199,7 +209,8 @@ export const Overlay = ({ tl, isScrolled, setIsReady }) => {
               <div className="overflow-hidden flex-1 relative flex justify-center items-center ">
                 <span
                   ref={(el) => (textRefs.current[1] = el)}
-                  className="font-title text-5xl tracking-wide leading-snug"
+                  style={{ opacity: 0 }}
+                  className="font-title text-4xl md:text-5xl tracking-wide !leading-[1.1]"
                 >
                   zážitek
                 </span>
@@ -208,13 +219,13 @@ export const Overlay = ({ tl, isScrolled, setIsReady }) => {
 
             <div
               ref={(el) => (textRefs.current[2] = el)}
-              style={{ transform: "translateZ(-1850px)" }}
-              className="absolute right-[30vw] top-[35vh] max-w-[320px] font-title text-3xl tracking-wider leading-normal"
+              style={{ transform: "translateZ(-2000px)" }}
+              className="absolute right-[45vw] md:right-[30vw] top-[35vh] max-w-[320px] font-title text-3xl tracking-wider leading-normal"
             >
-              <p className="font-title text-5xl tracking-wide leading-snug">
+              <p className="font-title text-4xl md:text-5xl tracking-wide leading-snug">
                 Nekonečná
               </p>
-              <p className="font-title text-5xl tracking-wide leading-snug">
+              <p className="font-title text-4xl md:text-5xl tracking-wide leading-snug">
                 zábava
               </p>
             </div>
@@ -226,7 +237,7 @@ export const Overlay = ({ tl, isScrolled, setIsReady }) => {
             ref={(el) => (textRefs.current[3] = el)}
             className="absolute left-[0vw] top-[0vh] h-[200vh] w-screen flex justify-end items-center overflow-hidden bg-primary"
           >
-            <div className="h-full w-[25vw] flex flex-col justify-center items-center px-[5vh] py-[5vh] gap-[5vh]">
+            <div className="h-full w-full sm:w-[50%] lg:w-[30%] flex flex-col justify-center items-center px-[5vh] py-[5vh] gap-[5vh]">
               <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-[5vh] px-10 rounded-[35px] bg-secondary">
                 <p className="font-title text-5xl tracking-wide leading-tight">
                   Plavby snů
@@ -254,14 +265,14 @@ export const Overlay = ({ tl, isScrolled, setIsReady }) => {
                 <p className="font-title text-5xl tracking-wide leading-tight">
                   Balónem nad ostrovem
                 </p>
-                <p className="font-title text-xl tracking-wide leading-tight">
+                <p className="font-title text-xl tracking-wide leading-normal">
                   Zažijte nezapomenutelný pohled na ostrov z ptačí perspektivy!
                   Leťte horkovzdušným balónem a obdivujte zelené džungle,
                   tyrkysové laguny a nekonečné obzory
                 </p>
               </div>
               <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-10 px-10 rounded-[35px] bg-secondary">
-                <p className="font-title text-5xl tracking-wide leading-normal">
+                <p className="font-title text-5xl tracking-wide leading-tight">
                   Magické plavby
                 </p>
                 <p className="font-title text-xl tracking-wide leading-normal">
@@ -282,9 +293,9 @@ export const Overlay = ({ tl, isScrolled, setIsReady }) => {
             >
               <span
                 ref={(el) => (textRefs.current[5] = el)}
-                className="font-title text-8xl leading-[0.9] tracking-wide"
+                className="font-title text-4xl lg:text-6xl 2xl:text-8xl leading-[0.9] tracking-wide"
               >
-                Prohledej místo
+                Klikni a hraj
               </span>
             </div>
             <div
@@ -293,9 +304,9 @@ export const Overlay = ({ tl, isScrolled, setIsReady }) => {
             >
               <span
                 ref={(el) => (textRefs.current[6] = el)}
-                className="font-title text-8xl leading-[0.9] tracking-wide"
+                className="font-title text-4xl lg:text-6xl 2xl:text-8xl leading-[0.9] tracking-wide"
               >
-                které nezná hranic
+                hru
               </span>
             </div>
           </div>

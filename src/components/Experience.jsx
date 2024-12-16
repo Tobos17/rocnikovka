@@ -1,6 +1,7 @@
 import {
   Cloud,
   Environment,
+  Html,
   KeyboardControls,
   OrbitControls,
   PivotControls,
@@ -71,7 +72,7 @@ const _airControlAngVel = new THREE.Vector3();
 const _cameraPosition = new THREE.Vector3();
 const _cameraTarget = new THREE.Vector3();
 
-const Vehicle = ({ position, rotation }) => {
+const Vehicle = ({ position, rotation, setResults }) => {
   const { world, rapier } = useRapier();
   const threeControls = useThree((s) => s.controls);
   const camera = useThree((s) => s.camera);
@@ -96,17 +97,17 @@ const Vehicle = ({ position, rotation }) => {
   //   }
   // );
 
-  const [engine, setEngine] = useState({
-    progress: 0,
-    progressEasingUp: 0.3,
-    progressEasingDown: 0.15,
-    speed: 0,
-    speedMultiplier: 2.5,
-    acceleration: 0,
-    accelerationMultiplier: 0.4,
-    rate: { min: 0.4, max: 1.4 },
-    volume: { min: 0.4, max: 1, master: 1 },
-  });
+  // const [engine, setEngine] = useState({
+  //   progress: 0,
+  //   progressEasingUp: 0.3,
+  //   progressEasingDown: 0.15,
+  //   speed: 0,
+  //   speedMultiplier: 2.5,
+  //   acceleration: 0,
+  //   accelerationMultiplier: 0.4,
+  //   rate: { min: 0.4, max: 1.4 },
+  //   volume: { min: 0.4, max: 1, master: 1 },
+  // });
 
   const soundRef = useRef();
 
@@ -116,50 +117,54 @@ const Vehicle = ({ position, rotation }) => {
       src: ["./sounds/engine.mp3"],
       loop: true,
     });
+    // console.log(soundRef.current);
+
+    soundRef.current.play();
 
     return () => soundRef.current.stop(); // Cleanup on component unmount
   }, []);
 
-  useEffect(() => {
-    if (!soundRef.current) return;
+  // useEffect(() => {
+  //   if (!soundRef.current) return;
 
-    let isPressed = false;
-    const handleKeyDown = (event) => {
-      console.log("Key pressed:", event.code);
-      if (
-        event.code === "KeyW" ||
-        event.code === "ArrowUp" ||
-        event.code === "KeyS" ||
-        event.code === "ArrowDown"
-      ) {
-        if (!isPressed) {
-          soundRef.current.play();
-        }
-        isPressed = true;
-      }
-    };
+  //   let isPressed = false;
+  //   const handleKeyDown = (event) => {
+  //     console.log("Key pressed:", event.code);
+  //     if (
+  //       event.code === "KeyW" ||
+  //       event.code === "ArrowUp" ||
+  //       event.code === "KeyS" ||
+  //       event.code === "ArrowDown"
+  //     ) {
+  //       if (!isPressed) {
+  //         soundRef.current.play();
+  //         // console.log(soundRef.current.volume);
+  //       }
+  //       isPressed = true;
+  //     }
+  //   };
 
-    const handleKeyUp = (event) => {
-      console.log("Key released:", event.code);
-      if (
-        event.code === "KeyW" ||
-        event.code === "ArrowUp" ||
-        event.code === "KeyS" ||
-        event.code === "ArrowDown"
-      ) {
-        isPressed = false;
-        soundRef.current.pause();
-      }
-    };
+  //   const handleKeyUp = (event) => {
+  //     console.log("Key released:", event.code);
+  //     if (
+  //       event.code === "KeyW" ||
+  //       event.code === "ArrowUp" ||
+  //       event.code === "KeyS" ||
+  //       event.code === "ArrowDown"
+  //     ) {
+  //       isPressed = false;
+  //       soundRef.current.pause();
+  //     }
+  //   };
 
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
+  //   window.addEventListener("keydown", handleKeyDown);
+  //   window.addEventListener("keyup", handleKeyUp);
 
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
-    };
-  }, []);
+  //   return () => {
+  //     window.removeEventListener("keydown", handleKeyDown);
+  //     window.removeEventListener("keyup", handleKeyUp);
+  //   };
+  // }, []);
 
   let hornSound = new Audio("/sounds/horn.mp3");
   let engineSound = new Audio("/sounds/engine.mp3");
@@ -187,7 +192,13 @@ const Vehicle = ({ position, rotation }) => {
   let intercest = false;
 
   useFrame((state, delta) => {
-    if (!chasisMeshRef.current || !vehicleController.current || !!threeControls)
+    if (
+      !chasisMeshRef.current ||
+      !vehicleController.current ||
+      !!threeControls ||
+      !camera ||
+      !soundRef.current
+    )
       return;
 
     let t = 1.0 - Math.pow(0.01, delta);
@@ -236,9 +247,14 @@ const Vehicle = ({ position, rotation }) => {
         new rapier.Vector3(angvel.x, angvel.y, angvel.z),
         true
       );
-
-      // soundRef.current.play();
     }
+
+    const vel =
+      Math.abs(chassisRigidBody.linvel().x) +
+      Math.abs(chassisRigidBody.linvel().z);
+
+    // console.log(vel * 0.15);
+    soundRef.current.volume(vel * 0.1);
 
     if (controls.horn) {
       hornSound.volume = 0.075;
@@ -267,6 +283,23 @@ const Vehicle = ({ position, rotation }) => {
     }
 
     if (controls.reset || chassisRigidBody.translation().y < -1) {
+      // console.log(
+      //   chassisRigidBody.translation().x,
+      //   chassisRigidBody.translation().z
+      // )
+
+      if (chassisRigidBody.translation().x < -5) {
+        const x = -7.2;
+        const z = -2.3;
+
+        const val = Math.sqrt(
+          Math.pow(chassisRigidBody.translation().x - x, 2) +
+            Math.pow(chassisRigidBody.translation().z - z, 2)
+        );
+
+        setResults((prev) => [...prev, val]);
+      }
+
       chassisRigidBody.setTranslation(
         new rapier.Vector3(...spawn.position),
         true
@@ -466,7 +499,7 @@ const ScenePhysics = () => {
   let crashSound = new Audio("/sounds/crashhh.mp3");
 
   useEffect(() => {
-    mainSound.volume = 0.05;
+    mainSound.volume = 0.01;
     mainSound.currentTime = 0;
     mainSound.play();
   }, []);
@@ -561,7 +594,7 @@ const TextPlane = () => {
   );
 };
 
-export const Experience = ({ isReady, tl }) => {
+export const Experience = ({ loading, isReady, tl }) => {
   // const { debug, orbitControls } = useControls(
   //   "rapier-dynamic-raycast-vehicle-controller/physics",
   //   {
@@ -569,6 +602,23 @@ export const Experience = ({ isReady, tl }) => {
   //     orbitControls: false,
   //   }
   // );
+
+  const [results, setResults] = useState([]);
+
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 1024) setIsSmallScreen(false);
+      else setIsSmallScreen(true);
+    };
+    window.addEventListener("resize", handleResize);
+
+    handleResize();
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   return (
     <>
@@ -580,7 +630,10 @@ export const Experience = ({ isReady, tl }) => {
           powerPreference: "high-performance",
         }}
         dpr={[1, 1.5]}
-        camera={{ near: 0.1, fov: 55, position: [0, 10, 0] }}
+        camera={{
+          near: 0.1,
+          fov: isSmallScreen ? 75 : 55,
+        }}
       >
         <Environment preset="sunset" />
         <Sky
@@ -596,16 +649,24 @@ export const Experience = ({ isReady, tl }) => {
         {isReady && (
           <Physics debug={false}>
             <KeyboardControls map={controls}>
-              <Vehicle position={spawn.position} rotation={spawn.rotation} />
+              <Vehicle
+                position={spawn.position}
+                rotation={spawn.rotation}
+                setResults={setResults}
+              />
             </KeyboardControls>
 
             <ScenePhysics />
           </Physics>
         )}
 
-        <Scene tl={tl} isReady={isReady} />
+        <Scene loading={loading} tl={tl} isReady={isReady} />
 
-        {isReady && <TextPlane />}
+        {isReady && (
+          <>
+            <TextPlane />
+          </>
+        )}
 
         <Ocean />
 
@@ -653,6 +714,22 @@ export const Experience = ({ isReady, tl }) => {
 
         {/* {orbitControls && <OrbitControls makeDefault />} */}
       </Canvas>
+
+      {isReady && (
+        <div className="fixed right-[5vw] top-[5vh] z-[100] h-[25vh] w-[20vw] flex flex-col gap-5 items-center justify-center overflow-hidden select-none">
+          <h1 className="text-4xl md:text-5xl font-title text-white">
+            Top 3 skoky
+          </h1>
+          <h1 className="text-4xl md:text-5xl font-title text-white">
+            {results
+              .sort((a, b) => b - a) // Sort in ascending order
+              .slice(0, 3) // Take the 3 smallest values
+              .map((res, index) => (
+                <p key={index}>{res.toFixed(2)}</p> // Render each result
+              ))}
+          </h1>
+        </div>
+      )}
     </>
   );
 };

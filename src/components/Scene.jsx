@@ -259,7 +259,7 @@ export const Scene = ({ loading, tl, isReady }) => {
   });
 
   useLayoutEffect(() => {
-    if (tl.current && camera && scene) {
+    if (tl.current && camera && scene && loading) {
       gsap.fromTo(
         camera.position,
         { x: 19, y: 4, z: -19 },
@@ -293,13 +293,14 @@ export const Scene = ({ loading, tl, isReady }) => {
   }, []);
 
   useFrame((state, delta) => {
-    if (isReady) return;
-    let t = 1.0 - Math.pow(0.01, delta * 0.2);
+    if (!isReady && !loading) {
+      let t = 1.0 - Math.pow(0.01, delta * 0.2);
 
-    const mouseX = cursor.current.x * 0.15;
-    const mouseY = cursor.current.y * 0.15;
+      const mouseX = cursor.current.x * 0.15;
+      const mouseY = cursor.current.y * 0.15;
 
-    scene.position.lerp(new THREE.Vector3(-mouseX, mouseY, -mouseX), t);
+      scene.position.lerp(new THREE.Vector3(-mouseX, mouseY, -mouseX), t);
+    }
   });
 
   return (

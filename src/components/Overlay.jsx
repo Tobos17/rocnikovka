@@ -82,7 +82,7 @@ export const Overlay = ({ tl, isScrolled, setIsReady }) => {
       tl.current.to(
         textRefs.current[3],
 
-        { x: "-100vw", duration: 0.95 },
+        { x: "-100vw", duration: 0.75 },
         3
       );
       tl.current.fromTo(
@@ -175,14 +175,14 @@ export const Overlay = ({ tl, isScrolled, setIsReady }) => {
               ref={text}
               className="absolute left-[7.5vw] bottom-[15vh] max-w-[800px] flex flex-col gap-1 items-start justify-center"
             >
-              <h1 className="font-title text-7xl xl:text-7xl 2xl:text-8xl tracking-wide">
+              <h1 className="font-title text-6xl sm:text-7xl xl:text-7xl 2xl:text-8xl tracking-wide">
                 ostrov plný zážitků
               </h1>
             </div>
 
             <div
               ref={text2}
-              className="absolute right-[7.5vw] bottom-[7.5vh] lg:bottom-[15vh] max-w-[500px] flex flex-col gap-1 items-end justify-center"
+              className="absolute right-[7.5vw] bottom-[5vh] sm:bottom-[7.5vh] lg:bottom-[15vh] max-w-[500px] flex flex-col gap-1 items-end justify-center"
             >
               <p className="font-title text-xl lg:text-xl xl:text-xl 2xl:text-3xl tracking-wide">
                 Přijďte objevit místo kde
@@ -235,14 +235,14 @@ export const Overlay = ({ tl, isScrolled, setIsReady }) => {
 
           <div
             ref={(el) => (textRefs.current[3] = el)}
-            className="absolute left-[0vw] top-[0vh] h-[200vh] w-screen flex justify-end items-center overflow-hidden bg-primary"
+            className="absolute z-[50] left-[0vw] top-[0vh] h-[200vh] w-screen flex justify-end items-center overflow-hidden bg-primary"
           >
             <div className="h-full w-full sm:w-[50%] lg:w-[30%] flex flex-col justify-center items-center px-[5vh] py-[5vh] gap-[5vh]">
               <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-[5vh] px-10 rounded-[35px] bg-secondary">
-                <p className="font-title text-5xl tracking-wide leading-tight">
+                <p className="font-title text-4xl sm:text-5xl tracking-wide leading-tight">
                   Plavby snů
                 </p>
-                <p className="font-title text-xl tracking-wide leading-normal">
+                <p className="font-title text-base sm:text-xl tracking-wide leading-normal">
                   Vydejte se na dechberoucí plavbu našimi loděmi s proskleným
                   dnem, které vám umožní obdivovat podmořský život z pohodlí
                   paluby. Připravte se na výpravy za delfíny, korálovými útesy a
@@ -251,10 +251,10 @@ export const Overlay = ({ tl, isScrolled, setIsReady }) => {
               </div>
 
               <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-10 px-10 rounded-[35px] bg-secondary">
-                <p className="font-title text-5xl tracking-wide leading-tight">
+                <p className="font-title text-4xl sm:text-5xl tracking-wide leading-tight">
                   Ponorkové dobrodružství
                 </p>
-                <p className="font-title text-xl tracking-wide leading-normal ">
+                <p className="font-title text-base sm:text-xl tracking-wide leading-normal ">
                   S naší futuristickou ponorkou se ponoříte do hlubin oceánu a
                   zažijete svět, který je jinak vyhrazen jen potápěčům. Sledujte
                   majestátní manty, pestrobarevné ryby a tajemné vraky lodí
@@ -262,20 +262,20 @@ export const Overlay = ({ tl, isScrolled, setIsReady }) => {
               </div>
 
               <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-10 px-10 rounded-[35px] bg-secondary">
-                <p className="font-title text-5xl tracking-wide leading-tight">
+                <p className="font-title text-4xl sm:text-5xl tracking-wide leading-tight">
                   Balónem nad ostrovem
                 </p>
-                <p className="font-title text-xl tracking-wide leading-normal">
+                <p className="font-title text-base sm:text-xl tracking-wide leading-normal">
                   Zažijte nezapomenutelný pohled na ostrov z ptačí perspektivy!
                   Leťte horkovzdušným balónem a obdivujte zelené džungle,
                   tyrkysové laguny a nekonečné obzory
                 </p>
               </div>
               <div className="flex-1 w-full flex flex-col items-center justify-center text-center gap-10 px-10 rounded-[35px] bg-secondary">
-                <p className="font-title text-5xl tracking-wide leading-tight">
+                <p className="font-title text-4xl sm:text-5xl tracking-wide leading-tight">
                   Magické plavby
                 </p>
-                <p className="font-title text-xl tracking-wide leading-normal">
+                <p className="font-title text-base sm:text-xl tracking-wide leading-normal">
                   Nasedněte na naši loď s proskleným dnem a odhalte tajemství
                   pod hladinou! Pozorujte korálové útesy, hrajte si s pohledem
                   na delfíny a užijte si kouzelné západy slunce na vodní hladině
@@ -285,7 +285,7 @@ export const Overlay = ({ tl, isScrolled, setIsReady }) => {
           </div>
           <div
             ref={(el) => (textRefs.current[4] = el)}
-            className="z-[100] fixed inset-0 flex flex-col gap-4 justify-center items-center h-screen w-screen bg-primary"
+            className="z-[20] fixed inset-0 flex flex-col gap-4 justify-center items-center h-screen w-screen bg-primary"
           >
             <div
               onClick={handleClick}

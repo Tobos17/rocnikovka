@@ -9,6 +9,7 @@ import {
   useGLTF,
   useKeyboardControls,
   useTexture,
+  Text,
 } from "@react-three/drei";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
@@ -31,6 +32,7 @@ import {
   Vignette,
 } from "@react-three/postprocessing";
 import { Howl } from "howler";
+import gsap from "gsap";
 
 const spawn = {
   position: [13, 1.5, -12.75],
@@ -72,7 +74,7 @@ const _airControlAngVel = new THREE.Vector3();
 const _cameraPosition = new THREE.Vector3();
 const _cameraTarget = new THREE.Vector3();
 
-const Vehicle = ({ position, rotation, setResults }) => {
+const Vehicle = ({ position, rotation, setResults, hasKeyboard }) => {
   const { world, rapier } = useRapier();
   const threeControls = useThree((s) => s.controls);
   const camera = useThree((s) => s.camera);
@@ -186,10 +188,145 @@ const Vehicle = ({ position, rotation, setResults }) => {
   const collider2 = useRef(null);
   const collider3 = useRef(null);
 
-  const [shadowOffset] = useState(new THREE.Vector3(0, -0.25, 0));
+  const [shadowOffset] = useState(new THREE.Vector3(-0.15, -0.25, 0.15));
   const shadow = useRef(null);
 
   let intercest = false;
+
+  //
+  //
+  //
+  let joystickX = 0;
+  let joystickY = 0;
+
+  let outerCircle, innerCircle;
+
+  let outerRadius = 0;
+  let centerX = 0;
+  let centerY = 0;
+
+  let dragging = false;
+
+  function setupJoystick() {
+    if (!hasKeyboard) {
+      outerCircle = document.getElementById("outer-circle");
+      innerCircle = document.getElementById("inner-circle");
+
+      outerRadius = outerCircle.clientWidth / 2;
+      centerX = outerCircle.clientWidth / 2;
+      centerY = outerCircle.clientHeight / 2;
+
+      outerCircle.addEventListener("touchstart", (e) => startDrag(e));
+      outerCircle.addEventListener("mousedown", (e) => startDrag(e));
+
+      window.addEventListener("touchend", () => endDrag());
+      window.addEventListener("mouseup", () => endDrag());
+
+      window.addEventListener("touchmove", (e) => handleDrag(e));
+      window.addEventListener("mousemove", (e) => handleDrag(e));
+    }
+  }
+
+  setupJoystick();
+
+  function startDrag(event) {
+    event.preventDefault();
+    dragging = true;
+  }
+
+  function endDrag(event) {
+    dragging = false;
+
+    gsap.to(innerCircle, {
+      x: 0,
+      y: 0,
+      duration: 0.2,
+      ease: "power2.out",
+    });
+    joystickX = 0;
+    joystickY = 0;
+  }
+
+  function handleDrag(event) {
+    if (!dragging) return;
+
+    // Determine whether the event is touch or mouse
+    let clientX, clientY;
+
+    if (event.type.startsWith("touch")) {
+      const touch = event.touches[0];
+      clientX = touch.clientX;
+      clientY = touch.clientY;
+    } else {
+      clientX = event.clientX;
+      clientY = event.clientY;
+    }
+
+    // Get the outer circle's bounding rectangle and calculate relative mouse position
+    const rect = outerCircle.getBoundingClientRect();
+    let mouseX = clientX - rect.left - centerX;
+    let mouseY = clientY - rect.top - centerY;
+
+    // Calculate distance from the center and constrain movement to the outer radius
+    const distance = Math.sqrt(mouseX * mouseX + mouseY * mouseY);
+
+    if (distance > outerRadius) {
+      const angle = Math.atan2(mouseY, mouseX);
+      mouseX = outerRadius * Math.cos(angle);
+      mouseY = outerRadius * Math.sin(angle);
+    }
+
+    // Move the inner circle using GSAP
+    gsap.to(innerCircle, {
+      x: mouseX,
+      y: mouseY,
+      duration: 0.05,
+      ease: "power1.out",
+    });
+
+    // Calculate joystick values (normalized coordinates)
+    joystickX = mouseX / outerRadius;
+    joystickY = -mouseY / outerRadius;
+  }
+
+  function handleJoystickMovement(x, y, controller, t) {
+    let engineForce;
+    let steerDirection;
+
+    if (x > 0.25) {
+      steerDirection = -1;
+    }
+    if (x < -0.25) {
+      steerDirection = 1;
+    }
+    if (y > 0.25) {
+      engineForce = 1;
+    }
+    if (y < -0.25) {
+      engineForce = -1;
+    }
+    if (y > -0.25 && y < 0.25) {
+      engineForce = 0;
+    }
+    if (x > -0.25 && x < 0.25) {
+      steerDirection = 0;
+    }
+
+    const currentSteering = controller.wheelSteering(0) || 0;
+    const steering = THREE.MathUtils.lerp(
+      currentSteering,
+      steerAngle * steerDirection,
+      0.5
+    );
+
+    // console.log(steering, engineForce);
+
+    controller.setWheelEngineForce(0, engineForce * accelerateForce);
+    controller.setWheelEngineForce(1, engineForce * accelerateForce);
+
+    controller.setWheelSteering(0, steering);
+    controller.setWheelSteering(1, steering);
+  }
 
   useFrame((state, delta) => {
     if (
@@ -214,8 +351,12 @@ const Vehicle = ({ position, rotation, setResults }) => {
     const engineForce =
       Number(controls.forward) * accelerateForce - Number(controls.back);
 
-    controller.setWheelEngineForce(0, engineForce);
-    controller.setWheelEngineForce(1, engineForce);
+    if (hasKeyboard === false) {
+      handleJoystickMovement(joystickX, joystickY, controller, t);
+    } else {
+      controller.setWheelEngineForce(0, engineForce);
+      controller.setWheelEngineForce(1, engineForce);
+    }
 
     const wheelBrake = Number(controls.brake) * brakeForce;
     controller.setWheelBrake(0, wheelBrake);
@@ -232,11 +373,14 @@ const Vehicle = ({ position, rotation, setResults }) => {
       0.5
     );
 
-    controller.setWheelSteering(0, steering);
-    controller.setWheelSteering(1, steering);
+    if (hasKeyboard) {
+      controller.setWheelSteering(0, steering);
+      controller.setWheelSteering(1, steering);
+    }
 
     const forwardAngVel = Number(controls.forward) - Number(controls.back);
     const sideAngVel = Number(controls.left) - Number(controls.right);
+    // console.log(forwardAngVel, sideAngVel);
 
     const angvel = _airControlAngVel.set(0, sideAngVel * t, forwardAngVel * t);
     angvel.applyQuaternion(chassisRigidBody.rotation());
@@ -470,12 +614,13 @@ const Vehicle = ({ position, rotation, setResults }) => {
         </mesh>
       </RigidBody>
       <mesh ref={shadow} rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[5, 5]} />
+        <planeGeometry args={[3, 4]} />
         <meshBasicMaterial
           color={0x000000}
           transparent
           side={THREE.DoubleSide}
           alphaMap={bakedShadow}
+          // visible={false}s
         />
       </mesh>
     </>
@@ -551,7 +696,7 @@ const TextPlane = () => {
 
   const position = [2, 3.1, 0];
   const position2 = [14, 1.15, -11.5];
-  const position3 = [-2.5, 1.5, -4];
+  const position3 = [-2, 1.75, -4.75];
 
   return (
     <>
@@ -594,7 +739,83 @@ const TextPlane = () => {
   );
 };
 
-export const Experience = ({ loading, isReady, tl }) => {
+const Table = ({ results }) => {
+  const { scene: table } = useGLTF("/models/table.glb");
+
+  const targetChild = table.children[2];
+
+  const position = targetChild.position;
+  const rotation = targetChild.rotation;
+  return (
+    <>
+      <group scale={1.2}>
+        <primitive object={table} dispose={null} />
+        {/* <Html
+          position={[position.x, position.y + 0.2, position.z]}
+          rotation={[rotation.x, rotation.y - Math.PI / 2, rotation.z]}
+          transform
+        >
+          <div className="z-[100] -translate-y-1/2 h-[3.25rem] w-12 flex flex-col gap-0 items-center justify-startw overflow-hidden select-none">
+            <h1 className="text-xs font-title text-white text-nowrap">
+              Top 2 skoky
+            </h1>
+            {results
+              .sort((a, b) => b - a)
+              .slice(0, 2)
+              .map((res, index) => (
+                <p key={index} className="text-xs font-title text-white">
+                  {res.toFixed(2)} m
+                </p>
+              ))}
+          </div>
+        </Html> */}
+        <group
+          position={[position.x, position.y + 1.25, position.z - 0.05]}
+          rotation={[rotation.x, rotation.y - Math.PI / 2, rotation.z]}
+        >
+          <Text
+            fontSize={0.275}
+            position={[0, 0.1, 0]}
+            font="/BebasNeue-Regular.ttf"
+            material={
+              new THREE.MeshStandardMaterial({
+                emissive: 0xf1cc6c,
+                emissiveIntensity: 0.5,
+              })
+            }
+            anchorX="center"
+            anchorY="middle"
+          >
+            Top 3 skoky
+          </Text>
+          {results
+            .sort((a, b) => b - a)
+            .slice(0, 3)
+            .map((res, index) => (
+              <Text
+                key={index}
+                position={[0, -0.3 * (index + 0.6), 0]}
+                fontSize={0.25}
+                font="/BebasNeue-Regular.ttf"
+                material={
+                  new THREE.MeshStandardMaterial({
+                    emissive: 0xf1cc6c,
+                    emissiveIntensity: 0.5,
+                  })
+                }
+                anchorX="center"
+                anchorY="middle"
+              >
+                {res.toFixed(2)} cm
+              </Text>
+            ))}
+        </group>
+      </group>
+    </>
+  );
+};
+
+export const Experience = ({ loading, isReady, tl, hasKeyboard }) => {
   // const { debug, orbitControls } = useControls(
   //   "rapier-dynamic-raycast-vehicle-controller/physics",
   //   {
@@ -653,6 +874,7 @@ export const Experience = ({ loading, isReady, tl }) => {
                 position={spawn.position}
                 rotation={spawn.rotation}
                 setResults={setResults}
+                hasKeyboard={hasKeyboard}
               />
             </KeyboardControls>
 
@@ -665,6 +887,7 @@ export const Experience = ({ loading, isReady, tl }) => {
         {isReady && (
           <>
             <TextPlane />
+            <Table results={results} />
           </>
         )}
 
@@ -714,22 +937,6 @@ export const Experience = ({ loading, isReady, tl }) => {
 
         {/* {orbitControls && <OrbitControls makeDefault />} */}
       </Canvas>
-
-      {isReady && (
-        <div className="fixed right-[5vw] top-[5vh] z-[100] h-[25vh] w-[20vw] flex flex-col gap-5 items-center justify-center overflow-hidden select-none">
-          <h1 className="text-4xl md:text-5xl font-title text-white">
-            Top 3 skoky
-          </h1>
-          <h1 className="text-4xl md:text-5xl font-title text-white">
-            {results
-              .sort((a, b) => b - a) // Sort in ascending order
-              .slice(0, 3) // Take the 3 smallest values
-              .map((res, index) => (
-                <p key={index}>{res.toFixed(2)}</p> // Render each result
-              ))}
-          </h1>
-        </div>
-      )}
     </>
   );
 };

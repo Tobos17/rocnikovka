@@ -122,56 +122,47 @@ function Home() {
       });
   };
 
-  // useLayoutEffect(() => {
-  //   if (isScrolled) {
-  //     gsap.fromTo(
-  //       loader.current,
-  //       { height: "0vh", width: "0vh" },
-  //       {
-  //         duration: 0.75,
-  //         ease: "power3.out",
-  //         height: "65vh",
-  //         width: "65vh",
-  //       }
-  //     );
+  const [hasKeyboard, setHasKeyboard] = useState(false);
 
-  //     gsap.fromTo(
-  //       clicker.current,
-  //       { opacity: 0 },
-  //       { duration: 1, ease: "power3.out", delay: 0.35, opacity: 1 }
-  //     );
-  //   }
-  // }, [isScrolled]);
+  useEffect(() => {
+    const checkKeyboardPresence = async () => {
+      if ("keyboard" in navigator) {
+        try {
+          await navigator.keyboard.getLayoutMap();
+          // setHasKeyboard(true);
+        } catch (error) {
+          setHasKeyboard(false);
+        }
+      } else {
+        setHasKeyboard(false);
+      }
+    };
 
+    checkKeyboardPresence();
+  }, []);
   return (
     <>
       <AnimatePresence mode="wait">
         {loading && <Loader setLoading={setLoading} />}
       </AnimatePresence>
-      <div className="h-full w-full flex flex-col">
-        {/* {isScrolled && (
-          <div
-            ref={loader}
-            style={{
-              left: "50%",
-              top: "50%",
-              transform: "translateX(-50%) translateY(-50%)",
-              transformOrigin: "center center",
-            }}
-            className="z-50 bg-secondary fixed rounded-full overflow-hidden"
-          >
-            <button
-              ref={clicker}
-              onClick={handleClick}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-title text-6xl tracking-wider"
-            >
-              Zablbni si
-            </button>
-          </div>
-        )} */}
 
+      {!hasKeyboard && isReady && (
+        <div className="z-[150] h-screen w-screen fixed">
+          <div id="joystick">
+            <div id="outer-circle">
+              <div id="inner-circle"></div>
+            </div>
+          </div>
+        </div>
+      )}
+      <div className="h-full w-full flex flex-col">
         <div className="h-screen w-screen fixed">
-          <Experience loading={loading} tl={tl} isReady={isReady} />
+          <Experience
+            loading={loading}
+            tl={tl}
+            isReady={isReady}
+            hasKeyboard={hasKeyboard}
+          />
         </div>
 
         <Overlay tl={tl} isScrolled={isScrolled} setIsReady={setIsReady} />

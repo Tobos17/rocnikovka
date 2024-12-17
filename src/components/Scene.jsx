@@ -51,7 +51,6 @@ export const Bridge = ({ tl }) => {
   bakedBridge.flipY = false;
   bakedBridge.colorSpace = THREE.SRGBColorSpace;
 
-  // const [intensity, setIntensity] = useState(0);
   const emissiveMaterial = useRef([]);
 
   useEffect(() => {
@@ -67,7 +66,7 @@ export const Bridge = ({ tl }) => {
           return;
         } else if (child.name.includes("Text")) {
           child.material = new THREE.MeshStandardMaterial({
-            color: new THREE.Color(0x483e2e),
+            color: new THREE.Color(0x5e513c),
             roughness: 1,
             metalness: 0.9,
           });
@@ -217,7 +216,7 @@ export const Scene = ({ loading, tl, isReady }) => {
   const camera = useThree((state) => state.camera);
   const scene = useThree((state) => state.scene);
 
-  const LINE_NB_POINTS = 1500;
+  const LINE_NB_POINTS = 2000;
 
   const curvePoints = useMemo(
     () => [
@@ -255,7 +254,7 @@ export const Scene = ({ loading, tl, isReady }) => {
       // state.camera.lookAt(lookAtPoint);
       // console.log(state.camera.getWorldDirection());
 
-      state.camera.position.lerp(curPoint, delta * 24);
+      state.camera.position.lerp(curPoint, delta * 20);
     }
   });
 

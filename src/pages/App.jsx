@@ -129,7 +129,7 @@ function Home() {
       if ("keyboard" in navigator) {
         try {
           await navigator.keyboard.getLayoutMap();
-          // setHasKeyboard(true);
+          setHasKeyboard(true);
         } catch (error) {
           setHasKeyboard(false);
         }

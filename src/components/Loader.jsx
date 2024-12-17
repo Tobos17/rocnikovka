@@ -23,8 +23,12 @@ export const Loader = ({ setLoading }) => {
             setLoading(false);
           }, 4500);
         }}
-        className="z-[50] fixed inset-0 h-[115vh] w-[105vw] bg-white"
-      ></motion.div>
+        className="z-[200] fixed inset-0 h-[100vh] w-[100vw] bg-white"
+      >
+        <h1 className="absolute bottom-10 right-10 font-end">
+          loading assets...
+        </h1>
+      </motion.div>
     </>
   );
 };

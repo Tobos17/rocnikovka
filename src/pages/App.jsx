@@ -27,21 +27,13 @@ function Home() {
     // }, 3000);
 
     lenisRef.current = new Lenis({
-      // duration: 1.5,
-      // easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      // smoothWheel: true,
-      // syncTouch: false,
-      // touchMultiplier: 0,
-      // syncTouch: true,
-      // wheelMultiplier: 0.5,
-
       duration: 3,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       direction: "vertical",
       gestureDirection: "vertical",
       smooth: true,
       smoothWheel: true,
-      smoothTouch: false,
+      smoothTouch: true,
       syncTouch: false,
       touchMultiplier: 0,
       wheelMultiplier: 0.4,
@@ -67,7 +59,7 @@ function Home() {
     };
   }, [loading]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     tl.current = gsap.timeline({
       scrollTrigger: {
         trigger: "#triggerRef",
@@ -76,16 +68,20 @@ function Home() {
         end: "bottom bottom",
         pin: true,
         scrub: 1,
-        onUpdate: (self) => {
-          // console.log(self.progress);
-
-          if (self.progress === 1) {
-            setIsScrolled(true);
-            tl.current.kill();
-            lenisRef.current.stop();
-            // console.log("done");
-          }
+        onLeave: () => {
+          // setIsScrolled(true);
+          tl.current.pause();
+          lenisRef.current.stop();
         },
+        // onUpdate: (self) => {
+
+        //   if (self.progress === 1) {
+        //     setIsScrolled(true);
+        //     tl.current.kill();
+        //     lenisRef.current.stop();
+
+        //   }
+        // },
         // markers: true,
       },
     });
@@ -98,43 +94,64 @@ function Home() {
   const loader = useRef(null);
   const clicker = useRef(null);
 
-  const handleClick = () => {
-    gsap
-      .to(loader.current, {
-        duration: 1,
-        ease: "power3.out",
-        height: "250vh",
-        width: "250vh",
-      })
-      .then(() => {
-        setIsReady(true);
-        gsap.to(loader.current, {
-          duration: 0.75,
-          ease: "power3.out",
-          height: "0vh",
-          width: "0vh",
-        });
-        gsap.to(clicker.current, {
-          duration: 0.5,
-          ease: "power3.out",
-          opacity: 0,
-        });
-      });
-  };
+  // const handleClick = () => {
+  //   gsap
+  //     .to(loader.current, {
+  //       duration: 1,
+  //       ease: "power3.out",
+  //       height: "250vh",
+  //       width: "250vh",
+  //     })
+  //     .then(() => {
+  //       setIsReady(true);
+  //       gsap.to(loader.current, {
+  //         duration: 0.75,
+  //         ease: "power3.out",
+  //         height: "0vh",
+  //         width: "0vh",
+  //       });
+  //       gsap.to(clicker.current, {
+  //         duration: 0.5,
+  //         ease: "power3.out",
+  //         opacity: 0,
+  //       });
+  //     });
+  // };
 
   const [hasKeyboard, setHasKeyboard] = useState(false);
 
   useEffect(() => {
+    const isFirefox =
+      typeof navigator !== "undefined" && /Firefox/i.test(navigator.userAgent);
+    const isSafari =
+      typeof navigator !== "undefined" &&
+      /Safari/i.test(navigator.userAgent) &&
+      !/Chrome|Chromium/i.test(navigator.userAgent);
+
     const checkKeyboardPresence = async () => {
       if ("keyboard" in navigator) {
         try {
           await navigator.keyboard.getLayoutMap();
+
           setHasKeyboard(true);
         } catch (error) {
-          setHasKeyboard(false);
+          console.log(error);
+          if (isFirefox || isSafari) {
+            window.innerWidth > 1200
+              ? setHasKeyboard(true)
+              : setHasKeyboard(false);
+          } else {
+            setHasKeyboard(false);
+          }
         }
       } else {
-        setHasKeyboard(false);
+        if (isFirefox || isSafari) {
+          window.innerWidth > 1200
+            ? setHasKeyboard(true)
+            : setHasKeyboard(false);
+        } else {
+          setHasKeyboard(false);
+        }
       }
     };
 
@@ -165,7 +182,7 @@ function Home() {
           />
         </div>
 
-        <Overlay tl={tl} isScrolled={isScrolled} setIsReady={setIsReady} />
+        <Overlay tl={tl} setIsReady={setIsReady} loading={loading} />
       </div>
     </>
   );

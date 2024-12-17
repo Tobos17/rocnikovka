@@ -25,9 +25,7 @@ export const Loader = ({ setLoading }) => {
         }}
         className="z-[200] fixed inset-0 h-[100vh] w-[100vw] bg-white"
       >
-        <h1 className="absolute bottom-10 right-10 font-end">
-          loading assets...
-        </h1>
+        <h1 className="absolute top-10 right-10 font-end">loading assets...</h1>
       </motion.div>
     </>
   );

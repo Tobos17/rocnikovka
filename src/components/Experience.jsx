@@ -74,7 +74,7 @@ const _airControlAngVel = new THREE.Vector3();
 const _cameraPosition = new THREE.Vector3();
 const _cameraTarget = new THREE.Vector3();
 
-const Vehicle = ({ position, rotation, setResults, hasKeyboard }) => {
+const Vehicle = ({ position, rotation, setResults, hasKeyboard, reset }) => {
   const { world, rapier } = useRapier();
   const threeControls = useThree((s) => s.controls);
   const camera = useThree((s) => s.camera);
@@ -123,50 +123,8 @@ const Vehicle = ({ position, rotation, setResults, hasKeyboard }) => {
 
     soundRef.current.play();
 
-    return () => soundRef.current.stop(); // Cleanup on component unmount
+    return () => soundRef.current.stop();
   }, []);
-
-  // useEffect(() => {
-  //   if (!soundRef.current) return;
-
-  //   let isPressed = false;
-  //   const handleKeyDown = (event) => {
-  //     console.log("Key pressed:", event.code);
-  //     if (
-  //       event.code === "KeyW" ||
-  //       event.code === "ArrowUp" ||
-  //       event.code === "KeyS" ||
-  //       event.code === "ArrowDown"
-  //     ) {
-  //       if (!isPressed) {
-  //         soundRef.current.play();
-  //         // console.log(soundRef.current.volume);
-  //       }
-  //       isPressed = true;
-  //     }
-  //   };
-
-  //   const handleKeyUp = (event) => {
-  //     console.log("Key released:", event.code);
-  //     if (
-  //       event.code === "KeyW" ||
-  //       event.code === "ArrowUp" ||
-  //       event.code === "KeyS" ||
-  //       event.code === "ArrowDown"
-  //     ) {
-  //       isPressed = false;
-  //       soundRef.current.pause();
-  //     }
-  //   };
-
-  //   window.addEventListener("keydown", handleKeyDown);
-  //   window.addEventListener("keyup", handleKeyUp);
-
-  //   return () => {
-  //     window.removeEventListener("keydown", handleKeyDown);
-  //     window.removeEventListener("keyup", handleKeyUp);
-  //   };
-  // }, []);
 
   let hornSound = new Audio("/sounds/horn.mp3");
   let engineSound = new Audio("/sounds/engine.mp3");
@@ -240,7 +198,7 @@ const Vehicle = ({ position, rotation, setResults, hasKeyboard }) => {
     gsap.to(innerCircle, {
       x: 0,
       y: 0,
-      duration: 0.2,
+      duration: 0.25,
       ease: "power2.out",
     });
     joystickX = 0;
@@ -278,10 +236,10 @@ const Vehicle = ({ position, rotation, setResults, hasKeyboard }) => {
 
     // Move the inner circle using GSAP
     gsap.to(innerCircle, {
-      x: mouseX,
-      y: mouseY,
-      duration: 0.05,
-      ease: "power1.out",
+      x: mouseX * 1.15,
+      y: mouseY * 1.15,
+      duration: 0.1,
+      ease: "power2.out",
     });
 
     // Calculate joystick values (normalized coordinates)
@@ -294,16 +252,16 @@ const Vehicle = ({ position, rotation, setResults, hasKeyboard }) => {
     let steerDirection;
 
     if (x > 0.25) {
-      steerDirection = -1;
+      steerDirection = -x;
     }
     if (x < -0.25) {
-      steerDirection = 1;
+      steerDirection = -x;
     }
     if (y > 0.25) {
-      engineForce = 1;
+      engineForce = y;
     }
     if (y < -0.25) {
-      engineForce = -1;
+      engineForce = y;
     }
     if (y > -0.25 && y < 0.25) {
       engineForce = 0;
@@ -328,6 +286,52 @@ const Vehicle = ({ position, rotation, setResults, hasKeyboard }) => {
     controller.setWheelSteering(1, steering);
   }
 
+  const resetPos = (chassisRigidBody) => {
+    if (chassisRigidBody.translation().y < -1) {
+      if (chassisRigidBody.translation().x < -5) {
+        const x = -7.2;
+        const z = -2.3;
+
+        const val = Math.sqrt(
+          Math.pow(chassisRigidBody.translation().x - x, 2) +
+            Math.pow(chassisRigidBody.translation().z - z, 2)
+        );
+
+        setResults((prev) => [...prev, val]);
+      }
+    }
+
+    chassisRigidBody.setTranslation(
+      new rapier.Vector3(...spawn.position),
+      true
+    );
+    const spawnRot = new THREE.Euler(...spawn.rotation);
+    const spawnQuat = new THREE.Quaternion().setFromEuler(spawnRot);
+    chassisRigidBody.setRotation(spawnQuat, true);
+    chassisRigidBody.setLinvel(new rapier.Vector3(0, 0, 0), true);
+    chassisRigidBody.setAngvel(new rapier.Vector3(0, 0, 0), true);
+
+    chassisRigidBody.setBodyType(rapier.RigidBodyType.KinematicPositionBased);
+  };
+
+  useEffect(() => {
+    if (
+      !chasisMeshRef.current ||
+      !vehicleController.current ||
+      !!threeControls ||
+      !camera ||
+      !soundRef.current
+    )
+      return;
+
+    const controller = vehicleController.current;
+    const chassisRigidBody = controller.chassis();
+    // console.log(reset);
+    if (reset) {
+      resetPos(chassisRigidBody);
+    }
+  }, [reset]);
+
   useFrame((state, delta) => {
     if (
       !chasisMeshRef.current ||
@@ -341,10 +345,10 @@ const Vehicle = ({ position, rotation, setResults, hasKeyboard }) => {
     let t = 1.0 - Math.pow(0.01, delta);
 
     /* controls */
-
     const controller = vehicleController.current;
-
     const chassisRigidBody = controller.chassis();
+
+    // handleReset(chassisRigidBody);
 
     const controls = getKeyboardControls();
 
@@ -427,34 +431,7 @@ const Vehicle = ({ position, rotation, setResults, hasKeyboard }) => {
     }
 
     if (controls.reset || chassisRigidBody.translation().y < -1) {
-      // console.log(
-      //   chassisRigidBody.translation().x,
-      //   chassisRigidBody.translation().z
-      // )
-
-      if (chassisRigidBody.translation().x < -5) {
-        const x = -7.2;
-        const z = -2.3;
-
-        const val = Math.sqrt(
-          Math.pow(chassisRigidBody.translation().x - x, 2) +
-            Math.pow(chassisRigidBody.translation().z - z, 2)
-        );
-
-        setResults((prev) => [...prev, val]);
-      }
-
-      chassisRigidBody.setTranslation(
-        new rapier.Vector3(...spawn.position),
-        true
-      );
-      const spawnRot = new THREE.Euler(...spawn.rotation);
-      const spawnQuat = new THREE.Quaternion().setFromEuler(spawnRot);
-      chassisRigidBody.setRotation(spawnQuat, true);
-      chassisRigidBody.setLinvel(new rapier.Vector3(0, 0, 0), true);
-      chassisRigidBody.setAngvel(new rapier.Vector3(0, 0, 0), true);
-
-      chassisRigidBody.setBodyType(rapier.RigidBodyType.KinematicPositionBased);
+      resetPos(chassisRigidBody);
     }
     if (state.camera.position.x > 15 || state.camera.position.x < -15) {
       chassisRigidBody.setBodyType(rapier.RigidBodyType.Dynamic);
@@ -620,7 +597,7 @@ const Vehicle = ({ position, rotation, setResults, hasKeyboard }) => {
           transparent
           side={THREE.DoubleSide}
           alphaMap={bakedShadow}
-          // visible={false}s
+          // visible={false}
         />
       </mesh>
     </>
@@ -828,6 +805,8 @@ export const Experience = ({ loading, isReady, tl, hasKeyboard }) => {
 
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
+  const [reset, setReset] = useState(false);
+
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth > 1024) setIsSmallScreen(false);
@@ -840,6 +819,11 @@ export const Experience = ({ loading, isReady, tl, hasKeyboard }) => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+  const handleChange = () => {
+    setReset(true);
+    setTimeout(() => setReset(false), 1000);
+  };
 
   return (
     <>
@@ -875,6 +859,7 @@ export const Experience = ({ loading, isReady, tl, hasKeyboard }) => {
                 rotation={spawn.rotation}
                 setResults={setResults}
                 hasKeyboard={hasKeyboard}
+                reset={reset}
               />
             </KeyboardControls>
 
@@ -937,6 +922,16 @@ export const Experience = ({ loading, isReady, tl, hasKeyboard }) => {
 
         {/* {orbitControls && <OrbitControls makeDefault />} */}
       </Canvas>
+      {!hasKeyboard && isReady && (
+        <div
+          onClick={() => handleChange()}
+          className="z-[250] pointer-events-auto absolute w-fit h-fit -translate-x-1/2 -translate-y-1/2 bottom-[27.5vh] right-[11vw]"
+        >
+          <h1 className="text-4xl font-title text-white text-nowrap tracking-wide">
+            reset
+          </h1>
+        </div>
+      )}
     </>
   );
 };

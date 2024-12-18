@@ -24,6 +24,7 @@ html.lenis body {
 html,
 body {
   overscroll-behavior: none;
+  cursor: none;
 }
 
 .lenis.lenis-smooth {
@@ -84,10 +85,10 @@ body::-webkit-scrollbar {
 #joystick {
   /* z-index: 150; */
   position: absolute;
-  bottom: 30px;
-  right: 30px;
-  width: 100px;
-  height: 100px;
+  bottom: 10vh;
+  right: 10vw;
+  width: 150px;
+  height: 150px;
   pointer-events: none;
 }
 #outer-circle {
@@ -101,8 +102,8 @@ body::-webkit-scrollbar {
   align-items: center;
 }
 #inner-circle {
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   background-color: rgba(255, 255, 255, 0.6);
   pointer-events: auto; /* Inner circle should capture pointer events */

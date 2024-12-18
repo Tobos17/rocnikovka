@@ -6,7 +6,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Lenis from "lenis";
 import { Loader } from "../components/Loader";
-import { AnimatePresence } from "framer-motion";
+import Cursor from "../components/Cursor";
+// import { AnimatePresence } from "framer-motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -36,7 +37,7 @@ function Home() {
       smoothTouch: true,
       syncTouch: false,
       touchMultiplier: 0,
-      wheelMultiplier: 0.4,
+      wheelMultiplier: 0.45,
       infinite: false,
       autoResize: true,
     });
@@ -64,24 +65,18 @@ function Home() {
       scrollTrigger: {
         trigger: "#triggerRef",
         start: "top top",
-
         end: "bottom bottom",
         pin: true,
         scrub: 1,
-        onLeave: () => {
-          // setIsScrolled(true);
-          tl.current.pause();
-          lenisRef.current.stop();
+
+        onUpdate: (self) => {
+          if (self.progress === 1) {
+            // setIsScrolled(true);
+            tl.current.pause();
+            lenisRef.current.stop();
+            // console.log("stop");
+          }
         },
-        // onUpdate: (self) => {
-
-        //   if (self.progress === 1) {
-        //     setIsScrolled(true);
-        //     tl.current.kill();
-        //     lenisRef.current.stop();
-
-        //   }
-        // },
         // markers: true,
       },
     });
@@ -90,33 +85,6 @@ function Home() {
       if (tl.current) tl.current.kill();
     };
   }, []);
-
-  const loader = useRef(null);
-  const clicker = useRef(null);
-
-  // const handleClick = () => {
-  //   gsap
-  //     .to(loader.current, {
-  //       duration: 1,
-  //       ease: "power3.out",
-  //       height: "250vh",
-  //       width: "250vh",
-  //     })
-  //     .then(() => {
-  //       setIsReady(true);
-  //       gsap.to(loader.current, {
-  //         duration: 0.75,
-  //         ease: "power3.out",
-  //         height: "0vh",
-  //         width: "0vh",
-  //       });
-  //       gsap.to(clicker.current, {
-  //         duration: 0.5,
-  //         ease: "power3.out",
-  //         opacity: 0,
-  //       });
-  //     });
-  // };
 
   const [hasKeyboard, setHasKeyboard] = useState(false);
 
@@ -133,7 +101,9 @@ function Home() {
         try {
           await navigator.keyboard.getLayoutMap();
 
-          setHasKeyboard(true);
+          window.innerWidth > 1200
+            ? setHasKeyboard(true)
+            : setHasKeyboard(false);
         } catch (error) {
           console.log(error);
           if (isFirefox || isSafari) {
@@ -157,14 +127,15 @@ function Home() {
 
     checkKeyboardPresence();
   }, []);
+
   return (
     <>
-      <AnimatePresence mode="wait">
-        {loading && <Loader setLoading={setLoading} />}
-      </AnimatePresence>
+      {loading && <Loader setLoading={setLoading} />}
+
+      {hasKeyboard && !isReady && !loading && <Cursor />}
 
       {!hasKeyboard && isReady && (
-        <div className="z-[150] h-screen w-screen fixed">
+        <div className="z-[150] h-screen w-screen fixed pointer-events-none">
           <div id="joystick">
             <div id="outer-circle">
               <div id="inner-circle"></div>
@@ -172,7 +143,7 @@ function Home() {
           </div>
         </div>
       )}
-      <div className="h-full w-full flex flex-col">
+      <div className="h-full w-full flex flex-col pointer-events-none">
         <div className="h-screen w-screen fixed">
           <Experience
             loading={loading}
@@ -182,7 +153,12 @@ function Home() {
           />
         </div>
 
-        <Overlay tl={tl} setIsReady={setIsReady} loading={loading} />
+        <Overlay
+          tl={tl}
+          setIsReady={setIsReady}
+          loading={loading}
+          isReady={isReady}
+        />
       </div>
     </>
   );

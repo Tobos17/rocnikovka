@@ -74,6 +74,7 @@ function Home() {
             // setIsScrolled(true);
             tl.current.pause();
             lenisRef.current.stop();
+
             // console.log("stop");
           }
         },

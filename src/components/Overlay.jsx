@@ -193,7 +193,7 @@ export const Overlay = ({ tl, setIsReady, loading, isReady }) => {
     <>
       <div
         id="triggerRef"
-        className="scene-inner !h-[3000dvh] md:!h-[1000dvh] pointer-events-none"
+        className="scene-inner !h-[3000dvh] lg:!h-[1000dvh] pointer-events-none"
       >
         {!isReady && (
           <>
@@ -201,7 +201,7 @@ export const Overlay = ({ tl, setIsReady, loading, isReady }) => {
               <div ref={sectionRef} className="scene-content-inner">
                 <div
                   ref={scrollTextRef}
-                  className="absolute -translate-x-1/2 left-1/2 -translate-y-1/2 bottom-[85vh] lg:bottom-[2vh] flex flex-col gap-0 items-start justify-center pointer-events-none"
+                  className="absolute -translate-x-1/2 left-1/2 -translate-y-1/2 bottom-[80vh] lg:bottom-[2vh] flex flex-col gap-0 items-start justify-center pointer-events-none"
                 >
                   <h1 className="font-title text-xl tracking-wide">Scroll</h1>
                   <div
@@ -342,7 +342,7 @@ export const Overlay = ({ tl, setIsReady, loading, isReady }) => {
               <div
                 ref={(el) => (textRefs.current[4] = el)}
                 // style={{ top: "-100vh", opacity: loading ? 0 : 1 }}
-                className="z-[20] fixed inset-0 flex flex-col gap-4 justify-center items-center h-screen w-screen bg-primary"
+                className="z-[20] fixed inset-0 flex flex-col gap-4 justify-center items-center h-screen w-screen bg-primary pointer-events-none"
               >
                 <div
                   onClick={handleClick}

@@ -279,8 +279,8 @@ const Vehicle = ({ position, rotation, setResults, hasKeyboard, reset }) => {
 
     // console.log(steering, engineForce);
 
-    controller.setWheelEngineForce(0, engineForce * accelerateForce);
-    controller.setWheelEngineForce(1, engineForce * accelerateForce);
+    controller.setWheelEngineForce(0, engineForce * accelerateForce * 0.8);
+    controller.setWheelEngineForce(1, engineForce * accelerateForce * 0.8);
 
     controller.setWheelSteering(0, steering);
     controller.setWheelSteering(1, steering);

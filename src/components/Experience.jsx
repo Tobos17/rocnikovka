@@ -213,6 +213,7 @@ const Vehicle = ({ position, rotation, setResults, hasKeyboard, reset }) => {
 
     if (event.type.startsWith("touch")) {
       const touch = event.touches[0];
+      if (touch.target.id === "reset") return;
       clientX = touch.clientX;
       clientY = touch.clientY;
     } else {

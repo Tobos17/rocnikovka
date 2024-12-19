@@ -126,7 +126,7 @@ function Home() {
       }
     };
 
-    // checkKeyboardPresence();
+    checkKeyboardPresence();
   }, []);
 
   const joystickRef = useRef(null);

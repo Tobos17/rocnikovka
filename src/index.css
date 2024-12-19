@@ -23,7 +23,7 @@ html.lenis body {
 }
 html,
 body {
-  overscroll-behavior: none;
+  overscroll-behavior: none !important;
   cursor: none;
 }
 
@@ -85,8 +85,8 @@ body::-webkit-scrollbar {
 #joystick {
   /* z-index: 150; */
   position: absolute;
-  bottom: 10vh;
-  right: 10vw;
+  /* bottom: 10vh;
+  right: 10vw; */
   width: 150px;
   height: 150px;
   pointer-events: none;

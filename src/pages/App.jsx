@@ -126,23 +126,81 @@ function Home() {
       }
     };
 
-    checkKeyboardPresence();
+    // checkKeyboardPresence();
   }, []);
+
+  const joystickRef = useRef(null);
+
+  useEffect(() => {
+    if (!joystickRef.current || !isReady) return;
+
+    const startDrag = (e) => {
+      // e.preventDefault();
+
+      const touch = e.touches[0];
+      if (touch.target.id === "reset") return;
+
+      // Get the coordinates of the touch
+      const touchX = touch.clientX;
+      const touchY = touch.clientY;
+
+      const rect = joystickRef.current.getBoundingClientRect();
+
+      // gsap.set(joystickRef.current, { opacity: 1 });
+      gsap.to(joystickRef.current, {
+        opacity: 1,
+        x: touchX - rect.width / 2,
+        y: touchY - rect.height / 2,
+        duration: 0,
+      });
+    };
+
+    const endDrag = () => {
+      gsap.to(joystickRef.current, {
+        opacity: 0,
+        duration: 0,
+      });
+    };
+
+    window.addEventListener("touchstart", (e) => startDrag(e));
+    window.addEventListener("touchend", () => endDrag());
+
+    return () => {
+      window.removeEventListener("touchstart", (e) => startDrag(e));
+      window.removeEventListener("touchend", () => endDrag());
+    };
+  }, [isReady]);
+
+  const [reset, setReset] = useState(false);
+
+  const handleChange = () => {
+    setReset(true);
+    setTimeout(() => setReset(false), 1000);
+  };
 
   return (
     <>
       {loading && <Loader setLoading={setLoading} />}
 
-      {hasKeyboard && !isReady && !loading && <Cursor />}
+      {hasKeyboard && !isReady && <Cursor />}
 
       {!hasKeyboard && isReady && (
-        <div className="z-[150] h-screen w-screen fixed pointer-events-none">
-          <div id="joystick">
-            <div id="outer-circle">
-              <div id="inner-circle"></div>
+        <>
+          <div className="z-[200] h-screen w-screen fixed pointer-events-none">
+            <div style={{ opacity: 0 }} ref={joystickRef} id="joystick">
+              <div id="outer-circle">
+                <div id="inner-circle"></div>
+              </div>
             </div>
           </div>
-        </div>
+          <h1
+            id="reset"
+            onClick={() => handleChange()}
+            className="absolute z-[300] w-fit h-fit bottom-[50vh] right-[5vw] text-4xl font-title text-white text-nowrap tracking-wide"
+          >
+            reset
+          </h1>
+        </>
       )}
       <div className="h-full w-full flex flex-col pointer-events-none">
         <div className="h-screen w-screen fixed">
@@ -151,6 +209,7 @@ function Home() {
             tl={tl}
             isReady={isReady}
             hasKeyboard={hasKeyboard}
+            reset={reset}
           />
         </div>
 

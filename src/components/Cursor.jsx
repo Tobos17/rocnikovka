@@ -50,9 +50,9 @@ export default function index() {
         style={{
           left: smoothMouse.x,
           top: smoothMouse.y,
-          // opacity: 0.75,
+          opacity: 0.75,
         }}
-        className="z-[200] mix-blend-difference fixed w-[20px] h-[20px] bg-white rounded-[50%] pointer-events-none"
+        className="z-[200] fixed w-[20px] h-[20px] bg-white rounded-[50%] pointer-events-none"
         ref={cursor}
       ></motion.div>
     </div>

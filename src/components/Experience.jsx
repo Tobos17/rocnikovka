@@ -167,7 +167,7 @@ const Vehicle = ({ position, rotation, setResults, hasKeyboard, reset }) => {
 
   function setupJoystick() {
     if (!hasKeyboard) {
-      outerCircle = document.getElementById("outer-circle");
+      outerCircle = document.getElementById("joystick");
       innerCircle = document.getElementById("inner-circle");
 
       outerRadius = outerCircle.clientWidth / 2;
@@ -206,7 +206,7 @@ const Vehicle = ({ position, rotation, setResults, hasKeyboard, reset }) => {
   }
 
   function handleDrag(event) {
-    if (!dragging) return;
+    // if (!dragging) return;
 
     // Determine whether the event is touch or mouse
     let clientX, clientY;
@@ -220,12 +220,10 @@ const Vehicle = ({ position, rotation, setResults, hasKeyboard, reset }) => {
       clientY = event.clientY;
     }
 
-    // Get the outer circle's bounding rectangle and calculate relative mouse position
     const rect = outerCircle.getBoundingClientRect();
     let mouseX = clientX - rect.left - centerX;
     let mouseY = clientY - rect.top - centerY;
 
-    // Calculate distance from the center and constrain movement to the outer radius
     const distance = Math.sqrt(mouseX * mouseX + mouseY * mouseY);
 
     if (distance > outerRadius) {
@@ -264,7 +262,11 @@ const Vehicle = ({ position, rotation, setResults, hasKeyboard, reset }) => {
       engineForce = y;
     }
     if (y > -0.25 && y < 0.25) {
-      engineForce = 0;
+      if (x < -0.25 || x > 0.25) {
+        engineForce = Math.abs(x) * 0.5;
+      } else {
+        engineForce = 0;
+      }
     }
     if (x > -0.25 && x < 0.25) {
       steerDirection = 0;
@@ -276,8 +278,6 @@ const Vehicle = ({ position, rotation, setResults, hasKeyboard, reset }) => {
       steerAngle * steerDirection,
       0.5
     );
-
-    // console.log(steering, engineForce);
 
     controller.setWheelEngineForce(0, engineForce * accelerateForce * 0.8);
     controller.setWheelEngineForce(1, engineForce * accelerateForce * 0.8);
@@ -644,7 +644,7 @@ const ScenePhysics = () => {
         scale={1.2}
         position={[0, 0, 0]}
         collisionGroups={(1 << 16) | 0x01}
-        onCollisionEnter={(e) => {
+        onCollisionEnter={() => {
           crashSound.volume = 1;
           crashSound.currentTime = 0;
           crashSound.play();
@@ -792,7 +792,7 @@ const Table = ({ results }) => {
   );
 };
 
-export const Experience = ({ loading, isReady, tl, hasKeyboard }) => {
+export const Experience = ({ loading, isReady, tl, hasKeyboard, reset }) => {
   // const { debug, orbitControls } = useControls(
   //   "rapier-dynamic-raycast-vehicle-controller/physics",
   //   {
@@ -802,28 +802,6 @@ export const Experience = ({ loading, isReady, tl, hasKeyboard }) => {
   // );
 
   const [results, setResults] = useState([]);
-
-  const [isSmallScreen, setIsSmallScreen] = useState(false);
-
-  const [reset, setReset] = useState(false);
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth > 1024) setIsSmallScreen(false);
-      else setIsSmallScreen(true);
-    };
-    window.addEventListener("resize", handleResize);
-
-    handleResize();
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
-  const handleChange = () => {
-    setReset(true);
-    setTimeout(() => setReset(false), 1000);
-  };
 
   return (
     <>
@@ -837,7 +815,7 @@ export const Experience = ({ loading, isReady, tl, hasKeyboard }) => {
         dpr={[1, 1.5]}
         camera={{
           near: 0.1,
-          fov: isSmallScreen ? 75 : 55,
+          fov: hasKeyboard ? 55 : 75,
         }}
       >
         <Environment preset="sunset" />
@@ -922,16 +900,16 @@ export const Experience = ({ loading, isReady, tl, hasKeyboard }) => {
 
         {/* {orbitControls && <OrbitControls makeDefault />} */}
       </Canvas>
-      {!hasKeyboard && isReady && (
+      {/* {!hasKeyboard && isReady && (
         <div
           onClick={() => handleChange()}
-          className="z-[250] pointer-events-auto absolute w-fit h-fit -translate-x-1/2 -translate-y-1/2 bottom-[27.5vh] right-[11vw]"
+          className="z-[250] pointer-events-auto absolute w-fit h-fit bottom-[50vh] right-[5vw]"
         >
           <h1 className="text-4xl font-title text-white text-nowrap tracking-wide">
             reset
           </h1>
         </div>
-      )}
+      )} */}
     </>
   );
 };

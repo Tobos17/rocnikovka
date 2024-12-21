@@ -618,14 +618,7 @@ const ScenePhysics = () => {
   const vertices1 = geometry1.attributes.position.array;
   const indices1 = geometry1.index.array;
 
-  let mainSound = new Audio("/sounds/main.mp3");
-  let crashSound = new Audio("/sounds/crashhh.mp3");
-
-  useEffect(() => {
-    mainSound.volume = 0.01;
-    mainSound.currentTime = 0;
-    mainSound.play();
-  }, []);
+  const crashSound = new Audio("/sounds/crashhh.mp3");
 
   return (
     <>
@@ -801,6 +794,14 @@ export const Experience = ({ loading, isReady, tl, hasKeyboard, reset }) => {
   //     orbitControls: false,
   //   }
   // );
+
+  const mainSound = new Audio("/sounds/main.mp3");
+
+  useEffect(() => {
+    mainSound.volume = 0.01;
+    mainSound.currentTime = 0;
+    mainSound.play();
+  }, []);
 
   const [results, setResults] = useState([]);
   const [isSmallScreen, setIsSmallScreen] = useState(false);

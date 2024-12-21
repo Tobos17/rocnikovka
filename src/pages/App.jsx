@@ -89,47 +89,59 @@ function Home() {
 
   const [hasKeyboard, setHasKeyboard] = useState(false);
 
-  useEffect(() => {
-    const isFirefox =
-      typeof navigator !== "undefined" && /Firefox/i.test(navigator.userAgent);
-    const isSafari =
-      typeof navigator !== "undefined" &&
-      /Safari/i.test(navigator.userAgent) &&
-      !/Chrome|Chromium/i.test(navigator.userAgent);
+  useLayoutEffect(() => {
+    function isTouchDevice() {
+      return window.matchMedia("(pointer: coarse)").matches;
+    }
 
-    const checkKeyboardPresence = async () => {
-      if ("keyboard" in navigator) {
-        try {
-          await navigator.keyboard.getLayoutMap();
-
-          window.innerWidth > 1200
-            ? setHasKeyboard(true)
-            : setHasKeyboard(false);
-        } catch (error) {
-          console.log(error);
-          if (isFirefox || isSafari) {
-            window.innerWidth > 1200
-              ? setHasKeyboard(true)
-              : setHasKeyboard(false);
-          } else {
-            setHasKeyboard(false);
-          }
-        }
-      } else {
-        if (isFirefox || isSafari) {
-          window.innerWidth > 1200
-            ? setHasKeyboard(true)
-            : setHasKeyboard(false);
-        } else {
-          window.innerWidth > 1200
-            ? setHasKeyboard(true)
-            : setHasKeyboard(false);
-        }
-      }
-    };
-
-    checkKeyboardPresence();
+    if (isTouchDevice()) {
+      setHasKeyboard(false);
+    } else {
+      setHasKeyboard(true);
+    }
   }, []);
+
+  // useEffect(() => {
+  //   const isFirefox =
+  //     typeof navigator !== "undefined" && /Firefox/i.test(navigator.userAgent);
+  //   const isSafari =
+  //     typeof navigator !== "undefined" &&
+  //     /Safari/i.test(navigator.userAgent) &&
+  //     !/Chrome|Chromium/i.test(navigator.userAgent);
+
+  //   const checkKeyboardPresence = async () => {
+  //     if ("keyboard" in navigator) {
+  //       try {
+  //         await navigator.keyboard.getLayoutMap();
+
+  //         window.innerWidth > 1200
+  //           ? setHasKeyboard(true)
+  //           : setHasKeyboard(false);
+  //       } catch (error) {
+  //         console.log(error);
+  //         if (isFirefox || isSafari) {
+  //           window.innerWidth > 1200
+  //             ? setHasKeyboard(true)
+  //             : setHasKeyboard(false);
+  //         } else {
+  //           setHasKeyboard(false);
+  //         }
+  //       }
+  //     } else {
+  //       if (isFirefox || isSafari) {
+  //         window.innerWidth > 1200
+  //           ? setHasKeyboard(true)
+  //           : setHasKeyboard(false);
+  //       } else {
+  //         window.innerWidth > 1200
+  //           ? setHasKeyboard(true)
+  //           : setHasKeyboard(false);
+  //       }
+  //     }
+  //   };
+
+  //   checkKeyboardPresence();
+  // }, []);
 
   const joystickRef = useRef(null);
 
@@ -198,7 +210,7 @@ function Home() {
           <h1
             id="reset"
             onClick={() => handleChange()}
-            className="absolute z-[300] w-fit h-fit bottom-[50vh] right-[5vw] text-4xl font-title text-white text-nowrap tracking-wide"
+            className="select-none absolute z-[300] w-fit h-fit bottom-[50vh] right-[5vw] text-4xl font-title text-white text-nowrap tracking-wide"
           >
             reset
           </h1>

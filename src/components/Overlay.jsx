@@ -193,7 +193,8 @@ export const Overlay = ({ tl, setIsReady, loading, isReady }) => {
     <>
       <div
         id="triggerRef"
-        className="scene-inner !h-[3000dvh] lg:!h-[1000dvh] pointer-events-none"
+        draggable="false"
+        className="select-none scene-inner !h-[3000dvh] lg:!h-[1000dvh] pointer-events-none"
       >
         {!isReady && (
           <>

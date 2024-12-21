@@ -1,8 +1,9 @@
 #define SCALE 10.0
 
-varying vec2 vUv;
-
 uniform float uTime;
+
+varying vec2 vUv;
+varying vec3 vPosition;
 
 float calculateSurface(float x, float z) {
     float y = 0.0;
@@ -20,5 +21,6 @@ void main() {
     pos.z += strength * calculateSurface(pos.x * 2.5, -pos.y * 2.5 );
     // pos.z -= strength * calculateSurface(0.0, 0.0);
 
+    vPosition = pos;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
 }  

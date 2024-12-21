@@ -1,8 +1,9 @@
-varying vec2 vUv;
-
 uniform sampler2D uMap;
 uniform float uTime;
 uniform vec3 uColor;
+
+varying vec2 vUv;
+varying vec3 vPosition;
 
 void main() {
     float time = uTime * 0.1;
@@ -16,7 +17,13 @@ void main() {
     vec4 tex2 = texture2D(uMap, uv * 1.0 + vec2(0.2));
 
     vec3 blue = uColor;
+    blue += vec3(tex1.r * 0.9 - tex2.r * 0.02);
 
-    gl_FragColor = vec4(blue + vec3(tex1.r * 0.9 - tex2.r * 0.02), 1.0);
+    float fac = smoothstep(0., 1., vPosition.z + 1.);
+    fac = pow(fac, 4.);
+    
+    vec3 finalColor = mix(blue * 0.55, blue, fac);
+
+    gl_FragColor = vec4(finalColor, 1.0);
     // gl_FragColor = tex1;
 }

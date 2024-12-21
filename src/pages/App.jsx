@@ -34,8 +34,8 @@ function Home() {
       gestureDirection: "vertical",
       smooth: true,
       smoothWheel: true,
-      smoothTouch: true,
-      syncTouch: false,
+      smoothTouch: false,
+      syncTouch: true,
       touchMultiplier: 0,
       wheelMultiplier: 0.45,
       infinite: false,
@@ -50,12 +50,16 @@ function Home() {
       lenis.raf(time);
       requestAnimationFrame(raf);
     }
+    lenis.on("scroll", ScrollTrigger.update);
+    // gsap.ticker.add(raf);
+    gsap.ticker.lagSmoothing(0);
 
     requestAnimationFrame(raf);
 
     return () => {
       if (!loading) {
         lenis.destroy();
+        // gsap.ticker.remove(raf);
       }
     };
   }, [loading]);

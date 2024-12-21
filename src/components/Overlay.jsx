@@ -194,11 +194,11 @@ export const Overlay = ({ tl, setIsReady, loading, isReady }) => {
       <div
         id="triggerRef"
         draggable="false"
-        className="select-none scene-inner !h-[3000dvh] lg:!h-[1000dvh] pointer-events-none"
+        className="touch-none select-none scene-inner !h-[3000dvh] lg:!h-[1000dvh] pointer-events-none"
       >
         {!isReady && (
           <>
-            <div className="scene-content pointer-events-auto">
+            <div className="scene-content touch-none select-none">
               <div ref={sectionRef} className="scene-content-inner">
                 <div
                   ref={scrollTextRef}

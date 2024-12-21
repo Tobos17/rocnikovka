@@ -193,7 +193,7 @@ export const Overlay = ({ tl, setIsReady, loading, isReady }) => {
     <>
       <div
         id="triggerRef"
-        className="select-none scene-inner !h-[3000dvh] lg:!h-[1000dvh] pointer-events-none"
+        className="select-none scene-inner !h-[1000dvh] pointer-events-none"
       >
         {!isReady && (
           <>
@@ -342,7 +342,7 @@ export const Overlay = ({ tl, setIsReady, loading, isReady }) => {
               <div
                 ref={(el) => (textRefs.current[4] = el)}
                 // style={{ top: "-100vh", opacity: loading ? 0 : 1 }}
-                className="z-[20] fixed inset-0 flex flex-col gap-4 justify-center items-center h-screen w-screen bg-primary pointer-events-none"
+                className="overflow-hidden touch-none z-[20] fixed inset-0 flex flex-col gap-4 justify-center items-center h-screen w-screen bg-primary pointer-events-none"
               >
                 <div
                   onClick={handleClick}

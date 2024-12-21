@@ -798,10 +798,12 @@ export const Experience = ({ loading, isReady, tl, hasKeyboard, reset }) => {
   const mainSound = new Audio("/sounds/main.mp3");
 
   useEffect(() => {
-    mainSound.volume = 0.01;
-    mainSound.currentTime = 0;
-    mainSound.play();
-  }, []);
+    if (isReady) {
+      mainSound.volume = 0.01;
+      mainSound.currentTime = 0;
+      mainSound.play();
+    }
+  }, [isReady]);
 
   const [results, setResults] = useState([]);
   const [isSmallScreen, setIsSmallScreen] = useState(false);

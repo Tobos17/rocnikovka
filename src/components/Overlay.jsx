@@ -200,7 +200,7 @@ export const Overlay = ({ tl, setIsReady, loading, isReady }) => {
             <div className="scene-content pointer-events-auto">
               <div
                 ref={sectionRef}
-                className="overflow-hidden touch-none  pointer-events-none scene-content-inner"
+                className="pointer-events-none scene-content-inner"
               >
                 <div
                   ref={scrollTextRef}

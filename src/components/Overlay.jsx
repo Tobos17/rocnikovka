@@ -198,7 +198,10 @@ export const Overlay = ({ tl, setIsReady, loading, isReady }) => {
         {!isReady && (
           <>
             <div className="scene-content pointer-events-auto">
-              <div ref={sectionRef} className="scene-content-inner">
+              <div
+                ref={sectionRef}
+                className="overflow-hidden touch-none  pointer-events-none scene-content-inner"
+              >
                 <div
                   ref={scrollTextRef}
                   className="absolute -translate-x-1/2 left-1/2 -translate-y-1/2 bottom-[80vh] lg:bottom-[2vh] flex flex-col gap-0 items-start justify-center pointer-events-none"
@@ -341,7 +344,6 @@ export const Overlay = ({ tl, setIsReady, loading, isReady }) => {
 
               <div
                 ref={(el) => (textRefs.current[4] = el)}
-                // style={{ top: "-100vh", opacity: loading ? 0 : 1 }}
                 className="overflow-hidden touch-none z-[20] fixed inset-0 flex flex-col gap-4 justify-center items-center h-screen w-screen bg-primary pointer-events-none"
               >
                 <div

@@ -833,7 +833,7 @@ export const Experience = ({ loading, isReady, tl, hasKeyboard, reset }) => {
         dpr={[1, 1.5]}
         camera={{
           near: 0.1,
-          fov: isSmallScreen ? 75 : 55,
+          fov: isSmallScreen ? 80 : 55,
         }}
       >
         <Environment preset="sunset" />

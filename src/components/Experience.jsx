@@ -803,6 +803,20 @@ export const Experience = ({ loading, isReady, tl, hasKeyboard, reset }) => {
   // );
 
   const [results, setResults] = useState([]);
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 1200) setIsSmallScreen(false);
+      else setIsSmallScreen(true);
+    };
+    window.addEventListener("resize", handleResize);
+
+    handleResize();
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   return (
     <>
@@ -816,7 +830,7 @@ export const Experience = ({ loading, isReady, tl, hasKeyboard, reset }) => {
         dpr={[1, 1.5]}
         camera={{
           near: 0.1,
-          fov: hasKeyboard ? 55 : 75,
+          fov: isSmallScreen ? 75 : 55,
         }}
       >
         <Environment preset="sunset" />

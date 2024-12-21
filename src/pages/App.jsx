@@ -121,7 +121,9 @@ function Home() {
             ? setHasKeyboard(true)
             : setHasKeyboard(false);
         } else {
-          setHasKeyboard(false);
+          window.innerWidth > 1200
+            ? setHasKeyboard(true)
+            : setHasKeyboard(false);
         }
       }
     };

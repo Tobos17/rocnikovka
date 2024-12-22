@@ -263,7 +263,16 @@ export const Scene = ({ loading, tl, isReady }) => {
       gsap.fromTo(
         camera.position,
         { x: 19, y: 4, z: -19 },
-        { x: 15, y: 1.5, z: -15, duration: 3, ease: "sm" }
+        {
+          x: 15,
+          y: 1.5,
+          z: -15,
+          duration: 3,
+          ease: "sm",
+          onComplete: () => {
+            window.addEventListener("mousemove", updateCursorPosition);
+          },
+        }
       );
 
       camera.lookAt(0, 1.5, 0);
@@ -275,6 +284,10 @@ export const Scene = ({ loading, tl, isReady }) => {
       // .to(camera.position, { x: 2, y: 5, z: -9, duration: 1 }, 2)
       // .to(camera.position, { x: 2, y: 9, z: -9, duration: 1 }, 3);
     }
+    return () => {
+      return () =>
+        window.removeEventListener("mousemove", updateCursorPosition);
+    };
   }, [tl.current]);
 
   const cursor = useRef({ x: 0, y: 0 });
@@ -287,10 +300,6 @@ export const Scene = ({ loading, tl, isReady }) => {
   };
 
   // Add mousemove listener
-  useEffect(() => {
-    window.addEventListener("mousemove", updateCursorPosition);
-    return () => window.removeEventListener("mousemove", updateCursorPosition);
-  }, []);
 
   useFrame((state, delta) => {
     if (!isReady && !loading) {

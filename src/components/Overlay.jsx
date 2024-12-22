@@ -93,13 +93,13 @@ export const Overlay = ({ tl, setIsReady, loading, isReady }) => {
       tl.current.to(
         textRefs.current[3],
 
-        { x: "-100vw", duration: 1 },
+        { x: "-100vw", duration: 0.95 },
         3
       );
       tl.current.fromTo(
         textRefs.current[4],
         { y: "-100vh" },
-        { y: "0vh", duration: 0.65 },
+        { y: "0vh", duration: 0.6 },
         3.35
       );
 
@@ -183,6 +183,7 @@ export const Overlay = ({ tl, setIsReady, loading, isReady }) => {
 
   const handleClick = () => {
     setIsReady(true);
+    document.body.style.cursor = "auto";
     document.getElementById("triggerRef").remove();
     const element = document.querySelector(".pin-spacer");
     element.remove();
@@ -344,7 +345,7 @@ export const Overlay = ({ tl, setIsReady, loading, isReady }) => {
 
               <div
                 ref={(el) => (textRefs.current[4] = el)}
-                className="overflow-hidden touch-none z-[20] fixed inset-0 flex flex-col gap-4 justify-center items-center h-screen w-screen bg-primary pointer-events-none"
+                className="overflow-hidden select-none touch-none z-[20] fixed inset-0 flex flex-col gap-4 justify-center items-center h-screen w-screen bg-primary pointer-events-none"
               >
                 <div
                   onClick={handleClick}

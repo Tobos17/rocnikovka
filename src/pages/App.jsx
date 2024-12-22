@@ -74,7 +74,7 @@ function Home() {
         scrub: 1,
 
         onUpdate: (self) => {
-          if (self.progress === 1) {
+          if (self.progress >= 0.99) {
             // setIsScrolled(true);
             tl.current.pause();
             lenisRef.current.stop();

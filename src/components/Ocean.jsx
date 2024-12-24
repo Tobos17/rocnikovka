@@ -109,16 +109,6 @@ const Water = ({ cubeRef }) => {
 const Model = React.forwardRef((props, ref) => {
   const { scene } = useGLTF("/models/majak.glb");
 
-  // useEffect(() => {
-  //   scene.traverse((child) => {
-  //     if (child.isMesh) {
-  //       console.log(child);
-  //       child.lightMapIntensity = 0;
-  //       child.envMapIntensity = 0;
-  //     }
-  //   });
-  // }, [scene]);
-
   return <primitive ref={ref} object={scene} {...props} dispose={null} />;
 });
 
@@ -126,8 +116,8 @@ export function Ocean() {
   const cubeRef = useRef();
 
   return (
-    <group position={[0, -2, 0]}>
-      <Model ref={cubeRef} position={[-6, 0, -11.5]} />
+    <group position={[0, -2, 0]} rotation={[0, Math.PI / 4, 0]}>
+      <Model ref={cubeRef} position={[5, 0, -11.5]} />
       <Water cubeRef={cubeRef} />
     </group>
   );

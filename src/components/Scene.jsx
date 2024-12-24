@@ -189,15 +189,15 @@ export const Floors = () => {
         } else if (child.name === "image003") {
           child.material = new THREE.MeshStandardMaterial({
             emissive: new THREE.Color(0xf1cc6c),
-            emissiveIntensity: -0.5,
-            map: imageTexture4,
+            emissiveIntensity: -1,
+            map: imageTexture2,
           });
           return;
         } else if (child.name === "image004") {
           child.material = new THREE.MeshStandardMaterial({
             emissive: new THREE.Color(0xf1cc6c),
             emissiveIntensity: -1,
-            map: imageTexture2,
+            map: imageTexture4,
           });
           return;
         } else {
@@ -237,24 +237,58 @@ export const Scene = ({ loading, tl, isReady }) => {
     return curve.getPoints(LINE_NB_POINTS);
   }, [curve]);
 
+  const cursorRef = useRef({ x: 0, y: 0 });
+
+  const updateCursorPosition = (event) => {
+    const mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+    const mouseY = (event.clientY / window.innerHeight) * 2 - 1;
+
+    const sensitivityX = 0.2;
+    const sensitivityY = 0.2;
+
+    cursorRef.current.x = mouseX * sensitivityX;
+    cursorRef.current.y = mouseY * sensitivityY;
+  };
+
   useFrame((state, delta) => {
-    if (tl.current && camera && scene && !loading && !isReady) {
-      // console.log(loading);
+    if (tl.current && camera && scene && !isReady) {
       const curPointIndex = Math.min(
         Math.round(tl.current.progress() * linePoints.length),
         linePoints.length - 1
       );
-      // console.log(state.camera.position.y);
 
-      const curPoint = linePoints[curPointIndex];
+      const basePoint = linePoints[curPointIndex];
 
-      const lookAtPoint =
-        linePoints[Math.min(linePoints.length, curPointIndex + 10)];
+      const right = new THREE.Vector3(1, 0, 0);
+      right.applyQuaternion(camera.quaternion);
 
-      // state.camera.lookAt(lookAtPoint);
-      // console.log(state.camera.getWorldDirection());
+      const movement = right.clone().multiplyScalar(cursorRef.current.x);
 
-      state.camera.position.lerp(curPoint, delta * 20);
+      const finalPosition = new THREE.Vector3(
+        basePoint.x + movement.x,
+        basePoint.y + cursorRef.current.y,
+        basePoint.z + movement.z
+      );
+
+      state.camera.position.x = THREE.MathUtils.lerp(
+        camera.position.x,
+        finalPosition.x,
+        delta * 2.5
+      );
+
+      state.camera.position.y = THREE.MathUtils.lerp(
+        camera.position.y,
+        finalPosition.y,
+        delta * 2.5
+      );
+      state.camera.position.z = THREE.MathUtils.lerp(
+        camera.position.z,
+        finalPosition.z,
+        delta * 2.5
+      );
+
+      // const lookAtPoint =
+      //   linePoints[Math.min(linePoints.length, curPointIndex + 10)];
     }
   });
 
@@ -275,42 +309,17 @@ export const Scene = ({ loading, tl, isReady }) => {
         }
       );
 
+      // rotace
       camera.lookAt(0, 1.5, 0);
       tl.current
-        // .to(camera.position, { x: 10.3, y: 1.2, z: -10.3, duration: 1 }, 0)
         .to(camera.rotation, { y: Math.PI / 2.5, duration: 1.75 }, 0)
-        // .to(camera.position, { x: -0.5, y: 1, z: -7.25, duration: 1 }, 1)
         .to(camera.rotation, { y: Math.PI / 60, duration: 1.5 }, 2);
-      // .to(camera.position, { x: 2, y: 5, z: -9, duration: 1 }, 2)
-      // .to(camera.position, { x: 2, y: 9, z: -9, duration: 1 }, 3);
     }
     return () => {
       return () =>
         window.removeEventListener("mousemove", updateCursorPosition);
     };
   }, [tl.current]);
-
-  const cursor = useRef({ x: 0, y: 0 });
-
-  const updateCursorPosition = (event) => {
-    cursor.current = {
-      x: (event.clientX / window.innerWidth) * 2 - 1, // Normalized X (-1 to 1)
-      y: -(event.clientY / window.innerHeight) * 2 + 1, // Normalized Y (-1 to 1)
-    };
-  };
-
-  // Add mousemove listener
-
-  useFrame((state, delta) => {
-    if (!isReady && !loading) {
-      let t = 1.0 - Math.pow(0.01, delta * 0.2);
-
-      const mouseX = cursor.current.x * 0.15;
-      const mouseY = cursor.current.y * 0.15;
-
-      scene.position.lerp(new THREE.Vector3(-mouseX, mouseY, -mouseX), t);
-    }
-  });
 
   return (
     <>

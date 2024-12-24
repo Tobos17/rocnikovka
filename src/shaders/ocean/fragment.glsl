@@ -25,5 +25,5 @@ void main() {
     vec3 finalColor = mix(blue * 0.55, blue, fac);
 
     gl_FragColor = vec4(finalColor, 1.0);
-    // gl_FragColor = tex1;
+    // gl_FragColor = vec4(vec3(fac), 1.0);
 }

@@ -1,4 +1,3 @@
-import { OrbitControls } from "@react-three/drei";
 import { Experience } from "../components/Experience";
 import { Overlay } from "../components/Overlay";
 import gsap from "gsap";
@@ -7,14 +6,11 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Lenis from "lenis";
 import { Loader } from "../components/Loader";
 import Cursor from "../components/Cursor";
-// import { AnimatePresence } from "framer-motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
 function Home() {
-  // console.log("home");
   const [loading, setLoading] = useState(true);
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isReady, setIsReady] = useState(false);
 
   const lenisRef = useRef(null);
@@ -22,11 +18,6 @@ function Home() {
   const tl = useRef(null);
 
   useLayoutEffect(() => {
-    // setTimeout(() => {
-    //   document.body.classList.remove("loading");
-    //   setLoading(false);
-    // }, 3000);
-
     lenisRef.current = new Lenis({
       duration: 3,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -43,28 +34,26 @@ function Home() {
     });
     const lenis = lenisRef.current;
 
-    // console.log(lenis);
     loading ? lenis.stop() : lenis.start();
-
-    function raf(time) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
     lenis.on("scroll", ScrollTrigger.update);
-    // gsap.ticker.add(raf);
-    gsap.ticker.lagSmoothing(0);
 
-    requestAnimationFrame(raf);
+    gsap.ticker.add((time) => lenis.raf(time * 1000));
+
+    gsap.ticker.lagSmoothing(0);
 
     return () => {
       if (!loading) {
         lenis.destroy();
-        // gsap.ticker.remove(raf);
+        gsap.ticker.remove(lenis.raf);
       }
     };
   }, [loading]);
 
   useEffect(() => {
+    const preventScroll = (e) => {
+      e.preventDefault();
+    };
+
     tl.current = gsap.timeline({
       scrollTrigger: {
         trigger: "#triggerRef",
@@ -75,11 +64,17 @@ function Home() {
 
         onUpdate: (self) => {
           if (self.progress >= 0.99) {
-            // setIsScrolled(true);
             tl.current.pause();
-            lenisRef.current.stop();
+            lenisRef.current?.stop();
+            document.body.style.overflow = "hidden";
+            document.body.style.touchAction = "none";
 
-            // console.log("stop");
+            document.addEventListener("touchmove", preventScroll, {
+              passive: false,
+            });
+            document.addEventListener("wheel", preventScroll, {
+              passive: false,
+            });
           }
         },
         // markers: true,
@@ -87,7 +82,14 @@ function Home() {
     });
 
     return () => {
-      if (tl.current) tl.current.kill();
+      if (tl.current) {
+        tl.current.kill();
+
+        document.body.style.overflow = "auto";
+        document.body.style.touchAction = "auto";
+        document.removeEventListener("touchmove", preventScroll);
+        document.removeEventListener("wheel", preventScroll);
+      }
     };
   }, []);
 
@@ -104,48 +106,6 @@ function Home() {
       setHasKeyboard(true);
     }
   }, []);
-
-  // useEffect(() => {
-  //   const isFirefox =
-  //     typeof navigator !== "undefined" && /Firefox/i.test(navigator.userAgent);
-  //   const isSafari =
-  //     typeof navigator !== "undefined" &&
-  //     /Safari/i.test(navigator.userAgent) &&
-  //     !/Chrome|Chromium/i.test(navigator.userAgent);
-
-  //   const checkKeyboardPresence = async () => {
-  //     if ("keyboard" in navigator) {
-  //       try {
-  //         await navigator.keyboard.getLayoutMap();
-
-  //         window.innerWidth > 1200
-  //           ? setHasKeyboard(true)
-  //           : setHasKeyboard(false);
-  //       } catch (error) {
-  //         console.log(error);
-  //         if (isFirefox || isSafari) {
-  //           window.innerWidth > 1200
-  //             ? setHasKeyboard(true)
-  //             : setHasKeyboard(false);
-  //         } else {
-  //           setHasKeyboard(false);
-  //         }
-  //       }
-  //     } else {
-  //       if (isFirefox || isSafari) {
-  //         window.innerWidth > 1200
-  //           ? setHasKeyboard(true)
-  //           : setHasKeyboard(false);
-  //       } else {
-  //         window.innerWidth > 1200
-  //           ? setHasKeyboard(true)
-  //           : setHasKeyboard(false);
-  //       }
-  //     }
-  //   };
-
-  //   checkKeyboardPresence();
-  // }, []);
 
   const joystickRef = useRef(null);
 

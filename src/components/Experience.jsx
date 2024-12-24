@@ -519,6 +519,20 @@ const Vehicle = ({ position, rotation, setResults, hasKeyboard, reset }) => {
   const { scene: scene2 } = useGLTF("/models/ch.glb");
   const bakedShadow = useTexture("/textures/simpleShadow.jpg");
 
+  useEffect(() => {
+    scene2.traverse((child) => {
+      if (child.isMesh) {
+        const originalColor = child.material.color.clone();
+
+        originalColor.multiplyScalar(2.75);
+
+        child.material = new THREE.MeshBasicMaterial({
+          color: originalColor,
+        });
+      }
+    });
+  }, []);
+
   return (
     <>
       <RigidBody
@@ -800,7 +814,6 @@ export const Experience = ({ loading, isReady, tl, hasKeyboard, reset }) => {
   useEffect(() => {
     if (isReady) {
       mainSound.volume = 0.01;
-      mainSound.currentTime = 0;
       mainSound.play();
     }
   }, [isReady]);
@@ -874,7 +887,6 @@ export const Experience = ({ loading, isReady, tl, hasKeyboard, reset }) => {
 
         <Ocean />
 
-        {/* {!isReady && ( */}
         <EffectComposer>
           <Bloom
             intensity={2}
@@ -885,7 +897,6 @@ export const Experience = ({ loading, isReady, tl, hasKeyboard, reset }) => {
           <Vignette offset={0.1} darkness={0.85} />
           <BrightnessContrast brightness={-0.1} contrast={-0.15} />
         </EffectComposer>
-        {/* )} */}
 
         <Cloud
           position={[15, 5, 40]}
@@ -918,16 +929,6 @@ export const Experience = ({ loading, isReady, tl, hasKeyboard, reset }) => {
 
         {/* {orbitControls && <OrbitControls makeDefault />} */}
       </Canvas>
-      {/* {!hasKeyboard && isReady && (
-        <div
-          onClick={() => handleChange()}
-          className="z-[250] pointer-events-auto absolute w-fit h-fit bottom-[50vh] right-[5vw]"
-        >
-          <h1 className="text-4xl font-title text-white text-nowrap tracking-wide">
-            reset
-          </h1>
-        </div>
-      )} */}
     </>
   );
 };

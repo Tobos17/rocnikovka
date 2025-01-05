@@ -75,12 +75,7 @@ function Home() {
         scrub: 1,
 
         onUpdate: (self) => {
-          if (!readyScroll.current) {
-            lenisRef.current?.stop();
-            return;
-          }
-
-          if (self.progress >= 0.99) {
+          if (self.progress >= 0.99 || !readyScroll.current) {
             tl.current.pause();
             lenisRef.current?.stop();
             document.body.style.overflow = "hidden";

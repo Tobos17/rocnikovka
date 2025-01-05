@@ -31,10 +31,12 @@ function Home() {
       smoothWheel: true,
       smoothTouch: false,
       syncTouch: true,
-      touchMultiplier: 0,
+      touchInertiaMultiplier: 25,
+      touchMultiplier: 1,
       wheelMultiplier: 0.45,
       infinite: false,
       autoResize: true,
+      overscroll: false,
     });
     const lenis = lenisRef.current;
 
@@ -48,7 +50,7 @@ function Home() {
       }, 5000);
     }
 
-    lenis.on("scroll", ScrollTrigger.update);
+    lenis.on("scroll", (e) => ScrollTrigger.update);
 
     gsap.ticker.add((time) => lenis.raf(time * 1000));
 
@@ -72,12 +74,11 @@ function Home() {
         trigger: "#triggerRef",
         pin: true,
         start: "top top",
-        end: "+=10000",
+        end: "+=15000 bottom",
 
         scrub: 1,
 
         onUpdate: (self) => {
-          console.log(self.progress);
           if (self.progress >= 0 && !readyScroll.current) {
             tl.current.pause();
             lenisRef.current?.stop();
@@ -87,7 +88,7 @@ function Home() {
             });
           }
 
-          if (self.progress >= 0.99) {
+          if (self.progress === 1) {
             tl.current.pause();
             lenisRef.current?.stop();
             document.body.style.overflow = "hidden";

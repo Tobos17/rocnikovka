@@ -48,14 +48,14 @@ body {
 }
 
 html {
-  /* scrollbar-width: none; */
+  scrollbar-width: none;
 }
 body {
   -ms-overflow-style: none;
 }
 
 body::-webkit-scrollbar {
-  /* display: none; */
+  display: none;
 }
 
 .scene-inner {

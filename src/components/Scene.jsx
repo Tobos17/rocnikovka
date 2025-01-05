@@ -251,13 +251,7 @@ export const Scene = ({ loading, tl, isReady }) => {
   };
 
   useFrame((state, delta) => {
-    if (
-      tl.current &&
-      camera &&
-      scene &&
-      !isReady &&
-      cursorRef.current.x !== null
-    ) {
+    if (tl.current && camera && scene && !isReady) {
       const curPointIndex = Math.min(
         Math.round(tl.current.progress() * linePoints.length),
         linePoints.length - 1

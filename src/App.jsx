@@ -74,7 +74,7 @@ function Home() {
         trigger: "#triggerRef",
         pin: true,
         start: "top top",
-        end: "+=15000 bottom",
+        end: "+=12500 bottom",
 
         scrub: 1,
 

@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 
-export default function index() {
+export const Cursor = () => {
   const cursor = useRef(null);
   const cursorSize = 20;
 
@@ -45,16 +45,14 @@ export default function index() {
   }, []);
 
   return (
-    <div className="">
-      <motion.div
-        style={{
-          left: smoothMouse.x,
-          top: smoothMouse.y,
-          opacity: 0.75,
-        }}
-        className="z-[200] fixed w-[20px] h-[20px] bg-white rounded-[50%] pointer-events-none"
-        ref={cursor}
-      ></motion.div>
-    </div>
+    <motion.div
+      style={{
+        left: smoothMouse.x,
+        top: smoothMouse.y,
+        opacity: 0.75,
+      }}
+      className="z-[200] fixed w-[20px] h-[20px] bg-white rounded-[50%] pointer-events-none"
+      ref={cursor}
+    ></motion.div>
   );
-}
+};

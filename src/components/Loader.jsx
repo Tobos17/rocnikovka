@@ -2,51 +2,55 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useProgress } from "@react-three/drei";
 
+const dotAnimation = {
+  hidden: { opacity: 0 },
+  visible: (i) => ({
+    opacity: 1,
+    transition: {
+      delay: i * 0.2,
+      repeat: Infinity,
+      repeatType: "mirror",
+      duration: 0.5,
+      ease: "easeInOut",
+    },
+  }),
+};
+
 export const Loader = ({ setLoading }) => {
-  const [animationFinished, setAnimationFinished] = useState(false);
-  const [loadingAnim, setLoadingAnim] = useState(true);
+  const [animation, setAnimation] = useState(true);
   const { progress } = useProgress();
 
   useEffect(() => {
     if (progress === 100) {
-      setLoadingAnim(false);
+      setAnimation(false);
+      setLoading(false);
     }
   }, [progress]);
 
-  useEffect(() => {
-    if (animationFinished) {
-      setTimeout(() => {
-        document.body.classList.remove("loading");
-        setLoading(false);
-      }, 2000);
-    }
-  }, [animationFinished]);
   return useMemo(
     () => (
       <AnimatePresence mode="wait">
-        {loadingAnim && (
+        {animation && (
           <motion.div
             style={{ willChange: "opacity", opacity: 1 }}
             exit={{
               opacity: 0,
             }}
             transition={{
-              duration: 1.5,
-              delay: 0.5,
-              ease: [0.76, 0, 0.24, 1],
+              duration: 2,
+              delay: 2,
+              ease: [0.25, 0.8, 0.25, 1],
             }}
-            onAnimationComplete={() => {
-              setAnimationFinished(true);
-            }}
+            // onAnimationComplete={() => {}}
             className="z-[200] fixed inset-0 h-screen w-full bg-white"
           >
-            <h1 className="absolute top-8 right-6 font-end">
-              loading assets...
+            <h1 className="absolute top-14 right-12 font-end text-xl flex">
+              loading assets ...
             </h1>
           </motion.div>
         )}
       </AnimatePresence>
     ),
-    [loadingAnim]
+    [animation]
   );
 };

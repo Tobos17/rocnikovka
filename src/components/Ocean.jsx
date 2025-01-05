@@ -1,6 +1,5 @@
-import React, { useEffect, useRef } from "react";
+import React, { forwardRef, useEffect, useRef } from "react";
 import { extend, useFrame } from "@react-three/fiber";
-import { useControls } from "leva";
 import * as THREE from "three";
 import { shaderMaterial, useGLTF, useTexture } from "@react-three/drei";
 
@@ -21,7 +20,6 @@ extend({ OceanMaterial });
 
 const waveElevation = (p, uTime) => {
   const position = p.clone().multiplyScalar(2.5);
-  // console.log(position);
   const time = uTime * 0.05;
   const scale = 10;
   const strength = 0.75;
@@ -44,28 +42,39 @@ const waveElevation = (p, uTime) => {
   return elv;
 };
 
-const Water = ({ cubeRef }) => {
-  useFrame((state, delta) => {
-    oceanMaterial.current.uniforms.uTime.value += delta * 10; //delta
-    oceanMaterial.current.uniforms.uMap.value = uMap;
+const Water = ({ modelRef }) => {
+  const oceanMaterial = useRef();
+  const uMap = useTexture("./textures/uMap.png");
 
-    if (cubeRef.current) {
-      // const offset = cubeRef.current.geometry.parameters.height / 2;
+  uMap.wrapS = THREE.RepeatWrapping;
+  uMap.wrapT = THREE.RepeatWrapping;
+
+  useEffect(() => {
+    if (oceanMaterial.current) {
+      oceanMaterial.current.uniforms.uMap.value = uMap;
+    }
+  }, [uMap]);
+
+  useFrame((state, delta) => {
+    if (!oceanMaterial.current || !modelRef.current) return;
+    oceanMaterial.current.uniforms.uTime.value += delta * 10;
+
+    if (modelRef.current) {
       const offset = 0;
 
       const shift = 0.1;
 
       const positionA = new THREE.Vector3().addVectors(
-        cubeRef.current.position,
+        modelRef.current.position,
         new THREE.Vector3(shift, 0, 0)
       );
       const positionB = new THREE.Vector3().addVectors(
-        cubeRef.current.position,
+        modelRef.current.position,
         new THREE.Vector3(0, 0, -shift)
       );
 
-      cubeRef.current.position.y = waveElevation(
-        cubeRef.current.position,
+      modelRef.current.position.y = waveElevation(
+        modelRef.current.position,
         oceanMaterial.current.uniforms.uTime.value
       );
       positionA.y = waveElevation(
@@ -78,47 +87,40 @@ const Water = ({ cubeRef }) => {
       );
 
       const up = new THREE.Vector3(0, 1, 0);
-      const toA = positionA.clone().sub(cubeRef.current.position).normalize();
-      const toB = positionB.clone().sub(cubeRef.current.position).normalize();
+      const toA = positionA.clone().sub(modelRef.current.position).normalize();
+      const toB = positionB.clone().sub(modelRef.current.position).normalize();
       const normal = new THREE.Vector3().crossVectors(toA, toB);
 
-      cubeRef.current.position.y += offset;
+      modelRef.current.position.y += offset;
 
       const quaternion = new THREE.Quaternion().setFromUnitVectors(up, normal);
-      cubeRef.current.quaternion.copy(quaternion);
+      modelRef.current.quaternion.copy(quaternion);
     }
   });
-
-  const oceanMaterial = useRef();
-  const uMap = useTexture("./textures/uMap.png");
-
-  uMap.wrapS = THREE.RepeatWrapping;
-  uMap.wrapT = THREE.RepeatWrapping;
 
   return (
     <>
       <mesh rotation-x={-Math.PI / 2}>
         <planeGeometry args={[100, 100, 150, 150]} />
         <oceanMaterial ref={oceanMaterial} />
-        {/* <meshBasicMaterial color={"red"} /> */}
       </mesh>
     </>
   );
 };
 
-const Model = React.forwardRef((props, ref) => {
+const Model = forwardRef((props, ref) => {
   const { scene } = useGLTF("/models/majak.glb");
 
   return <primitive ref={ref} object={scene} {...props} dispose={null} />;
 });
 
 export function Ocean() {
-  const cubeRef = useRef();
+  const modelRef = useRef();
 
   return (
     <group position={[0, -2, 0]} rotation={[0, Math.PI / 4, 0]}>
-      <Model ref={cubeRef} position={[5, 0, -11.5]} />
-      <Water cubeRef={cubeRef} />
+      <Model ref={modelRef} position={[5, 0, -11.5]} />
+      <Water modelRef={modelRef} />
     </group>
   );
 }

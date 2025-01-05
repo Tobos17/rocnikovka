@@ -1,7 +1,7 @@
-import { Line, OrbitControls, useGLTF, useTexture } from "@react-three/drei";
+import { useGLTF, useTexture } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import gsap from "gsap";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 
 export const Props = () => {
@@ -57,7 +57,6 @@ export const Bridge = ({ tl }) => {
     scene.traverse((child) => {
       if (child.isMesh) {
         if (child.name.includes("emis")) {
-          // console.log(child);
           child.material = new THREE.MeshStandardMaterial({
             emissive: new THREE.Color(0xf1cc6c),
             emissiveIntensity: 4,
@@ -159,7 +158,7 @@ export const Floors = () => {
 
   bakedFloors.flipY = false;
   bakedFloors.colorSpace = THREE.SRGBColorSpace;
-  // imageTexture.flipY = false;
+
   imageTexture.colorSpace = THREE.SRGBColorSpace;
 
   useEffect(() => {
@@ -215,6 +214,7 @@ export const Floors = () => {
 export const Scene = ({ loading, tl, isReady }) => {
   const camera = useThree((state) => state.camera);
   const scene = useThree((state) => state.scene);
+  const gl = useThree((state) => state.gl);
 
   const LINE_NB_POINTS = 2000;
 
@@ -237,7 +237,7 @@ export const Scene = ({ loading, tl, isReady }) => {
     return curve.getPoints(LINE_NB_POINTS);
   }, [curve]);
 
-  const cursorRef = useRef({ x: 0, y: 0 });
+  const cursorRef = useRef({ x: null, y: null });
 
   const updateCursorPosition = (event) => {
     const mouseX = (event.clientX / window.innerWidth) * 2 - 1;
@@ -251,7 +251,13 @@ export const Scene = ({ loading, tl, isReady }) => {
   };
 
   useFrame((state, delta) => {
-    if (tl.current && camera && scene && !isReady) {
+    if (
+      tl.current &&
+      camera &&
+      scene &&
+      !isReady &&
+      cursorRef.current.x !== null
+    ) {
       const curPointIndex = Math.min(
         Math.round(tl.current.progress() * linePoints.length),
         linePoints.length - 1
@@ -286,14 +292,11 @@ export const Scene = ({ loading, tl, isReady }) => {
         finalPosition.z,
         delta * 2.5
       );
-
-      // const lookAtPoint =
-      //   linePoints[Math.min(linePoints.length, curPointIndex + 10)];
     }
   });
 
   useLayoutEffect(() => {
-    if (tl.current && camera && scene && loading) {
+    if ((tl.current && camera && scene && gl, !loading)) {
       gsap.fromTo(
         camera.position,
         { x: 19, y: 4, z: -19 },
@@ -301,7 +304,7 @@ export const Scene = ({ loading, tl, isReady }) => {
           x: 15,
           y: 1.5,
           z: -15,
-          duration: 3,
+          duration: 4.5,
           ease: "sm",
           onComplete: () => {
             window.addEventListener("mousemove", updateCursorPosition);
@@ -309,8 +312,8 @@ export const Scene = ({ loading, tl, isReady }) => {
         }
       );
 
-      // rotace
       camera.lookAt(0, 1.5, 0);
+
       tl.current
         .to(camera.rotation, { y: Math.PI / 2.5, duration: 1.75 }, 0)
         .to(camera.rotation, { y: Math.PI / 60, duration: 1.5 }, 2);
@@ -319,21 +322,18 @@ export const Scene = ({ loading, tl, isReady }) => {
       return () =>
         window.removeEventListener("mousemove", updateCursorPosition);
     };
-  }, [tl.current]);
+  }, [tl.current, camera, scene, gl, loading]);
 
   return (
-    <>
-      <group scale={1.2} position={[0, 0, 0]}>
-        {/* <OrbitControls /> */}
-        {/* <primitive object={env} scale={1.2} position={[0, 0, 0]} /> */}
-        <Props />
-        <SpecialProps />
-        <Bridge tl={tl} />
-        <Mountains />
-        <Floors />
-      </group>
+    <group scale={1.2} position={[0, 0, 0]}>
+      <Props />
+      <SpecialProps />
+      <Bridge tl={tl} />
+      <Mountains />
+      <Floors />
 
       {/* <Line points={linePoints} color={"white"} lineWidth={16} /> */}
-    </>
+      {/* <primitive object={env} scale={1.2} position={[0, 0, 0]} /> */}
+    </group>
   );
 };

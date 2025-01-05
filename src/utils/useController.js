@@ -1,9 +1,5 @@
-import {
-  RapierRigidBody,
-  useAfterPhysicsStep,
-  useRapier,
-} from "@react-three/rapier";
-import { RefObject, useEffect, useRef } from "react";
+import { useAfterPhysicsStep, useRapier } from "@react-three/rapier";
+import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
 const up = new THREE.Vector3(0, 1, 0);
@@ -60,11 +56,10 @@ export const useVehicleController = (chassisRef, wheelsRef, wheelsInfo) => {
 
     wheels?.forEach((wheel, index) => {
       const wheelAxleCs = controller.wheelAxleCs(index);
-      const connection =
-        controller.wheelChassisConnectionPointCs(index)?.y || 0;
-      const suspension = controller.wheelSuspensionLength(index) || 0;
-      const steering = controller.wheelSteering(index) || 0;
-      const rotationRad = controller.wheelRotation(index) || 0;
+      const connection = controller.wheelChassisConnectionPointCs(index).y;
+      const suspension = controller.wheelSuspensionLength(index);
+      const steering = controller.wheelSteering(index);
+      const rotationRad = controller.wheelRotation(index);
 
       wheel.position.y = connection - suspension;
 

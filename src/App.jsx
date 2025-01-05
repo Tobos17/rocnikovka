@@ -1,20 +1,22 @@
-import { Experience } from "../components/Experience";
-import { Overlay } from "../components/Overlay";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Lenis from "lenis";
-import { Loader } from "../components/Loader";
-import Cursor from "../components/Cursor";
+
+import { Experience } from "./components/Experience";
+import { Overlay } from "./components/Overlay";
+import { Loader } from "./components/Loader";
+import { Content } from "./components/Content";
 
 gsap.registerPlugin(ScrollTrigger);
 
 function Home() {
   const [loading, setLoading] = useState(true);
   const [isReady, setIsReady] = useState(false);
+  const [reset, setReset] = useState(false);
+  const readyScroll = useRef(false);
 
   const lenisRef = useRef(null);
-
   const tl = useRef(null);
 
   useLayoutEffect(() => {
@@ -34,7 +36,17 @@ function Home() {
     });
     const lenis = lenisRef.current;
 
-    loading ? lenis.stop() : lenis.start();
+    if (loading) {
+      lenis.stop();
+    } else {
+      setTimeout(() => {
+        readyScroll.current = true;
+
+        lenis.start();
+        document.body.classList.remove("loading");
+      }, 5000);
+    }
+
     lenis.on("scroll", ScrollTrigger.update);
 
     gsap.ticker.add((time) => lenis.raf(time * 1000));
@@ -63,6 +75,11 @@ function Home() {
         scrub: 1,
 
         onUpdate: (self) => {
+          if (!readyScroll.current) {
+            lenisRef.current?.stop();
+            return;
+          }
+
           if (self.progress >= 0.99) {
             tl.current.pause();
             lenisRef.current?.stop();
@@ -91,7 +108,7 @@ function Home() {
         document.removeEventListener("wheel", preventScroll);
       }
     };
-  }, []);
+  }, [readyScroll]);
 
   const [hasKeyboard, setHasKeyboard] = useState(false);
 
@@ -107,98 +124,33 @@ function Home() {
     }
   }, []);
 
-  const joystickRef = useRef(null);
-
-  useEffect(() => {
-    if (!joystickRef.current || !isReady) return;
-
-    const startDrag = (e) => {
-      // e.preventDefault();
-
-      const touch = e.touches[0];
-      if (touch.target.id === "reset") return;
-
-      // Get the coordinates of the touch
-      const touchX = touch.clientX;
-      const touchY = touch.clientY;
-
-      const rect = joystickRef.current.getBoundingClientRect();
-
-      // gsap.set(joystickRef.current, { opacity: 1 });
-      gsap.to(joystickRef.current, {
-        opacity: 1,
-        x: touchX - rect.width / 2,
-        y: touchY - rect.height / 2,
-        duration: 0,
-      });
-    };
-
-    const endDrag = () => {
-      gsap.to(joystickRef.current, {
-        opacity: 0,
-        duration: 0,
-      });
-    };
-
-    window.addEventListener("touchstart", (e) => startDrag(e));
-    window.addEventListener("touchend", () => endDrag());
-
-    return () => {
-      window.removeEventListener("touchstart", (e) => startDrag(e));
-      window.removeEventListener("touchend", () => endDrag());
-    };
-  }, [isReady]);
-
-  const [reset, setReset] = useState(false);
-
-  const handleChange = () => {
-    setReset(true);
-    setTimeout(() => setReset(false), 1000);
-  };
-
   return (
-    <>
-      {loading && <Loader setLoading={setLoading} />}
+    <main>
+      <Loader setLoading={setLoading} />
 
-      {hasKeyboard && !isReady && <Cursor />}
-
-      {!hasKeyboard && isReady && (
-        <>
-          <div className="z-[200] h-screen w-screen fixed pointer-events-none">
-            <div style={{ opacity: 0 }} ref={joystickRef} id="joystick">
-              <div id="outer-circle">
-                <div id="inner-circle"></div>
-              </div>
-            </div>
-          </div>
-          <h1
-            id="reset"
-            onClick={() => handleChange()}
-            className="select-none absolute z-[300] w-fit h-fit bottom-[50vh] right-[5vw] text-4xl font-title text-white text-nowrap tracking-wide"
-          >
-            reset
-          </h1>
-        </>
-      )}
-      <div className="h-full w-full flex flex-col pointer-events-none">
-        <div className="h-screen w-screen fixed">
-          <Experience
-            loading={loading}
-            tl={tl}
-            isReady={isReady}
-            hasKeyboard={hasKeyboard}
-            reset={reset}
-          />
-        </div>
-
-        <Overlay
-          tl={tl}
-          setIsReady={setIsReady}
+      <div className="h-screen w-screen fixed">
+        <Experience
           loading={loading}
+          tl={tl}
           isReady={isReady}
+          hasKeyboard={hasKeyboard}
+          reset={reset}
         />
       </div>
-    </>
+
+      <Content
+        tl={tl}
+        setIsReady={setIsReady}
+        loading={loading}
+        isReady={isReady}
+      />
+
+      <Overlay
+        hasKeyboard={hasKeyboard}
+        setReset={setReset}
+        isReady={isReady}
+      />
+    </main>
   );
 }
 

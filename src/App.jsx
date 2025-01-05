@@ -70,14 +70,15 @@ function Home() {
     tl.current = gsap.timeline({
       scrollTrigger: {
         trigger: "#triggerRef",
-        start: "top top",
-        end: "bottom bottom",
         pin: true,
+        start: "top top",
+        end: "+=10000",
+
         scrub: 1,
 
         onUpdate: (self) => {
+          console.log(self.progress);
           if (self.progress >= 0 && !readyScroll.current) {
-            console.log("ready");
             tl.current.pause();
             lenisRef.current?.stop();
 

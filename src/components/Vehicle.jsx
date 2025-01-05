@@ -126,12 +126,9 @@ export const Vehicle = ({
 
   function startDrag(event) {
     event.preventDefault();
-    dragging = true;
   }
 
   function endDrag(event) {
-    dragging = false;
-
     gsap.to(innerCircle, {
       x: 0,
       y: 0,

@@ -16,6 +16,8 @@ function Home() {
   const [reset, setReset] = useState(false);
   const readyScroll = useRef(false);
 
+  const [hasKeyboard, setHasKeyboard] = useState(false);
+
   const lenisRef = useRef(null);
   const tl = useRef(null);
 
@@ -40,9 +42,8 @@ function Home() {
       lenis.stop();
     } else {
       setTimeout(() => {
-        readyScroll.current = true;
-
         lenis.start();
+        readyScroll.current = true;
         document.body.classList.remove("loading");
       }, 5000);
     }
@@ -75,7 +76,17 @@ function Home() {
         scrub: 1,
 
         onUpdate: (self) => {
-          if (self.progress >= 0.99 || !readyScroll.current) {
+          if (self.progress >= 0 && !readyScroll.current) {
+            console.log("ready");
+            tl.current.pause();
+            lenisRef.current?.stop();
+
+            document.addEventListener("wheel", preventScroll, {
+              passive: false,
+            });
+          }
+
+          if (self.progress >= 0.99) {
             tl.current.pause();
             lenisRef.current?.stop();
             document.body.style.overflow = "hidden";
@@ -103,9 +114,7 @@ function Home() {
         document.removeEventListener("wheel", preventScroll);
       }
     };
-  }, [readyScroll]);
-
-  const [hasKeyboard, setHasKeyboard] = useState(false);
+  }, []);
 
   useLayoutEffect(() => {
     function isTouchDevice() {

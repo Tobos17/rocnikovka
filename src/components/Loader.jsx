@@ -44,7 +44,7 @@ export const Loader = ({ setLoading }) => {
             // onAnimationComplete={() => {}}
             className="z-[200] fixed inset-0 h-screen w-full bg-white"
           >
-            <h1 className="absolute top-14 right-12 font-end text-xl flex">
+            <h1 className="absolute top-8 right-8 font-end text-xl flex">
               loading assets ...
             </h1>
           </motion.div>

@@ -32,7 +32,7 @@ function Home() {
       smoothTouch: false,
       syncTouch: true,
       touchInertiaMultiplier: 25,
-      touchMultiplier: 1,
+      touchMultiplier: 2,
       wheelMultiplier: 0.45,
       infinite: false,
       autoResize: true,
@@ -74,7 +74,7 @@ function Home() {
         trigger: "#triggerRef",
         pin: true,
         start: "top top",
-        end: "+=12500 bottom",
+        end: "+=10000 bottom",
 
         scrub: 1,
 

@@ -385,6 +385,8 @@ export const Vehicle = ({
       intercest = false;
     }
 
+    // console.log(camera.rotation.x, camera.rotation.y, camera.rotation.z);
+
     /* camera */
 
     // camera position

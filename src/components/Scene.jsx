@@ -1,3 +1,4 @@
+import { useSpring, animated } from "@react-spring/three";
 import { useGLTF, useTexture } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import gsap from "gsap";
@@ -216,6 +217,8 @@ export const Scene = ({ loading, tl, isReady }) => {
   const scene = useThree((state) => state.scene);
   const gl = useThree((state) => state.gl);
 
+  const idleAnim = useRef(true);
+
   const LINE_NB_POINTS = 2000;
 
   const curvePoints = useMemo(
@@ -251,7 +254,7 @@ export const Scene = ({ loading, tl, isReady }) => {
   };
 
   useFrame((state, delta) => {
-    if (tl.current && camera && scene && !isReady) {
+    if (tl.current && camera && scene && !isReady && !idleAnim.current) {
       const curPointIndex = Math.min(
         Math.round(tl.current.progress() * linePoints.length),
         linePoints.length - 1
@@ -290,7 +293,7 @@ export const Scene = ({ loading, tl, isReady }) => {
   });
 
   useLayoutEffect(() => {
-    if ((tl.current && camera && scene && gl, !loading)) {
+    if (tl.current && camera && scene && gl && !loading) {
       gsap.fromTo(
         camera.position,
         { x: 19, y: 4, z: -19 },
@@ -302,6 +305,7 @@ export const Scene = ({ loading, tl, isReady }) => {
           ease: "sm",
           onComplete: () => {
             window.addEventListener("mousemove", updateCursorPosition);
+            idleAnim.current = false;
           },
         }
       );

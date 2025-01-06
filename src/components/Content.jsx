@@ -139,8 +139,11 @@ export const Content = ({ tl, setIsReady, loading, isReady }) => {
 
   useEffect(() => {
     if (
-      (text.current && text2.current && scrollTextRef.current && !isReady,
-      !loading)
+      text.current &&
+      text2.current &&
+      scrollTextRef.current &&
+      !isReady &&
+      !loading
     ) {
       gsap.fromTo(
         text.current,
@@ -180,7 +183,7 @@ export const Content = ({ tl, setIsReady, loading, isReady }) => {
   const handleClick = () => {
     setIsReady(true);
     document.body.style.cursor = "auto";
-    document.getElementById("triggerRef").remove();
+
     const element = document.querySelector(".pin-spacer");
     element.remove();
     tl.current.kill();

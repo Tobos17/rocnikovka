@@ -49,6 +49,7 @@ export const EnvironmentProps = () => {
         color="white"
         noise={2}
         opacity={0.25}
+        alphaTest={0.9}
       />
 
       <ambientLight intensity={5.5} color={0xffffff} />

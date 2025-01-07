@@ -14,6 +14,7 @@ function Home() {
   const [loading, setLoading] = useState(true);
   const [isReady, setIsReady] = useState(false);
   const [reset, setReset] = useState(false);
+  const [switched, setSwitched] = useState(false);
   const readyScroll = useRef(false);
 
   const [hasKeyboard, setHasKeyboard] = useState(false);
@@ -141,6 +142,7 @@ function Home() {
           isReady={isReady}
           hasKeyboard={hasKeyboard}
           reset={reset}
+          switched={switched}
         />
       </div>
 
@@ -154,6 +156,8 @@ function Home() {
       <Overlay
         hasKeyboard={hasKeyboard}
         setReset={setReset}
+        switched={switched}
+        setSwitched={setSwitched}
         isReady={isReady}
       />
     </main>

@@ -38,13 +38,7 @@ const _airControlAngVel = new THREE.Vector3();
 const _cameraPosition = new THREE.Vector3();
 const _cameraTarget = new THREE.Vector3();
 
-export const Vehicle = ({
-  position,
-  rotation,
-  setResults,
-  hasKeyboard,
-  reset,
-}) => {
+export const Vehicle = ({ setResults, hasKeyboard, reset, switched }) => {
   const { world, rapier } = useRapier();
   const threeControls = useThree((s) => s.controls);
   const camera = useThree((s) => s.camera);
@@ -59,6 +53,28 @@ export const Vehicle = ({
     wheelsRef,
     wheels
   );
+
+  const isSwitched = useRef(false);
+  useEffect(() => {
+    const handleSwitch = (e) => {
+      if (e.key === "c") {
+        isSwitched.current = !isSwitched.current;
+      }
+    };
+    window.addEventListener("keydown", handleSwitch);
+
+    return () => {
+      window.removeEventListener("keydown", handleSwitch);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (switched) {
+      isSwitched.current = true;
+    } else {
+      isSwitched.current = false;
+    }
+  }, [switched]);
 
   const soundRef = useRef();
 
@@ -86,6 +102,7 @@ export const Vehicle = ({
 
   const [smoothedCameraPosition] = useState(new THREE.Vector3(0, 10, 0));
   const [smoothedCameraTarget] = useState(new THREE.Vector3());
+  const [smoothedCamera] = useState(new THREE.Vector3(0, 0, 0));
 
   const collider = useRef(null);
   const collider2 = useRef(null);
@@ -193,7 +210,7 @@ export const Vehicle = ({
     }
     if (y > -0.25 && y < 0.25) {
       if (x < -0.25 || x > 0.25) {
-        engineForce = Math.abs(x) * 0.5;
+        engineForce = Math.abs(x) * 0.25;
       } else {
         engineForce = 0;
       }
@@ -358,7 +375,11 @@ export const Vehicle = ({
     if (controls.reset || chassisRigidBody.translation().y < -1) {
       resetPos(chassisRigidBody);
     }
-    if (state.camera.position.x > 15 || state.camera.position.x < -15) {
+
+    if (
+      state.camera.position.x > (isSwitched.current ? 14 : 15) ||
+      state.camera.position.x < (isSwitched.current ? -14 : -15)
+    ) {
       chassisRigidBody.setBodyType(rapier.RigidBodyType.Dynamic);
     }
 
@@ -397,7 +418,44 @@ export const Vehicle = ({
 
     shadow.current.position.y = 0.025;
 
-    // camera behind chassis
+    if (chassisRigidBody.translation().x < -7.5) {
+      shadow.current.visible = false;
+    } else {
+      shadow.current.visible = true;
+    }
+
+    if (isSwitched.current) {
+      let rPosition = chassisRigidBody.translation();
+      let rQuaternion = chassisRigidBody.rotation();
+
+      let position = new THREE.Vector3(rPosition.x, rPosition.y, rPosition.z);
+
+      let quaternion = new THREE.Quaternion(
+        rQuaternion.x,
+        rQuaternion.y,
+        rQuaternion.z,
+        rQuaternion.w
+      );
+
+      let wDir = new THREE.Vector3(1, 0, 0);
+      wDir.applyQuaternion(quaternion);
+      wDir.normalize();
+      let cameraPosition = position.clone().add(wDir.clone().multiplyScalar(2));
+
+      cameraPosition.y += 1;
+
+      if (smoothedCamera.length() === 0) {
+        smoothedCamera.copy(cameraPosition);
+      } else {
+        smoothedCamera.lerp(cameraPosition, t);
+      }
+      state.camera.position.copy(smoothedCamera);
+
+      position.y += 0.5;
+      state.camera.lookAt(position);
+
+      return;
+    }
     if (intercest) {
       let cP;
 
@@ -415,12 +473,6 @@ export const Vehicle = ({
       t = 1.0 - Math.pow(0.01, delta * 0.4);
     } else {
       cameraPosition.copy(cameraOffset);
-    }
-
-    if (chassisRigidBody.translation().x < -7.5) {
-      shadow.current.visible = false;
-    } else {
-      shadow.current.visible = true;
     }
 
     cameraPosition.add(chassisRigidBody.translation());

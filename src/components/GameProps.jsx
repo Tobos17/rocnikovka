@@ -42,6 +42,7 @@ const TextPlane = () => {
           alphaMap={alphaText}
           transparent={true}
           side={THREE.DoubleSide}
+          alphaTest={0.25}
         />
       </mesh>
 
@@ -53,6 +54,7 @@ const TextPlane = () => {
           alphaMap={alphaText3}
           transparent={true}
           side={THREE.DoubleSide}
+          alphaTest={0.25}
         />
       </mesh>
     </>

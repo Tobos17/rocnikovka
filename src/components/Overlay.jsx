@@ -3,7 +3,13 @@ import gsap from "gsap";
 
 import { Cursor } from "./Cursor";
 
-export const Overlay = ({ hasKeyboard, isReady, setReset }) => {
+export const Overlay = ({
+  hasKeyboard,
+  isReady,
+  setReset,
+  switched,
+  setSwitched,
+}) => {
   const joystickRef = useRef(null);
 
   useEffect(() => {
@@ -67,6 +73,13 @@ export const Overlay = ({ hasKeyboard, isReady, setReset }) => {
             className="select-none absolute z-[300] w-fit h-fit bottom-[50vh] right-[5vw] text-4xl font-title text-white text-nowrap tracking-wide"
           >
             reset
+          </h1>
+          <h1
+            id="reset"
+            onClick={() => setSwitched(!switched)}
+            className="select-none absolute z-[300] w-fit h-fit bottom-[35vh] right-[5vw] text-4xl font-title text-white text-nowrap tracking-wide"
+          >
+            Switch
           </h1>
         </>
       )}

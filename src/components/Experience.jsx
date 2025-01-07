@@ -67,7 +67,14 @@ const ScenePhysics = () => {
   );
 };
 
-export const Experience = ({ loading, isReady, tl, hasKeyboard, reset }) => {
+export const Experience = ({
+  loading,
+  isReady,
+  tl,
+  hasKeyboard,
+  reset,
+  switched,
+}) => {
   const [results, setResults] = useState([]);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
@@ -120,6 +127,7 @@ export const Experience = ({ loading, isReady, tl, hasKeyboard, reset }) => {
                   setResults={setResults}
                   hasKeyboard={hasKeyboard}
                   reset={reset}
+                  switched={switched}
                 />
               </KeyboardControls>
 

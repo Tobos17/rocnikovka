@@ -1,4 +1,4 @@
-import { Cloud, Environment, Sky, Sparkles } from "@react-three/drei";
+import { Cloud, Environment, Sky } from "@react-three/drei";
 import { Ocean } from "./Ocean";
 
 export const EnvironmentProps = () => {
@@ -39,18 +39,6 @@ export const EnvironmentProps = () => {
       />
 
       <Ocean />
-
-      <Sparkles
-        size={15}
-        scale={[8, 2, 8]}
-        position={[10, 0.25, -10]}
-        speed={0.25}
-        count={75}
-        color="white"
-        noise={2}
-        opacity={0.25}
-        alphaTest={0.9}
-      />
 
       <ambientLight intensity={5.5} color={0xffffff} />
     </>

@@ -293,7 +293,8 @@ export const Scene = ({ loading, tl, isReady }) => {
   });
 
   useLayoutEffect(() => {
-    if (tl.current && camera && scene && gl && !loading) {
+    if (tl.current && camera && scene && gl && !loading && !isReady) {
+      console.log(isReady);
       gsap.fromTo(
         camera.position,
         { x: 19, y: 4, z: -19 },
@@ -317,8 +318,7 @@ export const Scene = ({ loading, tl, isReady }) => {
         .to(camera.rotation, { y: Math.PI / 60, duration: 1.5 }, 2);
     }
     return () => {
-      return () =>
-        window.removeEventListener("mousemove", updateCursorPosition);
+      window.removeEventListener("mousemove", updateCursorPosition);
     };
   }, [tl.current, camera, scene, gl, loading]);
 

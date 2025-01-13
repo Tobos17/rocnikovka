@@ -114,6 +114,7 @@ export const Experience = ({
           near: 0.1,
           fov: isSmallScreen ? 80 : 55,
           position: [19, 4, -19],
+          far: 100,
         }}
       >
         {/* <PivotControls scale={50} /> */}

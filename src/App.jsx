@@ -132,10 +132,10 @@ function Home() {
   }, []);
 
   return (
-    <main>
+    <main className="container">
       <Loader setLoading={setLoading} />
 
-      <div className="h-screen w-screen fixed">
+      <div className="h-screen h-svh w-screen fixed">
         <Experience
           loading={loading}
           tl={tl}

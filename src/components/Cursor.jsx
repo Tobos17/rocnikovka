@@ -33,6 +33,7 @@ export const Cursor = () => {
   };
 
   useEffect(() => {
+    cursor.current.style.display = "none";
     window.addEventListener("mousemove", manageMouseMove);
     window.addEventListener("mouseout", manageMouseOut);
     window.addEventListener("mouseover", manageMouseOver);

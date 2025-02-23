@@ -24,14 +24,47 @@ export const Loader = ({ setLoading }) => {
           }}
           transition={{
             duration: 2,
-            delay: 2.5,
+            delay: 2,
             ease: [0.25, 0.8, 0.25, 1],
           }}
           // onAnimationComplete={() => {}}
-          className="z-[200] fixed inset-0 h-screen w-full bg-white"
+          className="z-[200] fixed inset-0 h-screen h-svh w-full bg-white"
         >
           <h1 className="absolute top-8 right-8 font-end text-xl flex">
-            loading assets ...
+            loading assets
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 1, 0] }}
+              transition={{
+                duration: 1,
+                repeat: Infinity,
+                delay: 0.2,
+              }}
+            >
+              .
+            </motion.span>
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 1, 0] }}
+              transition={{
+                duration: 1,
+                repeat: Infinity,
+                delay: 0.4,
+              }}
+            >
+              .
+            </motion.span>
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 1, 0] }}
+              transition={{
+                duration: 1,
+                repeat: Infinity,
+                delay: 0.6,
+              }}
+            >
+              .
+            </motion.span>
           </h1>
         </motion.div>
       )}

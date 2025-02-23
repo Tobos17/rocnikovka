@@ -193,7 +193,7 @@ export const Content = ({ tl, setIsReady, loading, isReady }) => {
     <>
       <div
         id="triggerRef"
-        className="select-none h-screen w-screen pointer-events-none"
+        className="select-none h-screen h-svh w-screen pointer-events-none"
       >
         {!isReady && (
           <>
